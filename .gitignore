@@ -77,7 +77,7 @@ web_modules/
 # Next.js build output
 .next
 out
-
+node_modules
 # Nuxt.js build / generate output
 .nuxt
 dist
@@ -137,3 +137,11 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Archivo de base de datos local (contiene TODO, ¡incluyendo credenciales!)
+database.sqlite
+
+# Archivos de credenciales exportados
+n8n-credentials.json
+*.credentials.json
+
