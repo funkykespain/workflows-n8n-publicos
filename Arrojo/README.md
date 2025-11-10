@@ -1,3 +1,5 @@
+<p align="center"> <img src="profile.jpeg" alt="ArrojoBot Profile" width="250"/> </p>
+![Profile](profile.jpeg)
 # 🧠 1. ArrojoBot: Chatbot de Telegram con RAG y Agentes
 
 Este workflow de n8n implementa un chatbot avanzado para la banda de rock **"Arrojo"**, accesible tanto por **Telegram** como por un **webhook** para su sitio web oficial.
@@ -55,7 +57,7 @@ Para que este workflow funcione, necesitarás:
 -----
 
 ## 🧩 6. Estructura del Workflow
-
+![n8n Workflow](schema.png)
 Este workflow se divide en dos lógicas principales:
 
 ### 1. Lógica de Chatbot (Recepción y Respuesta)
@@ -126,7 +128,7 @@ El JSON de `pinData` muestra un ejemplo de entrada del usuario.
 
 1.  **Agente "Cafeina" (Planificador)**: Recibe el texto. Decide que la intención es buscar un vídeo. Devuelve un plan: `{"tools": ["YouTube"]}`.
 2.  **Agente "ArrojoBot" (Ejecutor)**: Recibe el plan. Activa la herramienta `youtube` con el término de búsqueda "vídeo de la pizza".
-3.  La herramienta de YouTube devuelve un enlace (ej: `https://www.youtube.com/watch?v=XXXXXXX`).
+3.  La herramienta de YouTube devuelve un enlace (ej: `https://youtube.com/shorts/9DddO6s0Epg`).
 4.  "ArrojoBot" formula una respuesta en personaje, en Markdown.
 
 **Salida esperada (Respuesta en Telegram):**
