@@ -136,7 +136,7 @@ El nodo `De MD a HTML` convierte el Markdown del bot a HTML, que se envía a Tel
 ```html
 ¡Claro! 🤘 Aquí tienes el vídeo de la pizza, ¡qué momentazo!
 
-<a href='https://www.youtube.com/watch?v=XXXXXXX'>Arrojo - El vídeo de la pizza</a>
+<a href='https://youtube.com/shorts/9DddO6s0Epg'>Arrojo - El vídeo de la pizza</a>
 
 ¡No olvides seguirnos en <a href='https://www.youtube.com/channel/UCJnAZC6v6OfKxNydcD6CFqQ'>YouTube</a> para más!
 ```
