@@ -1,5 +1,5 @@
 <p align="center"> <img src="profile.jpeg" alt="ArrojoBot Profile" width="250"/> </p>
-![Profile](profile.jpeg)
+![Profile](profile.png)
 # 🧠 1. ArrojoBot: Chatbot de Telegram con RAG y Agentes
 
 Este workflow de n8n implementa un chatbot avanzado para la banda de rock **"Arrojo"**, accesible tanto por **Telegram** como por un **webhook** para su sitio web oficial.
