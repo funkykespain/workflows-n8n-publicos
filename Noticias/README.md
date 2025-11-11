@@ -1,1 +1,147 @@
+<p align="center"\>
+<img src="profile.png" alt="Noticias Profile" width="250"/\>
+</p\>
 
+# 1\. Boletín de Audio: Tu Dosis Diaria de IA y Tech
+
+Este workflow de n8n es un sistema de curación y generación de contenido totalmente automatizado. Su objetivo es resolver la sobrecarga de información tecnológica (especialmente en IA y ciencia de datos) y entregar un resumen de audio conciso y de alta calidad directamente por WhatsApp.
+
+Cada madrugada, el flujo se activa, procesa noticias de decenas de fuentes tecnológicas de prestigio (como *MIT Technology Review*, *Xataka*, *The Hacker News*, etc.), y filtra el ruido (opiniones, rumores, duplicados) para quedarse solo con lo relevante.
+
+Posteriormente, una **orquesta de tres Agentes de IA** colabora:
+
+1.  Un **Analista** selecciona las 15 noticias más importantes del día, comparándolas con un historial de 7 días para evitar repeticiones.
+2.  Un **Summarizer** lee y resume cada una de esas 15 noticias.
+3.  Un **Guionista** toma los resúmenes y el contexto histórico para redactar un guion fluido y natural, en castellano, optimizado para audio.
+
+Finalmente, el guion se convierte a voz usando **Azure TTS** (voz `es-ES-AlvaroNeural`) y se distribuye como un único archivo de audio a una lista de suscriptores en WhatsApp.
+
+-----
+
+## 📍 2. ¡Suscríbete al Boletín\!
+
+Puedes recibir este boletín de audio cada mañana (Lunes a Viernes, \~6:00 AM CET) de forma gratuita.
+
+  * **Canal:** Envía un mensaje de WhatsApp al [**+34 665 656 404**](https://wa.me/34665656404)
+  * **Mensaje:** `alta noticias`
+
+La gestión de altas y bajas de esta lista de distribución se maneja a través de [**KykeBot**](https://github.com/funkykespain/workflows-n8n-publicos/tree/main/KykeBot), el asistente personal de Enrique Aranda.
+
+-----
+
+## ⚙️ 3. Requisitos Previos
+
+Para que este workflow funcione, necesitarás:
+
+  * Una instancia de **n8n** (local o en la nube).
+  * Una puerta de enlace de **WhatsApp API**, como **Evolution API** (usada en este flujo).
+  * Una base de datos **Redis** (para el historial de noticias).
+  * Una cuenta de **Google Sheets** (para leer la lista de distribución).
+  * Credenciales de API para:
+      * **OpenAI** (para el Agente Analista).
+      * **Mistral Cloud** (para el Agente Summarizer).
+      * **Google Gemini** (para el Agente Guionista).
+      * **Azure Cognitive Services (TTS)** (para la generación de audio).
+
+-----
+
+## 📦 4. Archivos Incluidos
+
+  * `Noticias.json`: El export completo del workflow de n8n.
+  * `profile.png`: Imagen de perfil del bot.
+  * `schema.png`: Diagrama visual del workflow.
+  * `README.md`: Este documento explicativo.
+
+-----
+
+## 🚀 5. Instalación e Importación del Workflow
+
+1.  Descarga el archivo `Noticias.json`.
+2.  En tu instancia de n8n, ve a **Import \> From File**.
+3.  Selecciona el archivo `Noticias.json` y guarda el workflow.
+4.  **Importante:** Este flujo utiliza múltiples credenciales (ver sección de Requisitos). Deberás crear y asignar cada una de ellas en los nodos correspondientes (ej: `News Analyzer`, `Website Summarizer`, `Redactor`, `Azure TTS`, `Lista de distribución`, `Enviar audio1`, `Historial`, etc.).
+5.  Configura el `Schedule` (disparador) a la hora que desees.
+6.  Activa el workflow.
+
+-----
+
+## 🧩 6. Estructura del Workflow
+
+Este workflow se inicia con un nodo `Schedule` que se ejecuta todos los días laborables a las 5:57 AM.
+![n8n Workflow](schema.png)
+
+El flujo se puede dividir en cinco fases principales:
+
+### Fase 1: Recolección y Filtrado (El "Curador")
+
+1.  **Disparador:** El nodo `Schedule` inicia el flujo (L-V, 5:57 AM).
+2.  **Recolección:** Múltiples nodos `RSS Feed Read` y `HTTP Request` (para *CB Insights*) extraen las últimas noticias de más de 10 fuentes (Lobste.rs, Google News IA, TheHackersNews, MIT, Xataka, TechCrunch, VentureBeat, Axios, Emerj).
+3.  **Estandarización:** Varios nodos `Set` (`Filter Fields`) unifican los datos en un formato común (título, pubDate, link, content).
+4.  **Filtro de Fecha:** Un nodo `Filter` (`Filter by Datetime`) descarta noticias con más de 24 horas (o 72h los lunes).
+5.  **Filtro de Contenido:** Un nodo `Filter` (`Remove Certain Content`) elimina artículos irrelevantes usando palabras clave (opinion, rumour, layoff, offer, discount, etc.).
+6.  **Agregación:** Un nodo `Aggregate` agrupa todas las noticias limpias del día.
+
+### Fase 2: Carga de Contexto Histórico
+
+1.  **Lectura de Historial:** Un nodo `Redis` (`Historial`) lee la lista `historial_noticias` que contiene los titulares de los últimos días.
+2.  **Filtro de Historial:** Un nodo `Code` (`Filtrado Historial`) procesa este historial para quedarse solo con las noticias de los últimos 7 días.
+
+### Fase 3: La Orquesta de Agentes de IA
+
+Esta es la lógica central donde tres agentes colaboran, cada uno con un LLM y un *prompt* especializado.
+
+1.  **Agente 1: El Analista (`News Analyzer`)**
+
+      * **Entrada:** Recibe la lista completa de noticias de *hoy* y el historial de *7 días*.
+      * **LLM:** Utiliza `4.1-mini` (OpenAI) con fallback a `Gemini 2.5-flash`.
+      * **Tarea:** Su *prompt* le instruye para actuar como analista, priorizando IA y Data Science, y aplicando filtros semánticos (para no repetir temas del historial) y de diversidad (para no incluir más de 2 noticias de la misma fuente).
+      * **Salida:** Devuelve un JSON con el **Top 15** de noticias (título y link).
+
+2.  **Agente 2: El Resumidor (`Website Summarizer`)**
+
+      * **Entrada:** Recibe el contenido de cada una de las 15 noticias seleccionadas (tras un mergeo de datos).
+      * **LLM:** Utiliza `Mistral Small` con fallback a `Gemini 2.5-flash`.
+      * **Tarea:** Su *prompt* le ordena devolver un JSON con un resumen de una sola frase concisa para cada artículo.
+      * **Salida:** Devuelve 15 resúmenes.
+
+3.  **Agente 3: El Guionista (`Redactor`)**
+
+      * **Entrada:** Recibe los 15 resúmenes y el historial de 7 días (para contexto).
+      * **LLM:** Utiliza `Gemini 2.5-flash` con fallback a `Mistral Small`.
+      * **Tarea:** Su *prompt* es el más complejo. Le exige actuar como redactor de guiones para audio (formato TTS). Debe escribir un guion fluido en español, natural, con un saludo y despedida, conectando las noticias, y haciendo referencias al contexto histórico (ej. "dando continuidad a lo que vimos la semana pasada..."). Se le prohíbe explícitamente usar cualquier formato (negritas, markdown, etc.).
+      * **Salida:** Un bloque de texto plano listo para ser locutado.
+
+### Fase 4: Generación y Distribución de Audio
+
+1.  **Limpieza de Texto:** Un nodo `Code` (`Limpieza para TTS`) prepara el texto del guionista, eliminando saltos de línea y escapando caracteres especiales para SSML.
+2.  **Generación de Audio:** Un nodo `HTTP Request` (`Azure TTS`) envía el texto limpio a la API de Azure Text-to-Speech, configurada para usar la voz `es-ES-AlvaroNeural` y devolver un archivo `.ogg`.
+3.  **Conversión:** El nodo `PasarBase64` convierte el audio binario a formato Base64 para la API de WhatsApp.
+4.  **Lista de Suscriptores:** Un nodo `Google Sheets` (`Lista de distribución`) lee la hoja de cálculo donde KykeBot gestiona las altas.
+5.  **Envío:** Un nodo `Loop Over Items` itera sobre cada suscriptor, y un nodo `Evolution API` (`Enviar audio1`) envía el archivo de audio (`send-audio`) a cada `remoteJid`.
+
+### Fase 5: Retroalimentación (Logging)
+
+  * **Guardado de Historial:** En paralelo a la distribución, un nodo `Redis` (`Guardado Historial`) toma la salida del Top 15 del **Agente 1** y la guarda en la lista `historial_noticias` en Redis. Esto asegura que el agente de mañana tenga el contexto de las noticias de hoy.
+
+-----
+
+## 🔧 7. Optimizaciones y Características Clave
+
+  * **Orquestación Multi-Agente:** En lugar de un solo LLM monolítico, se usan tres agentes especializados. Esto reduce la carga cognitiva de cada agente, mejora la fiabilidad de cada paso y permite usar el LLM más adecuado (y económico) para cada tarea (análisis, resumen, redacción).
+  * **Curación por Contexto (RAG Ligero):** El uso del historial de Redis de 7 días actúa como una forma de RAG. El **Agente 1** (Analista) lo usa para filtrar duplicados y el **Agente 3** (Guionista) lo usa para dar continuidad narrativa a los temas.
+  * **Optimización para Audio (TTS):** El *prompt* del Guionista y el nodo de limpieza (`Limpieza para TTS`) están diseñados específicamente para generar un texto que suene natural y profesional cuando es procesado por una voz neural, evitando formatos de texto escrito.
+  * **Filtrado Robusto:** El flujo no solo filtra por palabras clave (`Remove Certain Content`), sino también por fecha (`Filter by Datetime`) y, lo más importante, semánticamente (Agente 1), asegurando una alta calidad y relevancia del contenido final.
+  * **Gestión de Fuentes:** El flujo agrega más de 10 fuentes de primer nivel y es capaz de manejar formatos distintos (RSS y scraping de XML/HTML), unificándolos antes de pasarlos a la IA.
+
+-----
+
+## 🧑‍💻 8. Autor
+
+Desarrollado por [Enrique Aranda](https://www.linkedin.com/in/earanda/)
+(Workflows públicos de `funkykespain`).
+
+-----
+
+## 📄 9. Licencia
+
+Este proyecto se distribuye bajo la licencia MIT.
