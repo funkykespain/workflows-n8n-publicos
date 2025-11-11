@@ -22,7 +22,7 @@ El flujo está diseñado para ser robusto, gestionando el estado del usuario en 
 
 Puedes interactuar con este workflow en tiempo real a través del canal principal de WhatsApp de Enrique Aranda:
 
-  * **Canal de WhatsApp:** [**+34 665 656 404**](https://www.google.com/search?q=https://wa.me/34665656404)
+  * **Canal de WhatsApp:** [**+34 665 656 404**](https://wa.me/34665656404)
 
 -----
 
