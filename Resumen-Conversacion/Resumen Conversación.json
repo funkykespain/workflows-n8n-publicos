@@ -1,1 +1,534 @@
-{"updatedAt":"2025-07-24T11:54:47.000Z","createdAt":"2025-06-17T08:38:02.497Z","id":"gG0ICHL8DMZFCGR6","name":"Resumen Conversación","active":true,"isArchived":false,"nodes":[{"parameters":{"rule":{"interval":[{"triggerAtHour":6}]}},"type":"n8n-nodes-base.scheduleTrigger","typeVersion":1.2,"position":[0,0],"id":"7437971d-fe50-496d-84d0-36c97dafdd90","name":"Schedule Trigger"},{"parameters":{"operation":"keys","keyPattern":"*"},"type":"n8n-nodes-base.redis","typeVersion":1,"position":[224,0],"id":"40c7aa78-22ea-46ad-bd59-d9d8b33bf808","name":"Redis","credentials":{"redis":{"id":"PZWchEp9wlBwvVjx","name":"Redis -chat-perso"}}},{"parameters":{"options":{}},"type":"n8n-nodes-base.splitInBatches","typeVersion":3,"position":[672,-16],"id":"bbb7eb2c-ab61-481d-aab6-7fd102cb1521","name":"Loop Over Items"},{"parameters":{"jsCode":"const inputItem = items[0].json;\nconst newItems = [];\n\n// Iteramos sobre cada par [clave, valor] del objeto de entrada\nfor (const [key, value] of Object.entries(inputItem)) {\n  \n  // --- FILTRO AÑADIDO AQUÍ ---\n  // Solo procesamos las claves que NO empiezan con \"summary_marker:\"\n  if (!key.startsWith('summary_marker:')) {\n\n    // Si la clave es de una conversación, la añadimos a la lista para procesar.\n    newItems.push({\n      json: {\n        \"keyPattern\": key,\n        \"chatHistory\": value\n      }\n    });\n  }\n}\n\n// Devolvemos el array de nuevos ítems, que ahora solo contiene conversaciones reales.\nreturn newItems;"},"type":"n8n-nodes-base.code","typeVersion":2,"position":[448,0],"id":"73f9504b-bf27-4b49-b068-e91be2661003","name":"Code"},{"parameters":{"sendTo":"aravaren@gmail.com","subject":"={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}","message":"={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}","options":{"appendAttribution":false,"senderName":"KykeBot"}},"type":"n8n-nodes-base.gmailTool","typeVersion":2.1,"position":[2016,192],"id":"1c9a22b0-c754-40e5-bc6a-4bba39a8a990","name":"Mandar","webhookId":"f8bf9379-11b5-437c-9037-3a9a4de21b17","credentials":{"gmailOAuth2":{"id":"llOJlexeyzK60fJs","name":"Gmail perso"}}},{"parameters":{"operation":"getAll","returnAll":"={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Return_All', ``, 'boolean') }}","limit":50,"fields":["names","phoneNumbers","nicknames"],"useQuery":"={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Use_Query', ``, 'boolean') }}","query":"={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query', ``, 'string') }}","rawData":true,"options":{}},"type":"n8n-nodes-base.googleContactsTool","typeVersion":1,"position":[1872,192],"id":"b5f80e3a-1196-402c-b948-1542829dee72","name":"Get Contacts","credentials":{"googleContactsOAuth2Api":{"id":"mFjAUoc6bQC17ZZ3","name":"Contacts Perso"}}},{"parameters":{"jsCode":"const items = $input.all();\n\nreturn items.map(item => {\n  // Soporte para cuando los datos están dentro de item.json (caso común en n8n)\n  const source = item.json || item;\n\n  const historialCompleto = source.chatHistory || [];\n  const originalKey = source.keyPattern || '';\n  const indiceGuardado = source.data ? parseInt(source.data) : 0;\n  const longitudTotal = historialCompleto.length;\n\n  // Manejo del nuevo campo de contacto (usando clave dinámica)\n  let contactDataParsed = null;\n  const rawContactData = source[originalKey];\n  if (rawContactData && typeof rawContactData === 'string') {\n    try {\n      contactDataParsed = JSON.parse(rawContactData);\n    } catch (e) {\n      console.error(\"Error al parsear datos de contacto para\", originalKey, \":\", e);\n    }\n  }\n\n  // Validación básica\n  if (!Array.isArray(historialCompleto) || indiceGuardado >= longitudTotal) {\n    return null;\n  }\n\n  // Obtenemos mensajes nuevos en orden inverso\n  const mensajesNuevos = historialCompleto.slice(0, longitudTotal - indiceGuardado).reverse();\n\n  const formattedChatHistory = mensajesNuevos.map(messageString => {\n    try {\n      const messageObject = JSON.parse(messageString);\n      const type = messageObject.type;\n      const content = messageObject.data.content.trim();\n      if (type === 'human') return `human: ${content}`;\n      if (type === 'ai') return `AI: ${content}`;\n      return '';\n    } catch (e) {\n      return '';\n    }\n  }).filter(Boolean);\n\n  const tlf = originalKey.split('@')[0];\n\n  const result = {\n    Tlf: tlf,\n    keyPattern: originalKey,\n    longitudTotal: longitudTotal,\n    chatHistoryParsed: formattedChatHistory.join('\\n\\n'),\n    contactData: contactDataParsed\n  };\n\n  // Log de depuración opcional\n  console.log(\"Resultado generado:\", result);\n\n  return { json: result };\n}).filter(Boolean);\n"},"type":"n8n-nodes-base.code","typeVersion":2,"position":[1360,0],"id":"94da3900-c1fb-43b8-b0a4-c712a951c46e","name":"Procesado Chat","alwaysOutputData":true,"onError":"continueRegularOutput"},{"parameters":{"operation":"get","propertyName":"data","key":"=summary_marker:{{ $('Loop Over Items').item.json.keyPattern }}","options":{}},"type":"n8n-nodes-base.redis","typeVersion":1,"position":[944,-96],"id":"57fe1892-f189-4398-994c-90d00eb5fb6c","name":"Get Marker","credentials":{"redis":{"id":"PZWchEp9wlBwvVjx","name":"Redis -chat-perso"}}},{"parameters":{"mode":"combine","combineBy":"combineByPosition","numberInputs":3,"options":{}},"type":"n8n-nodes-base.merge","typeVersion":3.2,"position":[1184,-16],"id":"2b9ea1af-910d-4f01-999d-f9201029abc9","name":"Merge"},{"parameters":{},"type":"n8n-nodes-base.noOp","typeVersion":1,"position":[944,-256],"id":"178cc204-4cc2-459e-8237-489caf1d5b58","name":"Iteraciones terminadas"},{"parameters":{"operation":"set","key":"=summary_marker:{{ $('Procesado Chat').item.json.keyPattern }}","value":"={{ $('Procesado Chat').item.json.longitudTotal }}","keyType":"string"},"type":"n8n-nodes-base.redis","typeVersion":1,"position":[2176,-32],"id":"4a3b047a-3b63-4ec2-8530-fd8ccb034ab2","name":"Set Marker","credentials":{"redis":{"id":"PZWchEp9wlBwvVjx","name":"Redis -chat-perso"}}},{"parameters":{"conditions":{"options":{"caseSensitive":true,"leftValue":"","typeValidation":"strict","version":2},"conditions":[{"id":"7bbd4c92-bced-42e1-8d2f-885a662117b5","leftValue":"={{ $json.Tlf }}","rightValue":"","operator":{"type":"string","operation":"notEmpty","singleValue":true}}],"combinator":"and"},"options":{}},"type":"n8n-nodes-base.if","typeVersion":2.2,"position":[1584,0],"id":"c649cfa9-0395-49be-bf06-4f12c63a3286","name":"If"},{"parameters":{"operation":"keys","keyPattern":"={{ $json.keyPattern }}"},"type":"n8n-nodes-base.redis","typeVersion":1,"position":[944,80],"id":"c026bce3-b684-40a5-9c62-d329cb811f6b","name":"Buscar en BBDD","credentials":{"redis":{"id":"p7BHDYDpqTOSiyD7","name":"usuario-perso"}}},{"parameters":{"modelId":{"__rl":true,"value":"gpt-4o-mini","mode":"list","cachedResultName":"GPT-4O-MINI"},"messages":{"values":[{"content":"=Eres un asistente experto en análisis de conversaciones y búsqueda de contactos. Tienes acceso a dos herramientas:\n\n- \"Get Contacts\" → para buscar contactos en Google Contacts.\n- \"Mandar\" → para enviar emails en formato HTML por Gmail.\n\nSigue estos pasos:\n\n---\n\n1. 🔍 **Buscar contacto por teléfono**\n\nConsulta \"Get Contacts\" las veces necesarias para encontrar el `displayName` asociado al número {{ $json.Tlf }}. Usa variantes del número en estas formas:\n\n• +{{ $json.Tlf }}  \n• 00{{ $json.Tlf }}  \n• +{{ $json.Tlf.replace(/^(\\d{2})(\\d{3})(\\d{2})(\\d{2})(\\d{2})$/, '$1 $2 $3 $4 $5') }} \n• +{{ $json.Tlf.replace(/^(\\d{2})(\\d{3})(\\d{3})(\\d{3})$/, '$1 $2 $3 $4') }}  \n• {{ $json.Tlf.slice(2) }}  \n• {{ $json.Tlf.slice(2).replace(/^(\\d{3})(\\d{2})(\\d{2})(\\d{2})$/, '$1 $2 $3 $4') }}  \n• {{ $json.Tlf.slice(2).replace(/^(\\d{3})(\\d{3})(\\d{3})$/, '$1 $2 $3') }}\n\nSi encuentras coincidencia, guarda el `displayName`. Si no hay, usa \"Desconocido\".\n\n---\n\n2. ✏️ **Resumir conversación**\n\nLee el historial:\n\n{{ $json.chatHistoryParsed }}\n\n• Ignora cualquier mención a herramientas o funciones internas del asistente.  \n• Prioriza los mensajes del usuario (`human`).  \n• Resume la conversación en un máximo de 4 frases claras, sin usar frases como “el usuario dijo” o “se mencionó que…”.  \n• Añade una frase final describiendo el tono de la conversación (ej: cordial, directa, técnica, colaborativa).\n\n---\n\n3.  📧 **Enviar email con la herramienta \"Mandar\"**\n\n    Utiliza la herramienta \"Mandar\" para enviar el correo electrónico.\n\n    **Formato del correo:**\n\n      * **Asunto:** `[displayName]: [tema principal de la conversación, inferido del resumen]`\n\n          * Ejemplo: `Carlos Arrojo: concierto de la banda Arrojo en Chapinería`\n          * **No incluyas el número de teléfono en el asunto.**\n\n      * **Cuerpo (HTML):**\n\n        ```html\n        <p><strong>Resumen de la conversación con [displayName] (+<span style=\"white-space:nowrap\">{{ $json.Tlf }}</span>):</strong></p>\n<ul>\n    <li>Contacto inicial: Nombre: {{ $json.contactData.nombre ?? 'N/A' }} Apellidos: {{ $json.contactData.apellidos ?? 'N/A' }} Alias: {{ $json.contactData.alias ?? 'N/A' }} Teléfono: {{ $json.contactData.telefono ?? 'N/A' }} Email: {{ $json.contactData.email ?? 'N/A' }}</li>\n    <li>Estado y asunto (si aplica): El usuario está {{ $json.contactData.etiqueta_emocional ?? 'N/A' }} sobre un asunto {{ $json.contactData.etiqueta_asunto ?? 'N/A' }}. Notas adicionales: {{ $json.contactData.notas ?? 'N/A' }}</li>\n    <li>[Tu resumen de la conversación, frase 1]</li>\n    <li>[Tu resumen de la conversación, frase 2]</li>\n    <li>[Tu resumen de la conversación, frase 3]</li>\n    <li>[Tu resumen de la conversación, frase 4, si aplica]</li>\n</ul>\n        ```\n\n    **Directrices importantes para el cuerpo HTML:**\n\n      * **No incluyas saludos ni despedidas.**\n      * **No describas tus propios pasos** (ej., \"se consultó\", \"se usó una herramienta\", \"leí el historial\").\n      * **Solo usa el formato HTML proporcionado.** No añadas texto plano fuera de las etiquetas HTML.\n      * **Reemplaza `[displayName]` con el valor obtenido del paso 1.**\n      * **Reemplaza `[Tu resumen de la conversación, frase X]` con las frases generadas en el paso 2.** Asegúrate de que la frase final sobre el tono esté incluida en una de estas líneas de resumen.\n","role":"system"}]},"options":{}},"type":"@n8n/n8n-nodes-langchain.openAi","typeVersion":1.8,"position":[1776,-16],"id":"00dbd367-898e-4bac-875d-cbb2aaa348c9","name":"Message a model","retryOnFail":true,"credentials":{"openAiApi":{"id":"yXKIfAKVrr17zDhw","name":"OpenAi account"}},"onError":"continueErrorOutput"},{"parameters":{"amount":10},"type":"n8n-nodes-base.wait","typeVersion":1.1,"position":[2176,176],"id":"e7e9de21-e2da-4c0c-aa9a-437443f90de2","name":"Esperar antes de Reintentar","webhookId":"8919b1e7-6dea-41fe-a659-78ff9894e752"}],"connections":{"Schedule Trigger":{"main":[[{"node":"Redis","type":"main","index":0}]]},"Redis":{"main":[[{"node":"Code","type":"main","index":0}]]},"Loop Over Items":{"main":[[{"node":"Iteraciones terminadas","type":"main","index":0}],[{"node":"Get Marker","type":"main","index":0},{"node":"Merge","type":"main","index":1},{"node":"Buscar en BBDD","type":"main","index":0}]]},"Code":{"main":[[{"node":"Loop Over Items","type":"main","index":0}]]},"Mandar":{"ai_tool":[[{"node":"Message a model","type":"ai_tool","index":0}]]},"Get Contacts":{"ai_tool":[[{"node":"Message a model","type":"ai_tool","index":0}]]},"Procesado Chat":{"main":[[{"node":"If","type":"main","index":0}]]},"Get Marker":{"main":[[{"node":"Merge","type":"main","index":0}]]},"Merge":{"main":[[{"node":"Procesado Chat","type":"main","index":0}]]},"Set Marker":{"main":[[{"node":"Loop Over Items","type":"main","index":0}]]},"If":{"main":[[{"node":"Message a model","type":"main","index":0}],[{"node":"Loop Over Items","type":"main","index":0}]]},"Buscar en BBDD":{"main":[[{"node":"Merge","type":"main","index":2}]]},"Message a model":{"main":[[{"node":"Set Marker","type":"main","index":0}],[{"node":"Esperar antes de Reintentar","type":"main","index":0}]]},"Esperar antes de Reintentar":{"main":[[{"node":"Message a model","type":"main","index":0}]]}},"settings":{"executionOrder":"v1","timezone":"Europe/Madrid","callerPolicy":"workflowsFromSameOwner"},"staticData":{"node:Schedule Trigger":{"recurrenceRules":[]}},"meta":{"templateCredsSetupCompleted":true},"pinData":{"Schedule Trigger":[{"json":{"timestamp":"2025-07-24T06:00:51.025+02:00","Readable date":"July 24th 2025, 6:00:51 am","Readable time":"6:00:51 am","Day of week":"Thursday","Year":"2025","Month":"July","Day of month":"24","Hour":"06","Minute":"00","Second":"51","Timezone":"Europe/Madrid (UTC+02:00)"}}]},"versionId":"74acd196-881d-412d-8de8-e108d1b050e0","versionCounter":3,"triggerCount":1,"shared":[{"updatedAt":"2025-06-17T08:38:02.540Z","createdAt":"2025-06-17T08:38:02.540Z","role":"workflow:owner","workflowId":"gG0ICHL8DMZFCGR6","projectId":"Mvxq1zcG7g6su58x","project":{"updatedAt":"2025-05-19T09:52:22.244Z","createdAt":"2025-05-19T08:30:46.270Z","id":"Mvxq1zcG7g6su58x","name":"Enrique Aranda Varela <matriculas@universitashub.com>","type":"personal","icon":null,"description":null,"projectRelations":[{"updatedAt":"2025-05-19T08:30:46.271Z","createdAt":"2025-05-19T08:30:46.271Z","userId":"a4e9e30f-247d-4d10-90fb-23314a3f2652","projectId":"Mvxq1zcG7g6su58x","user":{"updatedAt":"2025-11-11T05:00:37.000Z","createdAt":"2025-05-19T08:30:40.896Z","id":"a4e9e30f-247d-4d10-90fb-23314a3f2652","email":"matriculas@universitashub.com","firstName":"Enrique","lastName":"Aranda Varela","personalizationAnswers":{"version":"v4","personalization_survey_submitted_at":"2025-05-19T09:54:15.566Z","personalization_survey_n8n_version":"1.79.3","companySize":"<20","companyType":"systems-integrator","role":"data-science","reportedSource":"youtube"},"settings":{"userActivated":true,"firstSuccessfulWorkflowId":"7eyZr9a4IWr7YuB8","userActivatedAt":1747654225274,"easyAIWorkflowOnboarded":true,"npsSurvey":{"responded":true,"lastShownAt":1749485707126},"dismissedCallouts":{"aiAgentStarterCallout":true}},"disabled":false,"mfaEnabled":false,"lastActiveAt":"2025-11-11","isPending":false}}]}}],"tags":[]}
+{
+  "name": "Resumen Conversación",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 6
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7437971d-fe50-496d-84d0-36c97dafdd90",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "keys",
+        "keyPattern": "*"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "40c7aa78-22ea-46ad-bd59-d9d8b33bf808",
+      "name": "Redis",
+      "credentials": {
+        "redis": {
+          "id": "PZWchEp9wlBwvVjx",
+          "name": "Redis -chat-perso"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        672,
+        -16
+      ],
+      "id": "bbb7eb2c-ab61-481d-aab6-7fd102cb1521",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputItem = items[0].json;\nconst newItems = [];\n\n// Iteramos sobre cada par [clave, valor] del objeto de entrada\nfor (const [key, value] of Object.entries(inputItem)) {\n  \n  // --- FILTRO AÑADIDO AQUÍ ---\n  // Solo procesamos las claves que NO empiezan con \"summary_marker:\"\n  if (!key.startsWith('summary_marker:')) {\n\n    // Si la clave es de una conversación, la añadimos a la lista para procesar.\n    newItems.push({\n      json: {\n        \"keyPattern\": key,\n        \"chatHistory\": value\n      }\n    });\n  }\n}\n\n// Devolvemos el array de nuevos ítems, que ahora solo contiene conversaciones reales.\nreturn newItems;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "73f9504b-bf27-4b49-b068-e91be2661003",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "sendTo": "tu_email@gmail.com",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "KykeBot"
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        2016,
+        192
+      ],
+      "id": "1c9a22b0-c754-40e5-bc6a-4bba39a8a990",
+      "name": "Mandar",
+      "webhookId": "f8bf9379-11b5-437c-9037-3a9a4de21b17",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "llOJlexeyzK60fJs",
+          "name": "Gmail perso"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "returnAll": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Return_All', ``, 'boolean') }}",
+        "limit": 50,
+        "fields": [
+          "names",
+          "phoneNumbers",
+          "nicknames"
+        ],
+        "useQuery": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Use_Query', ``, 'boolean') }}",
+        "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query', ``, 'string') }}",
+        "rawData": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleContactsTool",
+      "typeVersion": 1,
+      "position": [
+        1872,
+        192
+      ],
+      "id": "b5f80e3a-1196-402c-b948-1542829dee72",
+      "name": "Get Contacts",
+      "credentials": {
+        "googleContactsOAuth2Api": {
+          "id": "mFjAUoc6bQC17ZZ3",
+          "name": "Contacts Perso"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nreturn items.map(item => {\n  // Soporte para cuando los datos están dentro de item.json (caso común en n8n)\n  const source = item.json || item;\n\n  const historialCompleto = source.chatHistory || [];\n  const originalKey = source.keyPattern || '';\n  const indiceGuardado = source.data ? parseInt(source.data) : 0;\n  const longitudTotal = historialCompleto.length;\n\n  // Manejo del nuevo campo de contacto (usando clave dinámica)\n  let contactDataParsed = null;\n  const rawContactData = source[originalKey];\n  if (rawContactData && typeof rawContactData === 'string') {\n    try {\n      contactDataParsed = JSON.parse(rawContactData);\n    } catch (e) {\n      console.error(\"Error al parsear datos de contacto para\", originalKey, \":\", e);\n    }\n  }\n\n  // Validación básica\n  if (!Array.isArray(historialCompleto) || indiceGuardado >= longitudTotal) {\n    return null;\n  }\n\n  // Obtenemos mensajes nuevos en orden inverso\n  const mensajesNuevos = historialCompleto.slice(0, longitudTotal - indiceGuardado).reverse();\n\n  const formattedChatHistory = mensajesNuevos.map(messageString => {\n    try {\n      const messageObject = JSON.parse(messageString);\n      const type = messageObject.type;\n      const content = messageObject.data.content.trim();\n      if (type === 'human') return `human: ${content}`;\n      if (type === 'ai') return `AI: ${content}`;\n      return '';\n    } catch (e) {\n      return '';\n    }\n  }).filter(Boolean);\n\n  const tlf = originalKey.split('@')[0];\n\n  const result = {\n    Tlf: tlf,\n    keyPattern: originalKey,\n    longitudTotal: longitudTotal,\n    chatHistoryParsed: formattedChatHistory.join('\\n\\n'),\n    contactData: contactDataParsed\n  };\n\n  // Log de depuración opcional\n  console.log(\"Resultado generado:\", result);\n\n  return { json: result };\n}).filter(Boolean);\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1360,
+        0
+      ],
+      "id": "94da3900-c1fb-43b8-b0a4-c712a951c46e",
+      "name": "Procesado Chat",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "data",
+        "key": "=summary_marker:{{ $('Loop Over Items').item.json.keyPattern }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        944,
+        -96
+      ],
+      "id": "57fe1892-f189-4398-994c-90d00eb5fb6c",
+      "name": "Get Marker",
+      "credentials": {
+        "redis": {
+          "id": "PZWchEp9wlBwvVjx",
+          "name": "Redis -chat-perso"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1184,
+        -16
+      ],
+      "id": "2b9ea1af-910d-4f01-999d-f9201029abc9",
+      "name": "Merge"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        944,
+        -256
+      ],
+      "id": "178cc204-4cc2-459e-8237-489caf1d5b58",
+      "name": "Iteraciones terminadas"
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "=summary_marker:{{ $('Procesado Chat').item.json.keyPattern }}",
+        "value": "={{ $('Procesado Chat').item.json.longitudTotal }}",
+        "keyType": "string"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        2176,
+        -32
+      ],
+      "id": "4a3b047a-3b63-4ec2-8530-fd8ccb034ab2",
+      "name": "Set Marker",
+      "credentials": {
+        "redis": {
+          "id": "PZWchEp9wlBwvVjx",
+          "name": "Redis -chat-perso"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "7bbd4c92-bced-42e1-8d2f-885a662117b5",
+              "leftValue": "={{ $json.Tlf }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1584,
+        0
+      ],
+      "id": "c649cfa9-0395-49be-bf06-4f12c63a3286",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "keys",
+        "keyPattern": "={{ $json.keyPattern }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        944,
+        80
+      ],
+      "id": "c026bce3-b684-40a5-9c62-d329cb811f6b",
+      "name": "Buscar en BBDD",
+      "credentials": {
+        "redis": {
+          "id": "p7BHDYDpqTOSiyD7",
+          "name": "usuario-perso"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Eres un asistente experto en análisis de conversaciones y búsqueda de contactos. Tienes acceso a dos herramientas:\n\n- \"Get Contacts\" → para buscar contactos en Google Contacts.\n- \"Mandar\" → para enviar emails en formato HTML por Gmail.\n\nSigue estos pasos:\n\n---\n\n1. 🔍 **Buscar contacto por teléfono**\n\nConsulta \"Get Contacts\" las veces necesarias para encontrar el `displayName` asociado al número {{ $json.Tlf }}. Usa variantes del número en estas formas:\n\n• +{{ $json.Tlf }}  \n• 00{{ $json.Tlf }}  \n• +{{ $json.Tlf.replace(/^(\\d{2})(\\d{3})(\\d{2})(\\d{2})(\\d{2})$/, '$1 $2 $3 $4 $5') }} \n• +{{ $json.Tlf.replace(/^(\\d{2})(\\d{3})(\\d{3})(\\d{3})$/, '$1 $2 $3 $4') }}  \n• {{ $json.Tlf.slice(2) }}  \n• {{ $json.Tlf.slice(2).replace(/^(\\d{3})(\\d{2})(\\d{2})(\\d{2})$/, '$1 $2 $3 $4') }}  \n• {{ $json.Tlf.slice(2).replace(/^(\\d{3})(\\d{3})(\\d{3})$/, '$1 $2 $3') }}\n\nSi encuentras coincidencia, guarda el `displayName`. Si no hay, usa \"Desconocido\".\n\n---\n\n2. ✏️ **Resumir conversación**\n\nLee el historial:\n\n{{ $json.chatHistoryParsed }}\n\n• Ignora cualquier mención a herramientas o funciones internas del asistente.  \n• Prioriza los mensajes del usuario (`human`).  \n• Resume la conversación en un máximo de 4 frases claras, sin usar frases como “el usuario dijo” o “se mencionó que…”.  \n• Añade una frase final describiendo el tono de la conversación (ej: cordial, directa, técnica, colaborativa).\n\n---\n\n3.  📧 **Enviar email con la herramienta \"Mandar\"**\n\n    Utiliza la herramienta \"Mandar\" para enviar el correo electrónico.\n\n    **Formato del correo:**\n\n      * **Asunto:** `[displayName]: [tema principal de la conversación, inferido del resumen]`\n\n          * Ejemplo: `Carlos Arrojo: concierto de la banda Arrojo en Chapinería`\n          * **No incluyas el número de teléfono en el asunto.**\n\n      * **Cuerpo (HTML):**\n\n        ```html\n        <p><strong>Resumen de la conversación con [displayName] (+<span style=\"white-space:nowrap\">{{ $json.Tlf }}</span>):</strong></p>\n<ul>\n    <li>Contacto inicial: Nombre: {{ $json.contactData.nombre ?? 'N/A' }} Apellidos: {{ $json.contactData.apellidos ?? 'N/A' }} Alias: {{ $json.contactData.alias ?? 'N/A' }} Teléfono: {{ $json.contactData.telefono ?? 'N/A' }} Email: {{ $json.contactData.email ?? 'N/A' }}</li>\n    <li>Estado y asunto (si aplica): El usuario está {{ $json.contactData.etiqueta_emocional ?? 'N/A' }} sobre un asunto {{ $json.contactData.etiqueta_asunto ?? 'N/A' }}. Notas adicionales: {{ $json.contactData.notas ?? 'N/A' }}</li>\n    <li>[Tu resumen de la conversación, frase 1]</li>\n    <li>[Tu resumen de la conversación, frase 2]</li>\n    <li>[Tu resumen de la conversación, frase 3]</li>\n    <li>[Tu resumen de la conversación, frase 4, si aplica]</li>\n</ul>\n        ```\n\n    **Directrices importantes para el cuerpo HTML:**\n\n      * **No incluyas saludos ni despedidas.**\n      * **No describas tus propios pasos** (ej., \"se consultó\", \"se usó una herramienta\", \"leí el historial\").\n      * **Solo usa el formato HTML proporcionado.** No añadas texto plano fuera de las etiquetas HTML.\n      * **Reemplaza `[displayName]` con el valor obtenido del paso 1.**\n      * **Reemplaza `[Tu resumen de la conversación, frase X]` con las frases generadas en el paso 2.** Asegúrate de que la frase final sobre el tono esté incluida en una de estas líneas de resumen.\n",
+              "role": "system"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1776,
+        -16
+      ],
+      "id": "00dbd367-898e-4bac-875d-cbb2aaa348c9",
+      "name": "Message a model",
+      "retryOnFail": true,
+      "credentials": {
+        "openAiApi": {
+          "id": "yXKIfAKVrr17zDhw",
+          "name": "OpenAi account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2176,
+        176
+      ],
+      "id": "e7e9de21-e2da-4c0c-aa9a-437443f90de2",
+      "name": "Esperar antes de Reintentar",
+      "webhookId": "8919b1e7-6dea-41fe-a659-78ff9894e752"
+    }
+  ],
+  "pinData": {
+    "Schedule Trigger": [
+      {
+        "json": {
+          "timestamp": "2025-07-24T06:00:51.025+02:00",
+          "Readable date": "July 24th 2025, 6:00:51 am",
+          "Readable time": "6:00:51 am",
+          "Day of week": "Thursday",
+          "Year": "2025",
+          "Month": "July",
+          "Day of month": "24",
+          "Hour": "06",
+          "Minute": "00",
+          "Second": "51",
+          "Timezone": "Europe/Madrid (UTC+02:00)"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Redis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Iteraciones terminadas",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Marker",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Buscar en BBDD",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mandar": {
+      "ai_tool": [
+        [
+          {
+            "node": "Message a model",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Contacts": {
+      "ai_tool": [
+        [
+          {
+            "node": "Message a model",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Procesado Chat": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Marker": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Procesado Chat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Marker": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar en BBDD": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Set Marker",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Esperar antes de Reintentar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Esperar antes de Reintentar": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Madrid",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "74acd196-881d-412d-8de8-e108d1b050e0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6434ec3e42cbeca4460770f382b0d777ada4816e6e2e823489f950c2ff8fee35"
+  },
+  "id": "gG0ICHL8DMZFCGR6",
+  "tags": []
+}
