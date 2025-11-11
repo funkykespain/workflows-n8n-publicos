@@ -61,7 +61,7 @@ Existen numerosos flujos de trabajo adicionales, mucho más complejos y orientad
 
 ## 🧑‍💻 Autor
 
-Desarrollado por [**Enrique Aranda**](https.www.linkedin.com/in/earanda/)
+Desarrollado por [**Enrique Aranda**](https://www.linkedin.com/in/earanda/)
 (Workflows públicos de `funkykespain`).
 
 ## 📄 Licencia
