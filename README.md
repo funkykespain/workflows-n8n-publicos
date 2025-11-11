@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/n8n-io/n8n-design/main/assets/n8n-logo-icon.png" alt="n8n Logo" width="150"/>
+  <img src="https://github.com/funkykespain/workflows-n8n-publicos/blob/main/banner.png?raw=true" alt="n8n Workflows Banner" width="90%"/>
   <h1>Workflows Públicos de n8n</h1>
 </p>
 
