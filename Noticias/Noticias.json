@@ -1,1 +1,2042 @@
-{"updatedAt":"2025-10-08T19:13:53.000Z","createdAt":"2025-07-06T09:53:39.410Z","id":"YM1Wp5gneSnXKtJd","name":"Noticias","active":true,"isArchived":false,"nodes":[{"parameters":{"numberInputs":10},"id":"65405755-babe-49a2-8bec-2d7a5c9ebf6c","name":"Merge","type":"n8n-nodes-base.merge","position":[-448,3120],"typeVersion":3.1},{"parameters":{"aggregate":"aggregateAllItemData","include":"specifiedFields","fieldsToInclude":"title, pubDate, link","options":{}},"id":"28111140-5e59-432c-8abc-f531ddb6f118","name":"Aggregate","type":"n8n-nodes-base.aggregate","position":[128,3392],"typeVersion":1},{"parameters":{"url":"https://www.technologyreview.com/topic/artificial-intelligence/feed/","options":{"ignoreSSL":false}},"id":"70c060f5-b85d-47f7-81af-51aa13ce76e1","name":"MIT Technology Review Feed","type":"n8n-nodes-base.rssFeedRead","position":[-1056,3488],"typeVersion":1.1,"alwaysOutputData":true,"onError":"continueRegularOutput"},{"parameters":{"url":"https://lobste.rs/rss","options":{"ignoreSSL":false}},"id":"e3d0f1f4-4af8-4c6e-a984-a9c3e58828b8","name":"lobste.rs Feed","type":"n8n-nodes-base.rssFeedRead","position":[-1056,2592],"typeVersion":1.1,"alwaysOutputData":true,"onError":"continueRegularOutput"},{"parameters":{"conditions":{"options":{"version":2,"leftValue":"","caseSensitive":true,"typeValidation":"strict"},"conditions":[{"id":"30d4f694-9378-42b4-b1d5-cbc38fb3e7fe","operator":{"type":"dateTime","operation":"after"},"leftValue":"={{ $json.pubDate }}","rightValue":"={{ $now.weekday === 1 ? $now.minus({ hours: 72 }) : $now.minus({ hours: 24 }) }}"}],"combinator":"and"},"options":{}},"id":"3063a0a3-476d-452c-939d-5ae19f9453c4","name":"Filter by Datetime","type":"n8n-nodes-base.filter","position":[-240,3248],"typeVersion":2.2},{"parameters":{"fieldToSplitOut":"output.top_15_news","options":{}},"id":"3675149c-e65f-4f45-8673-b764ca051eca","name":"Split Out News Data","type":"n8n-nodes-base.splitOut","position":[1104,3344],"typeVersion":1},{"parameters":{"conditions":{"options":{"version":2,"leftValue":"","caseSensitive":true,"typeValidation":"strict"},"conditions":[{"id":"30d4f694-9378-42b4-b1d5-cbc38fb3e7fe","operator":{"type":"string","operation":"notRegex"},"leftValue":"={{ $json.link }}","rightValue":"opinion|rumour|layoff|porn|marijuana"},{"id":"fdddd55b-19d5-4e87-9586-01653750e807","operator":{"type":"string","operation":"notRegex"},"leftValue":"={{ $json.title }}","rightValue":"opinion|opinión|rumour|rumor|layoff|porn|porno|marijuana|marihuana|oferta|offer|deal|descuento|discount|sale|prime day|black friday|promoción|promotion|chollo"},{"id":"12e44449-d6bb-4243-abb7-cfa03a9327c5","operator":{"type":"string","operation":"notRegex"},"leftValue":"={{ $json.content }}","rightValue":"opinion|opinión|rumour|rumor|layoff|porn|porno|marijuana|marihuana|oferta|offer|deal|descuento|discount|sale|prime day|black friday|promoción|promotion|chollo"},{"id":"2df9ef75-ea55-4e5b-a78d-e37de85fe8ca","operator":{"type":"string","operation":"notEmpty","singleValue":true},"leftValue":"={{ $json.content }}","rightValue":""}],"combinator":"and"},"options":{}},"id":"69073d44-5069-406f-9f1d-ce2971b5b0fd","name":"Remove Certain Content","type":"n8n-nodes-base.filter","position":[-48,3248],"typeVersion":2.2},{"parameters":{"rule":{"interval":[{"field":"weeks","triggerAtDay":[5,4,2,3,1],"triggerAtHour":5,"triggerAtMinute":57}]}},"id":"607f3ec4-e746-459d-a79b-bd04c5b0410c","name":"Schedule","type":"n8n-nodes-base.scheduleTrigger","position":[-1424,3328],"typeVersion":1.2},{"parameters":{"assignments":{"assignments":[{"id":"e2ffe594-180d-4e1d-b869-8056ac67015d","name":"title","type":"string","value":"={{ $('Filter Fields').item.json.title }}"},{"id":"87c5a171-9ab9-4043-a72a-32aec218fe63","name":"pubDate","type":"string","value":"={{ $('Filter Fields').item.json.pubDate }}"},{"id":"978b05c9-6e6b-4a18-bc06-4de785b19413","name":"link","type":"string","value":"={{ $('Filter Fields').item.json.link }}"},{"id":"199a5920-72a3-470e-9adf-8252f6ebb37a","name":"content","type":"string","value":"={{ $json.data }}"}]},"options":{}},"id":"f4d8b680-a21f-44ce-bf3f-a480e3530051","name":"Rejoin Data","type":"n8n-nodes-base.set","position":[-464,2768],"typeVersion":3.4,"onError":"continueRegularOutput"},{"parameters":{"mode":"combine","advanced":true,"mergeByFields":{"values":[{"field1":"title","field2":"title"}]},"options":{}},"id":"8bd4b87c-8ebd-47dc-a17b-ffbafc5b709e","name":"Join Outputs","type":"n8n-nodes-base.merge","position":[1232,3248],"typeVersion":3.2,"alwaysOutputData":false},{"parameters":{"aggregate":"aggregateAllItemData","include":"specifiedFields","fieldsToInclude":"output","options":{}},"id":"e19d7fa1-06c8-444c-8349-47923010a68c","name":"Final Aggregate","type":"n8n-nodes-base.aggregate","position":[1792,3248],"typeVersion":1},{"parameters":{"url":"https://feeds.feedburner.com/TheHackersNews","options":{"ignoreSSL":false}},"id":"01dca878-9542-4823-b2a7-717e9fa34ec4","name":"TheHackersNews* Feed","type":"n8n-nodes-base.rssFeedRead","position":[-1056,3136],"typeVersion":1.1,"alwaysOutputData":true,"onError":"continueRegularOutput","notes":"*Not to be confused with \"Hacker News\" from ycombinator."},{"parameters":{"assignments":{"assignments":[{"id":"e2ffe594-180d-4e1d-b869-8056ac67015d","name":"title","type":"string","value":"={{ $json.title }}"},{"id":"87c5a171-9ab9-4043-a72a-32aec218fe63","name":"pubDate","type":"string","value":"={{ $json.pubDate }}"},{"id":"978b05c9-6e6b-4a18-bc06-4de785b19413","name":"link","type":"string","value":"={{ $json.link }}"},{"id":"199a5920-72a3-470e-9adf-8252f6ebb37a","name":"content","type":"string","value":"={{ $json.content }}"}]},"options":{}},"id":"e95144fb-12dc-4138-b296-6c7111bf231d","name":"Filter Fields","type":"n8n-nodes-base.set","position":[-848,2592],"typeVersion":3.4},{"parameters":{"assignments":{"assignments":[{"id":"e2ffe594-180d-4e1d-b869-8056ac67015d","name":"title","type":"string","value":"={{ $json.title }}"},{"id":"f43db298-a42f-4391-83b9-c49c5d8c03ae","name":"pubDate","type":"string","value":"={{ $json.pubDate }}"},{"id":"978b05c9-6e6b-4a18-bc06-4de785b19413","name":"link","type":"string","value":"={{ $json.link }}"},{"id":"199a5920-72a3-470e-9adf-8252f6ebb37a","name":"content","type":"string","value":"={{ $json.content }}"}]},"options":{}},"id":"d6232037-6680-4ac5-a0b4-67f377002d42","name":"Filter Fields 2","type":"n8n-nodes-base.set","position":[-848,2752],"typeVersion":3.4},{"parameters":{"assignments":{"assignments":[{"id":"e2ffe594-180d-4e1d-b869-8056ac67015d","name":"title","type":"string","value":"={{ $json.title }}"},{"id":"87c5a171-9ab9-4043-a72a-32aec218fe63","name":"pubDate","type":"string","value":"={{ $json.pubDate }}"},{"id":"978b05c9-6e6b-4a18-bc06-4de785b19413","name":"link","type":"string","value":"={{ $json.link }}"},{"id":"199a5920-72a3-470e-9adf-8252f6ebb37a","name":"content","type":"string","value":"={{ $json.content }}"}]},"options":{}},"id":"7b94557f-046f-4a65-8a8b-b7b3de8a9507","name":"Filter Fields 4","type":"n8n-nodes-base.set","position":[-848,3136],"typeVersion":3.4},{"parameters":{"assignments":{"assignments":[{"id":"e2ffe594-180d-4e1d-b869-8056ac67015d","name":"title","type":"string","value":"={{ $json.title }}"},{"id":"87c5a171-9ab9-4043-a72a-32aec218fe63","name":"pubDate","type":"string","value":"={{ $json.pubDate }}"},{"id":"978b05c9-6e6b-4a18-bc06-4de785b19413","name":"link","type":"string","value":"={{ $json.link }}"},{"id":"199a5920-72a3-470e-9adf-8252f6ebb37a","name":"content","type":"string","value":"={{ $json.content }}"}]},"options":{}},"id":"f6f5c9e3-16f2-4b05-87c9-02a0a99a4ad1","name":"Filter Fields 6","type":"n8n-nodes-base.set","position":[-848,3488],"typeVersion":3.4},{"parameters":{"assignments":{"assignments":[{"id":"e2ffe594-180d-4e1d-b869-8056ac67015d","name":"title","type":"string","value":"={{ $json.title }}"},{"id":"87c5a171-9ab9-4043-a72a-32aec218fe63","name":"pubDate","type":"string","value":"={{ $json.pubDate }}"},{"id":"978b05c9-6e6b-4a18-bc06-4de785b19413","name":"link","type":"string","value":"={{ $json.link }}"},{"id":"199a5920-72a3-470e-9adf-8252f6ebb37a","name":"content","type":"string","value":"={{ $json.content }}"}]},"options":{}},"id":"47ac8aa1-031e-4f2b-bb2a-1e0ddb0d521c","name":"Filter Fields 8","type":"n8n-nodes-base.set","position":[-848,3856],"typeVersion":3.4},{"parameters":{"html":"={{ $json.data }}","options":{}},"id":"10fe6f66-8665-4b40-a821-a34e9f857f0e","name":"Markdown Conversion","type":"n8n-nodes-base.markdown","position":[-416,2576],"typeVersion":1,"onError":"continueRegularOutput"},{"parameters":{"schemaType":"manual","inputSchema":"{\n  \"type\": \"object\",\n  \"properties\": {\n    \"summary\": {\n      \"type\": \"string\",\n      \"description\": \"A concise, single-sentence summary of the news article's content.\"\n    },\n    \"link\": {\n      \"type\": \"string\",\n      \"description\": \"The original URL of the news article.\"\n    }\n  },\n  \"required\": [\n    \"summary\",\n    \"link\"\n  ],\n  \"additionalProperties\": false\n}"},"id":"076d0f6e-ac65-4f6d-a53f-bb946609534e","name":"JSON Output Parser 2","type":"@n8n/n8n-nodes-langchain.outputParserStructured","position":[1616,3424],"typeVersion":1.2},{"parameters":{"schemaType":"manual","inputSchema":"{\n  \"type\": \"object\",\n  \"properties\": {\n    \"top_15_news\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"title\": {\n            \"type\": \"string\",\n            \"description\": \"The title to the news article.\"\n          },\n          \"link\": {\n            \"type\": \"string\",\n            \"description\": \"The link to the news article.\"\n          }\n        },\n        \"required\": [\"title\", \"link\"],\n        \"additionalProperties\": false\n      }\n    }\n  },\n  \"required\": [\"top_15_news\"],\n  \"additionalProperties\": false\n}"},"id":"acd28d0f-212a-4453-ba9e-4c6048d183ac","name":"JSON Output Parser","type":"@n8n/n8n-nodes-langchain.outputParserStructured","position":[928,3728],"typeVersion":1.2},{"parameters":{"mode":"combine","combineBy":"combineByPosition","numberInputs":3,"options":{}},"id":"fb2ab00e-2c0b-40d2-bdc1-e15b655c3613","name":"Final Join Outputs","type":"n8n-nodes-base.merge","position":[1952,3520],"typeVersion":3.2},{"parameters":{"url":"={{ $json.link }}","options":{"timeout":10000}},"id":"21177642-6b14-457f-8c92-f30e24bd1045","name":"HTTP Request1","type":"n8n-nodes-base.httpRequest","position":[-656,2592],"typeVersion":4.2,"onError":"continueErrorOutput","notes":"It is a necessary node because lobste.rs will not give the actual content of the links."},{"parameters":{"resource":"messages-api","operation":"send-audio","instanceName":"KykeBot","remoteJid":"34666410064@s.whatsapp.net","media":"={{ $('PasarBase64').item.json.audioContent }}","options_message":{}},"type":"n8n-nodes-evolution-api.evolutionApi","typeVersion":1,"position":[2400,3856],"id":"4b8e38dd-0b40-43ef-83ce-1eefa456d375","name":"Enviar audio","credentials":{"evolutionApi":{"id":"QQCyaNiIBYUmTu2Z","name":"Evolution account"}}},{"parameters":{"jsCode":"return items.map(item => {\n  let inputText = item.json.output;\n\n  // 1. Limpieza de Markdown y otros caracteres no deseados\n  // Elimina **, #, _, y ` (backticks)\n  let cleanedText = inputText\n   .replace(/\\*\\*/g, '')      // Elimina negrita (**)\n   .replace(/#/g, '')         // Elimina encabezados (#)\n   .replace(/_/g, '')         // Elimina cursiva (_)\n   .replace(/`/g, '');        // Elimina código en línea (`)\n\n  // 2. Normalizar los saltos de línea para que sean consistentes\n  // Esto mantiene los saltos de línea para que el TTS los interprete como pausas.\n  cleanedText = cleanedText.replace(/\\n\\s*\\n/g, '\\n\\n');\n\n  // 3. Escapar caracteres especiales para XML/SSML\n  // ¡MUY IMPORTANTE! Esto evita que el texto rompa la estructura del SSML.\n  // Los caracteres clave a escapar son: & < > \" '\n  cleanedText = cleanedText\n   .replace(/&/g, '&amp;')\n   .replace(/</g, '&lt;')\n   .replace(/>/g, '&gt;')\n   .replace(/\"/g, '&quot;')\n   .replace(/'/g, '&apos;');\n\n  // 4. Asignar el texto limpio y seguro a la nueva propiedad\n  item.json.cleanedTextForTTS = cleanedText;\n\n  return item;\n});"},"type":"n8n-nodes-base.code","typeVersion":2,"position":[2608,3536],"id":"0048f4a9-dffc-41be-a32a-84b2e895675f","name":"Limpieza para TTS"},{"parameters":{"url":"https://news.google.com/rss/search?q=inteligencia+artificial&hl=es&gl=ES&ceid=ES:e","options":{"ignoreSSL":false}},"id":"22132f78-877b-4ba4-bebf-e10e21192e08","name":"Google News – Inteligencia Artificial","type":"n8n-nodes-base.rssFeedRead","position":[-1056,2752],"typeVersion":1.1,"alwaysOutputData":true,"onError":"continueRegularOutput"},{"parameters":{"url":"https://feeds.weblogssl.com/xataka2","options":{"ignoreSSL":false}},"id":"268d3872-0b56-42cd-bf13-bb977aa758d0","name":"Xataka","type":"n8n-nodes-base.rssFeedRead","position":[-1056,3856],"typeVersion":1.1,"alwaysOutputData":true,"onError":"continueRegularOutput"},{"parameters":{"options":{}},"type":"n8n-nodes-base.splitInBatches","typeVersion":3,"position":[2576,4016],"id":"db4ce472-6e55-449e-8d55-b89c5c341d5b","name":"Loop Over Items"},{"parameters":{},"type":"n8n-nodes-base.noOp","typeVersion":1,"position":[2768,3872],"id":"9d33057d-a013-466b-a7c9-a93b6f615b6e","name":"Terminado"},{"parameters":{"resource":"messages-api","operation":"send-audio","instanceName":"KykeBot","remoteJid":"={{ $json.ID }}","media":"={{ $('PasarBase64').item.json.audioContent }}","options_message":{}},"type":"n8n-nodes-evolution-api.evolutionApi","typeVersion":1,"position":[2768,4032],"id":"0fb3be79-e1c5-492d-9904-c64545a2e98b","name":"Enviar audio1","credentials":{"evolutionApi":{"id":"QQCyaNiIBYUmTu2Z","name":"Evolution account"}}},{"parameters":{"assignments":{"assignments":[{"id":"e2ffe594-180d-4e1d-b869-8056ac67015d","name":"title","type":"string","value":"={{ $json.title }}"},{"id":"87c5a171-9ab9-4043-a72a-32aec218fe63","name":"pubDate","type":"string","value":"={{ $json.pubDate }}"},{"id":"978b05c9-6e6b-4a18-bc06-4de785b19413","name":"link","type":"string","value":"={{ $json.link }}"},{"id":"199a5920-72a3-470e-9adf-8252f6ebb37a","name":"content","type":"string","value":"={{ $json.content }}"}]},"options":{}},"id":"5f4266e1-50b0-4de5-bce8-c067a134fd52","name":"Filter Fields 11","type":"n8n-nodes-base.set","position":[-848,2960],"typeVersion":3.4},{"parameters":{"url":"https://www.cbinsights.com/research/feed/","sendHeaders":true,"headerParameters":{"parameters":[{"name":"User-Agent","value":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"}]},"options":{}},"type":"n8n-nodes-base.httpRequest","typeVersion":4.2,"position":[-1168,4256],"id":"8fa70b18-22b9-4dfb-849f-5518b8b3ad80","name":"CB Insights"},{"parameters":{"options":{}},"type":"n8n-nodes-base.xml","typeVersion":1,"position":[-944,4256],"id":"9107be3c-5766-4d34-b9a2-1c624a7bb515","name":"XML"},{"parameters":{"assignments":{"assignments":[{"id":"e2ffe594-180d-4e1d-b869-8056ac67015d","name":"title","type":"string","value":"={{ $json.title }}"},{"id":"87c5a171-9ab9-4043-a72a-32aec218fe63","name":"pubDate","type":"string","value":"={{ $json.pubDate }}"},{"id":"978b05c9-6e6b-4a18-bc06-4de785b19413","name":"link","type":"string","value":"={{ $json.link }}"},{"id":"199a5920-72a3-470e-9adf-8252f6ebb37a","name":"content","type":"string","value":"={{ $json.content }}"}]},"options":{}},"id":"d4e5071b-ae3a-43b3-a1bd-6f69c53b31bb","name":"Filter Fields 12","type":"n8n-nodes-base.set","position":[-848,3312],"typeVersion":3.4},{"parameters":{"assignments":{"assignments":[{"id":"e2ffe594-180d-4e1d-b869-8056ac67015d","name":"title","type":"string","value":"={{ $json.title }}"},{"id":"87c5a171-9ab9-4043-a72a-32aec218fe63","name":"pubDate","type":"string","value":"={{ $json.pubDate }}"},{"id":"978b05c9-6e6b-4a18-bc06-4de785b19413","name":"link","type":"string","value":"={{ $json.link }}"},{"id":"199a5920-72a3-470e-9adf-8252f6ebb37a","name":"content","type":"string","value":"={{ $json.content }}"}]},"options":{}},"id":"12796104-d8c6-4479-8488-095c9a9c2fa4","name":"Filter Fields 13","type":"n8n-nodes-base.set","position":[-848,3680],"typeVersion":3.4},{"parameters":{"assignments":{"assignments":[{"id":"e2ffe594-180d-4e1d-b869-8056ac67015d","name":"title","type":"string","value":"={{ $json.title }}"},{"id":"87c5a171-9ab9-4043-a72a-32aec218fe63","name":"pubDate","type":"string","value":"={{ $json.pubDate }}"},{"id":"978b05c9-6e6b-4a18-bc06-4de785b19413","name":"link","type":"string","value":"={{ $json.link }}"},{"id":"199a5920-72a3-470e-9adf-8252f6ebb37a","name":"content","type":"string","value":"={{ $json.content }}"}]},"options":{}},"id":"2cd1a809-b3fd-4519-abd3-36f1991ea057","name":"Filter Fields 14","type":"n8n-nodes-base.set","position":[-848,4080],"typeVersion":3.4},{"parameters":{"url":"https://techcrunch.com/category/artificial-intelligence/feed/","options":{"ignoreSSL":false}},"id":"64fd19e4-7853-4935-afac-9278441aabfa","name":"TechCrunch","type":"n8n-nodes-base.rssFeedRead","position":[-1056,2960],"typeVersion":1.1,"alwaysOutputData":true,"onError":"continueRegularOutput"},{"parameters":{"url":"https://venturebeat.com/category/ai/feed/","options":{"ignoreSSL":false}},"id":"636db09b-4875-4ffc-97c1-5137824a782d","name":"VentureBeat","type":"n8n-nodes-base.rssFeedRead","position":[-1056,3312],"typeVersion":1.1,"alwaysOutputData":true,"onError":"continueRegularOutput"},{"parameters":{"url":"https://api.axios.com/feed/technology","options":{"ignoreSSL":false}},"id":"7557f1cd-7980-4893-a326-e1edbd7dbaf9","name":"Axios Pro","type":"n8n-nodes-base.rssFeedRead","position":[-1056,3680],"typeVersion":1.1,"alwaysOutputData":true,"onError":"continueRegularOutput"},{"parameters":{"url":"https://emerj.com/feed/","options":{"ignoreSSL":false}},"id":"d3b6bf76-8550-44bd-be83-cbc7e4435ca1","name":"Emerj AI Research","type":"n8n-nodes-base.rssFeedRead","position":[-1056,4080],"typeVersion":1.1,"alwaysOutputData":true,"onError":"continueRegularOutput"},{"parameters":{"jsCode":"// Accedemos a la lista de noticias anidada\nconst items = $input.item.json.rss.channel.item;\n\n// Creamos una nueva lista con el formato correcto\nconst formattedItems = items.map(item => {\n\n  // Tomamos el contenido HTML y lo guardamos en una variable\n  const htmlContent = item['content:encoded'] || '';\n  \n  // Usamos una expresión regular para eliminar todas las etiquetas HTML\n  // y .trim() para quitar espacios en blanco al principio o al final.\n  const plainTextContent = htmlContent.replace(/<[^>]*>/g, '').trim();\n\n  return {\n    title: item.title,\n    link: item.link,\n    pubDate: item.pubDate,\n    creator: item['dc:creator'],\n    content: plainTextContent // Usamos el texto ya limpio\n  };\n});\n\n// Devolvemos la nueva lista formateada\nreturn formattedItems;"},"type":"n8n-nodes-base.code","typeVersion":2,"position":[-720,4256],"id":"b8a3ad67-29f9-4a3c-8b1d-04f376d4e182","name":"Mapeo y limpieza HTML"},{"parameters":{"method":"POST","url":"https://westeurope.tts.speech.microsoft.com/cognitiveservices/v1","authentication":"genericCredentialType","genericAuthType":"httpHeaderAuth","sendHeaders":true,"headerParameters":{"parameters":[{"name":"X-Microsoft-OutputFormat","value":"ogg-24khz-16bit-mono-opus"}]},"sendBody":true,"contentType":"raw","rawContentType":"application/ssml+xml","body":"=<speak version='1.0' xml:lang='es-ES'>\n    <voice xml:lang='es-ES' name='es-ES-AlvaroNeural'>\n        {{ $json.cleanedTextForTTS }}\n    </voice>\n</speak>","options":{}},"type":"n8n-nodes-base.httpRequest","typeVersion":4.2,"position":[2768,3536],"id":"1594e063-c704-4aa1-b8ff-906128f0d256","name":"Azure TTS","credentials":{"httpHeaderAuth":{"id":"s7VYvQ2IA014YZZl","name":"Ocp-Apim-Subscription-Key"}}},{"parameters":{"operation":"binaryToPropery","destinationKey":"audioContent","options":{}},"type":"n8n-nodes-base.extractFromFile","typeVersion":1,"position":[2912,3536],"id":"a69cbec3-fffc-4514-b0be-b44b720dd758","name":"PasarBase64"},{"parameters":{"documentId":{"__rl":true,"value":"19RlLz1KvHcnqXRx4Jy11UW87huYLurQmSxf4r_L7GG8","mode":"list","cachedResultName":"Lista Distribución Noticias","cachedResultUrl":"https://docs.google.com/spreadsheets/d/19RlLz1KvHcnqXRx4Jy11UW87huYLurQmSxf4r_L7GG8/edit?usp=drivesdk"},"sheetName":{"__rl":true,"value":"gid=0","mode":"list","cachedResultName":"Alta","cachedResultUrl":"https://docs.google.com/spreadsheets/d/19RlLz1KvHcnqXRx4Jy11UW87huYLurQmSxf4r_L7GG8/edit#gid=0"},"options":{}},"type":"n8n-nodes-base.googleSheets","typeVersion":4.6,"position":[2400,4016],"id":"be028140-f180-4b96-8013-423e09953faf","name":"Lista de distribución","credentials":{"googleSheetsOAuth2Api":{"id":"FKAAQaA83djinadK","name":"Google Sheets Perso"}}},{"parameters":{},"type":"@n8n/n8n-nodes-langchain.toolThink","typeVersion":1.1,"position":[1568,3680],"id":"3135d982-3569-487f-94ea-442d7e1f0dcb","name":"Think"},{"parameters":{"jsCode":"// Array para guardar todas las noticias\nlet allHistoricalNews = [];\n\n// Obtener los datos de entrada\nconst rawData = items[0]?.json?.propertyName;\n\n// Comprobar si hay datos para procesar\nif (rawData && Array.isArray(rawData) && rawData.length > 0) {\n    // Recorrer cada elemento de la lista de entrada\n    for (const jsonString of rawData) {\n        try {\n            const parsedData = JSON.parse(jsonString);\n            \n            // Si el elemento es un array, añadir todos sus objetos\n            if (Array.isArray(parsedData)) {\n                allHistoricalNews = allHistoricalNews.concat(parsedData);\n            } else {\n            // Si es un solo objeto, añadirlo directamente\n                allHistoricalNews.push(parsedData);\n            }\n        } catch (e) {\n            console.error(\"Error al procesar un elemento del historial: \", jsonString, e);\n        }\n    }\n}\n\n// Si al final no hay noticias, devolver un resultado vacío\nif (allHistoricalNews.length === 0) {\n    return [{ json: { historial: [] } }];\n}\n\n// Obtener la fecha de hace 7 días (hoy es 24 de septiembre de 2025)\nconst sevenDaysAgo = $now.minus({ days: 7 }).toFormat('yyyy-MM-dd'); // Esto dará '2025-09-17'\n\n// Filtrar las noticias para incluir solo las de la última semana\nconst filteredHistoricalNews = allHistoricalNews.filter(article => {\n    return article && article.pubDate && article.pubDate >= sevenDaysAgo;\n});\n\n// Devolver solo el título y la fecha de las noticias filtradas\nconst cleanedHistory = filteredHistoricalNews.map(article => ({\n    title: article.title,\n    pubDate: article.pubDate\n}));\n\n// Devolver el resultado final\nreturn [{\n    json: {\n        historial: cleanedHistory\n    }\n}];"},"type":"n8n-nodes-base.code","typeVersion":2,"position":[-864,4432],"id":"1ac68049-71a5-4675-b8f4-59812422ad14","name":"Filtrado Historial"},{"parameters":{"operation":"push","list":"historial_noticias","messageData":"={{ $json.output.top_15_news.map(item => JSON.stringify({ title: item.title, pubDate: $now.toFormat('yyyy-MM-dd') })) }}"},"type":"n8n-nodes-base.redis","typeVersion":1,"position":[1248,3440],"id":"e391af86-9e96-4d5e-8239-1b33bad97b2b","name":"Guardado Historial","credentials":{"redis":{"id":"EcQvh3FvZpXkll5a","name":"Redis News"}}},{"parameters":{"operation":"get","key":"historial_noticias","options":{}},"type":"n8n-nodes-base.redis","typeVersion":1,"position":[-1072,4432],"id":"6843cd02-4b73-4017-bd17-29ea95e49856","name":"Historial","credentials":{"redis":{"id":"EcQvh3FvZpXkll5a","name":"Redis News"}}},{"parameters":{},"type":"n8n-nodes-base.merge","typeVersion":3.2,"position":[320,3536],"id":"a6550812-dd9f-485e-b232-e3e22683013f","name":"Une Noticias e Historial"},{"parameters":{"language":"python","pythonCode":"# En n8n, los datos de entrada están disponibles en la lista 'items'\n# Accedemos a los datos de manera similar a como lo hacemos en JS\n\ntoday_news = items[0]['json']['data']\nhistorical_news = items[1]['json']['historial']\n\n# La estructura de retorno es idéntica: una lista con un diccionario\nreturn [{\n    'json': {\n        'data': today_news,\n        'historial': historical_news\n    }\n}]"},"type":"n8n-nodes-base.code","typeVersion":2,"position":[528,3536],"id":"c14414f4-307a-4415-9af6-086fd0f07f9b","name":"Parseo Noticias e Historial"},{"parameters":{"options":{}},"type":"@n8n/n8n-nodes-langchain.lmChatGoogleGemini","typeVersion":1,"position":[1472,3824],"id":"df501d04-f3f1-4818-ae39-da34e5ec1b2d","name":"Gemini 2.5-flash","credentials":{"googlePalmApi":{"id":"Nfh2hr8zUT0GcB3D","name":"Google Gemini Perso"}}},{"parameters":{"model":"mistral-small-latest","options":{}},"id":"319e8cb1-24da-43b1-9f6b-efa9f7563aca","name":"Mistral Small","type":"@n8n/n8n-nodes-langchain.lmChatMistralCloud","position":[1424,4000],"typeVersion":1,"credentials":{"mistralCloudApi":{"id":"81ZX0QW59kxH7QR4","name":"Mistral Cloud Perso"}}},{"parameters":{"promptType":"define","text":"=Analyze today's news from the first list and use the second list as historical context.\n\nToday's Articles:\n{{ JSON.stringify($json.data) }}\n\nHistorical Articles:\n{{ JSON.stringify($json.historial) }}","hasOutputParser":true,"needsFallback":true,"options":{"systemMessage":"You are a professional analyst specializing in current news, with a focus on technology and business applications. Your primary objective is to compile a list of the top 15 most relevant news articles for professionals interested in AI, data science, and emerging technologies.\n\n### Task Breakdown:\n1. **Top News List:** Compile a list of the top 15 news titles along with their respective **links**.\n\n### Prioritization Criteria:\n- **Prioritization Level 1: Thematic Relevance.**\n    - **a. Highest Priority:** News about AI business and breakthrough research.\n    - **b. High Priority:** Practical applications of data science, machine learning, and algorithms.\n    - **c. Medium Priority:** Significant news in other areas of technology (e.g., robotics, biotech, hardware).\n    - **d. Low Priority:** General scientific research only if it's a major breakthrough related to AI or computing.\n\n- **Prioritization Level 2: Geopolitical Relevance.**\n    - After categorizing news by thematic relevance, apply a geopolitical filter. Within each thematic priority level, rank news by the following geographical order:\n        - **1. Spain:** Directly related to Spain.\n        - **2. Europe:** Relevant to Europe.\n        - **3. Global:** Broad global news.\n\n### Filtering and Analysis Guidelines:\n1. **Semantic Filtering:** Analyze the new articles from \"Today's Articles\" and compare them to the \"Historical Articles.\" Exclude any new article if its core topic is a direct repetition or a minor update of a topic already covered recently. Prioritize truly new topics.\n2. **Thematic Continuity:** When selecting articles for the final \"Top News List,\" actively look for significant updates on previously covered topics. If an old topic has a major new development, include the new article and provide context.\n3. **Source Diversity:** Do not return more than one or two news items from the same website in the top 15.\n4. **Quality Control:** Exclude news with problematic or irrelevant headlines, as well as commercial offers, discounts, or sales promotions.\n\nThe output MUST be a JSON object with a single key \"top_15_news\" containing an array of objects. Each object in the array must have the keys \"title\" and \"link\". Do not include any other keys or text outside the JSON.\nCrucially, the 'link' value MUST be the original URL provided in the input, not a new or modified one.\nThe 'title' value MUST be copied exactly from the original input, without any modifications."}},"type":"@n8n/n8n-nodes-langchain.agent","typeVersion":2.2,"position":[736,3536],"id":"1455c5f8-41a6-4b9d-b63f-b4ac435f9ffe","name":"News Analyzer","retryOnFail":true},{"parameters":{"promptType":"define","text":"=Website: {{ $json.link }}\nContent: {{ $json.content }}","hasOutputParser":true,"needsFallback":true,"options":{"systemMessage":"You are an automated web analyzer tasked with summarizing information from a webpage. Your objective is to return a single JSON object containing a concise, single-sentence summary and the original URL. Do not include any other information or text outside the JSON object.\n\nThe output MUST be a JSON object with two keys: \"summary\" and \"link\". The value of the \"summary\" key must be a string containing a single, concise sentence. The value of the \"link\" key must be the original URL from the input."}},"type":"@n8n/n8n-nodes-langchain.agent","typeVersion":2.2,"position":[1424,3248],"id":"8de3bc08-3a31-46b9-b7f1-1230fe756672","name":"Website Summarizer","retryOnFail":true},{"parameters":{"promptType":"define","text":"=Eres un redactor profesional especializado en tecnología y desarrollo de software, con experiencia en redacción para voz (text-to-speech). Tu tarea es crear un boletín informativo diario en español de España, dirigido a profesionales, desarrolladores y entusiastas del software. Este boletín será leído por un sistema TTS, por lo que el lenguaje debe ser natural, oral, fluido y agradable al oído.\n\nSigue estos pasos:\n1. Escribe un saludo breve adecuado para la mañana de lunes a viernes.\n2. Extrae la fecha actual y fórmala como \"Estas son las noticias tecnológicas para hoy, {{ $now.toFormat(\"cccc d 'de' LLLL 'de' yyyy\", { locale: 'es' }) }}\".\n3. Incluye un título general para el boletín.\n4. Organiza el contenido en párrafos o frases claras, evitando subtítulos formales.\n5. **Integra los artículos de hoy en una narrativa cohesionada.** Asegúrate de traducir al español los resúmenes de los artículos que originalmente estén en inglés, y luego usa conectores lógicos como además, por otro lado, mientras tanto, en otro frente, etc.\n6. **Da continuidad a los temas.** Si una noticia de hoy está relacionada con un tema de la lista de noticias históricas, haz una referencia a esa noticia anterior en el boletín. **Utiliza un lenguaje de referencia temporal natural como \"ayer\", \"anteayer\", \"el pasado [día de la semana]\" o \"la semana pasada\", en lugar de mencionar la fecha completa.** Si la noticia es de hoy, evítalo. No todas las noticias históricas deben ser mencionadas, solo las relevantes para los artículos de hoy.\n7. Mantén un tono informativo, fluido y conversacional adecuado para ser escuchado por TTS.\n8. No incluyas palabras como “artículo”, “post”, ni enlaces. Todo debe sonar como un relato de voz.\n9. **EVITA CUALQUIER TIPO DE FORMATO DE TEXTO** como negritas, cursivas, encabezados o listas. Solo usa texto plano continuo.\n10. Finaliza siempre con una despedida breve y cercana:\n    - **Lunes a Jueves:** Puedes usar el día de la semana actual para personalizarla, como por ejemplo, en el caso de que sea Lunes, deseando un buen inicio de semana. También sería simpático incorporar un guiño humorístico o una referencia ingeniosa a alguna noticia mencionada en el boletín.\n    - **Viernes:** Desea al oyente que pase un feliz fin de semana y que las noticias volverán a partir del Lunes.\n11. **Recuerda siempre que el medio es AUDIO.** Por tanto, la despedida debe ser coherente con un formato de voz. Evita a toda costa frases de un medio escrito como \"nos leemos\".\n\n**Artículos de hoy:**\n{{ JSON.stringify($json.today_news) }}\n\n**Historial de noticias (para contexto):**\n{{ JSON.stringify($json.historical_news) }}\n\nDevuelve un texto plano continuo que contenga el boletín informativo diario en español, sin ningún formato especial.","needsFallback":true,"options":{}},"type":"@n8n/n8n-nodes-langchain.agent","typeVersion":2.2,"position":[2320,3536],"id":"00e4ed9d-dce3-4b5a-83b1-dd9f84ad837c","name":"Redactor","retryOnFail":true},{"parameters":{"model":{"__rl":true,"value":"gpt-4.1-mini","mode":"list","cachedResultName":"gpt-4.1-mini"},"options":{}},"type":"@n8n/n8n-nodes-langchain.lmChatOpenAi","typeVersion":1.2,"position":[736,3728],"id":"de9f9407-4717-4d75-9a0a-469c6828c7e9","name":"4.1-mini","credentials":{"openAiApi":{"id":"yXKIfAKVrr17zDhw","name":"OpenAi account"}}},{"parameters":{"jsCode":"// Función para calcular similitud entre dos strings\nfunction calculateSimilarity(str1, str2) {\n  if (!str1 || !str2) return 0;\n  \n  const longer = str1.length > str2.length ? str1 : str2;\n  const shorter = str1.length > str2.length ? str2 : str1;\n  \n  if (longer.length === 0) return 1.0;\n  \n  const editDistance = getEditDistance(longer, shorter);\n  return (longer.length - editDistance) / longer.length;\n}\n\n// Función para calcular la distancia de Levenshtein\nfunction getEditDistance(str1, str2) {\n  const matrix = [];\n  \n  for (let i = 0; i <= str2.length; i++) {\n    matrix[i] = [i];\n  }\n  \n  for (let j = 0; j <= str1.length; j++) {\n    matrix[0][j] = j;\n  }\n  \n  for (let i = 1; i <= str2.length; i++) {\n    for (let j = 1; j <= str1.length; j++) {\n      if (str2.charAt(i - 1) === str1.charAt(j - 1)) {\n        matrix[i][j] = matrix[i - 1][j - 1];\n      } else {\n        matrix[i][j] = Math.min(\n          matrix[i - 1][j - 1] + 1,\n          matrix[i][j - 1] + 1,\n          matrix[i - 1][j] + 1\n        );\n      }\n    }\n  }\n  \n  return matrix[str2.length][str1.length];\n}\n\n// Función para encontrar un enlace similar existente\nfunction findSimilarLink(targetLink, existingLinks, threshold = 0.85) {\n  for (const [existingLink, data] of existingLinks) {\n    const similarity = calculateSimilarity(targetLink, existingLink);\n    if (similarity >= threshold) {\n      return existingLink;\n    }\n  }\n  return null;\n}\n\nconst inputData = items[0]?.json || {};\n\n// Crear un mapa para fusionar los datos usando enlaces como clave.\nconst newsMap = new Map();\n\n// 1. Procesar la lista de resúmenes (data) primero para tener una base.\nconst summaries = inputData.data || [];\nfor (const item of summaries) {\n  const link = item?.output?.link;\n  const summary = item?.output?.summary;\n\n  if (link && summary) {\n    newsMap.set(link, {\n      title: null,\n      summary: summary\n    });\n  }\n}\n\n// 2. Procesar la lista de títulos (top_15_news) y correlacionar por similitud.\nconst titles = inputData.output?.top_15_news || [];\nfor (const item of titles) {\n  const link = item?.link;\n  const title = item?.title;\n\n  if (link && title) {\n    // Primero intentamos encontrar una coincidencia exacta\n    if (newsMap.has(link)) {\n      const existingNews = newsMap.get(link);\n      existingNews.title = title;\n    } else {\n      // Si no hay coincidencia exacta, buscamos enlaces similares\n      const similarLink = findSimilarLink(link, newsMap);\n      \n      if (similarLink) {\n        // Actualizamos la entrada existente con el título\n        const existingNews = newsMap.get(similarLink);\n        existingNews.title = title;\n      } else {\n        // Si no hay enlace similar, creamos una nueva entrada\n        newsMap.set(link, {\n          title: title,\n          summary: null\n        });\n      }\n    }\n  }\n}\n\n// Convertir el mapa a un array de objetos para el output final.\nconst todayNews = Array.from(newsMap.values());\n\n// Procesar el historial de noticias sin cambios.\nconst historicalNews = (inputData.historial || []).map(item => ({\n  title: item.title,\n  pubDate: item.pubDate\n}));\n\n// Devolver el objeto final con los datos combinados.\nreturn [{\n  json: {\n    today_news: todayNews,\n    historical_news: historicalNews\n  }\n}];"},"type":"n8n-nodes-base.code","typeVersion":2,"position":[2144,3536],"id":"91b95cf3-579f-417d-a2b0-93afc3411616","name":"Normalizador de Enlaces y Fusión de Contenido"}],"connections":{"Merge":{"main":[[{"node":"Filter by Datetime","type":"main","index":0}]]},"Aggregate":{"main":[[{"node":"Une Noticias e Historial","type":"main","index":0}]]},"MIT Technology Review Feed":{"main":[[{"node":"Filter Fields 6","type":"main","index":0}]]},"lobste.rs Feed":{"main":[[{"node":"Filter Fields","type":"main","index":0}]]},"Filter by Datetime":{"main":[[{"node":"Remove Certain Content","type":"main","index":0}]]},"Split Out News Data":{"main":[[{"node":"Join Outputs","type":"main","index":1}]]},"Remove Certain Content":{"main":[[{"node":"Aggregate","type":"main","index":0},{"node":"Join Outputs","type":"main","index":0}]]},"Schedule":{"main":[[{"node":"lobste.rs Feed","type":"main","index":0},{"node":"Google News – Inteligencia Artificial","type":"main","index":0},{"node":"TheHackersNews* Feed","type":"main","index":0},{"node":"MIT Technology Review Feed","type":"main","index":0},{"node":"Xataka","type":"main","index":0},{"node":"TechCrunch","type":"main","index":0},{"node":"VentureBeat","type":"main","index":0},{"node":"Axios Pro","type":"main","index":0},{"node":"Emerj AI Research","type":"main","index":0},{"node":"CB Insights","type":"main","index":0},{"node":"Historial","type":"main","index":0}]]},"Rejoin Data":{"main":[[{"node":"Merge","type":"main","index":0}]]},"Join Outputs":{"main":[[{"node":"Website Summarizer","type":"main","index":0}]]},"Final Aggregate":{"main":[[{"node":"Final Join Outputs","type":"main","index":0}]]},"TheHackersNews* Feed":{"main":[[{"node":"Filter Fields 4","type":"main","index":0}]]},"Filter Fields":{"main":[[{"node":"HTTP Request1","type":"main","index":0}]]},"Filter Fields 2":{"main":[[{"node":"Merge","type":"main","index":1}]]},"Filter Fields 4":{"main":[[{"node":"Merge","type":"main","index":3}]]},"Filter Fields 6":{"main":[[{"node":"Merge","type":"main","index":5}]]},"Filter Fields 8":{"main":[[{"node":"Merge","type":"main","index":7}]]},"Markdown Conversion":{"main":[[{"node":"Rejoin Data","type":"main","index":0}]]},"JSON Output Parser 2":{"ai_outputParser":[[{"node":"Website Summarizer","type":"ai_outputParser","index":0}]]},"JSON Output Parser":{"ai_outputParser":[[{"node":"News Analyzer","type":"ai_outputParser","index":0}]]},"HTTP Request1":{"main":[[{"node":"Markdown Conversion","type":"main","index":0}]]},"Final Join Outputs":{"main":[[{"node":"Normalizador de Enlaces y Fusión de Contenido","type":"main","index":0}]]},"Limpieza para TTS":{"main":[[{"node":"Azure TTS","type":"main","index":0}]]},"Google News – Inteligencia Artificial":{"main":[[{"node":"Filter Fields 2","type":"main","index":0}]]},"Xataka":{"main":[[{"node":"Filter Fields 8","type":"main","index":0}]]},"Loop Over Items":{"main":[[{"node":"Terminado","type":"main","index":0}],[{"node":"Enviar audio1","type":"main","index":0}]]},"Enviar audio1":{"main":[[{"node":"Loop Over Items","type":"main","index":0}]]},"CB Insights":{"main":[[{"node":"XML","type":"main","index":0}]]},"TechCrunch":{"main":[[{"node":"Filter Fields 11","type":"main","index":0}]]},"VentureBeat":{"main":[[{"node":"Filter Fields 12","type":"main","index":0}]]},"Axios Pro":{"main":[[{"node":"Filter Fields 13","type":"main","index":0}]]},"Emerj AI Research":{"main":[[{"node":"Filter Fields 14","type":"main","index":0}]]},"XML":{"main":[[{"node":"Mapeo y limpieza HTML","type":"main","index":0}]]},"Filter Fields 11":{"main":[[{"node":"Merge","type":"main","index":2}]]},"Filter Fields 12":{"main":[[{"node":"Merge","type":"main","index":4}]]},"Filter Fields 13":{"main":[[{"node":"Merge","type":"main","index":6}]]},"Filter Fields 14":{"main":[[{"node":"Merge","type":"main","index":8}]]},"Mapeo y limpieza HTML":{"main":[[{"node":"Merge","type":"main","index":9}]]},"Azure TTS":{"main":[[{"node":"PasarBase64","type":"main","index":0}]]},"PasarBase64":{"main":[[{"node":"Lista de distribución","type":"main","index":0}]]},"Lista de distribución":{"main":[[{"node":"Loop Over Items","type":"main","index":0}]]},"Think":{"ai_tool":[[{"node":"News Analyzer","type":"ai_tool","index":0},{"node":"Website Summarizer","type":"ai_tool","index":0},{"node":"Redactor","type":"ai_tool","index":0}]]},"Filtrado Historial":{"main":[[{"node":"Une Noticias e Historial","type":"main","index":1},{"node":"Final Join Outputs","type":"main","index":2}]]},"Historial":{"main":[[{"node":"Filtrado Historial","type":"main","index":0}]]},"Une Noticias e Historial":{"main":[[{"node":"Parseo Noticias e Historial","type":"main","index":0}]]},"Parseo Noticias e Historial":{"main":[[{"node":"News Analyzer","type":"main","index":0}]]},"Gemini 2.5-flash":{"ai_languageModel":[[{"node":"News Analyzer","type":"ai_languageModel","index":1},{"node":"Website Summarizer","type":"ai_languageModel","index":1},{"node":"Redactor","type":"ai_languageModel","index":0}]]},"Mistral Small":{"ai_languageModel":[[{"node":"Website Summarizer","type":"ai_languageModel","index":0},{"node":"Redactor","type":"ai_languageModel","index":1}]]},"News Analyzer":{"main":[[{"node":"Split Out News Data","type":"main","index":0},{"node":"Final Join Outputs","type":"main","index":1},{"node":"Guardado Historial","type":"main","index":0}]]},"Website Summarizer":{"main":[[{"node":"Final Aggregate","type":"main","index":0}]]},"Redactor":{"main":[[{"node":"Limpieza para TTS","type":"main","index":0}]]},"4.1-mini":{"ai_languageModel":[[{"node":"News Analyzer","type":"ai_languageModel","index":0}]]},"Normalizador de Enlaces y Fusión de Contenido":{"main":[[{"node":"Redactor","type":"main","index":0}]]}},"settings":{"executionOrder":"v1","timezone":"Europe/Madrid","callerPolicy":"workflowsFromSameOwner"},"staticData":{"node:Schedule":{"recurrenceRules":[]}},"meta":{"templateCredsSetupCompleted":true},"pinData":{"Enviar audio":[{"json":{"success":true,"data":{"key":{"remoteJid":"34666410064@s.whatsapp.net","fromMe":true,"id":"3EB03B6DFD29F938E3D96F3378FAC1987DD4B746"},"pushName":"Você","status":"PENDING","message":{"audioMessage":{"url":"https://mmg.whatsapp.net/v/t62.7114-24/542920902_1270863884720157_992777139444814474_n.enc?ccb=11-4&oh=01_Q5Aa2QFDzyxJXwELeZ-_UV9Ptiorg3lxx-kx-SOq6eyS30mexA&oe=68DD4B1F&_nc_sid=5e03e0&mms3=true","mimetype":"audio/ogg; codecs=opus","fileSha256":"g7G1O4BX6U2EMnIB162psYVd4NiwMNjWjzDuINxrNKI=","fileLength":"3393591","seconds":192,"ptt":true,"mediaKey":"G2JdCXY4semeoZLhRTgNPqz6NgHQKiW0O8lja6FGBLc=","fileEncSha256":"9AdW1nfoxnvaENSVBbN1FqgfDNtc8nPmQ5tzTm1dZAI=","directPath":"/v/t62.7114-24/542920902_1270863884720157_992777139444814474_n.enc?ccb=11-4&oh=01_Q5Aa2QFDzyxJXwELeZ-_UV9Ptiorg3lxx-kx-SOq6eyS30mexA&oe=68DD4B1F&_nc_sid=5e03e0","mediaKeyTimestamp":"1756753258","waveform":"MldPMEkrQkgqSVNDMTFkTkknRzVMOS1ULUhGKlQ/Ok1DKldOTC1KJURRKE1KMU9MPzROVUpXSShVVC0pXENCFg=="}},"contextInfo":null,"messageType":"audioMessage","messageTimestamp":1756753258,"instanceId":"0c58488e-9cb1-4680-a442-59c40879528b","source":"unknown"}}}]},"versionId":"48da991e-165c-4b10-906c-997db04f06b8","versionCounter":3,"triggerCount":1,"shared":[{"updatedAt":"2025-07-06T09:53:39.549Z","createdAt":"2025-07-06T09:53:39.549Z","role":"workflow:owner","workflowId":"YM1Wp5gneSnXKtJd","projectId":"Mvxq1zcG7g6su58x","project":{"updatedAt":"2025-05-19T09:52:22.244Z","createdAt":"2025-05-19T08:30:46.270Z","id":"Mvxq1zcG7g6su58x","name":"Enrique Aranda Varela <matriculas@universitashub.com>","type":"personal","icon":null,"description":null,"projectRelations":[{"updatedAt":"2025-05-19T08:30:46.271Z","createdAt":"2025-05-19T08:30:46.271Z","userId":"a4e9e30f-247d-4d10-90fb-23314a3f2652","projectId":"Mvxq1zcG7g6su58x","user":{"updatedAt":"2025-11-11T05:00:37.000Z","createdAt":"2025-05-19T08:30:40.896Z","id":"a4e9e30f-247d-4d10-90fb-23314a3f2652","email":"matriculas@universitashub.com","firstName":"Enrique","lastName":"Aranda Varela","personalizationAnswers":{"version":"v4","personalization_survey_submitted_at":"2025-05-19T09:54:15.566Z","personalization_survey_n8n_version":"1.79.3","companySize":"<20","companyType":"systems-integrator","role":"data-science","reportedSource":"youtube"},"settings":{"userActivated":true,"firstSuccessfulWorkflowId":"7eyZr9a4IWr7YuB8","userActivatedAt":1747654225274,"easyAIWorkflowOnboarded":true,"npsSurvey":{"responded":true,"lastShownAt":1749485707126},"dismissedCallouts":{"aiAgentStarterCallout":true}},"disabled":false,"mfaEnabled":false,"lastActiveAt":"2025-11-11","isPending":false}}]}}],"tags":[]}
+{
+  "name": "Noticias",
+  "nodes": [
+    {
+      "parameters": {
+        "numberInputs": 10
+      },
+      "id": "65405755-babe-49a2-8bec-2d7a5c9ebf6c",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        -448,
+        3120
+      ],
+      "typeVersion": 3.1
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "include": "specifiedFields",
+        "fieldsToInclude": "title, pubDate, link",
+        "options": {}
+      },
+      "id": "28111140-5e59-432c-8abc-f531ddb6f118",
+      "name": "Aggregate",
+      "type": "n8n-nodes-base.aggregate",
+      "position": [
+        128,
+        3392
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "url": "https://www.technologyreview.com/topic/artificial-intelligence/feed/",
+        "options": {
+          "ignoreSSL": false
+        }
+      },
+      "id": "70c060f5-b85d-47f7-81af-51aa13ce76e1",
+      "name": "MIT Technology Review Feed",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "position": [
+        -1056,
+        3488
+      ],
+      "typeVersion": 1.1,
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://lobste.rs/rss",
+        "options": {
+          "ignoreSSL": false
+        }
+      },
+      "id": "e3d0f1f4-4af8-4c6e-a984-a9c3e58828b8",
+      "name": "lobste.rs Feed",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "position": [
+        -1056,
+        2592
+      ],
+      "typeVersion": 1.1,
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "30d4f694-9378-42b4-b1d5-cbc38fb3e7fe",
+              "operator": {
+                "type": "dateTime",
+                "operation": "after"
+              },
+              "leftValue": "={{ $json.pubDate }}",
+              "rightValue": "={{ $now.weekday === 1 ? $now.minus({ hours: 72 }) : $now.minus({ hours: 24 }) }}"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "3063a0a3-476d-452c-939d-5ae19f9453c4",
+      "name": "Filter by Datetime",
+      "type": "n8n-nodes-base.filter",
+      "position": [
+        -240,
+        3248
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.top_15_news",
+        "options": {}
+      },
+      "id": "3675149c-e65f-4f45-8673-b764ca051eca",
+      "name": "Split Out News Data",
+      "type": "n8n-nodes-base.splitOut",
+      "position": [
+        1104,
+        3344
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "30d4f694-9378-42b4-b1d5-cbc38fb3e7fe",
+              "operator": {
+                "type": "string",
+                "operation": "notRegex"
+              },
+              "leftValue": "={{ $json.link }}",
+              "rightValue": "opinion|rumour|layoff|porn|marijuana"
+            },
+            {
+              "id": "fdddd55b-19d5-4e87-9586-01653750e807",
+              "operator": {
+                "type": "string",
+                "operation": "notRegex"
+              },
+              "leftValue": "={{ $json.title }}",
+              "rightValue": "opinion|opinión|rumour|rumor|layoff|porn|porno|marijuana|marihuana|oferta|offer|deal|descuento|discount|sale|prime day|black friday|promoción|promotion|chollo"
+            },
+            {
+              "id": "12e44449-d6bb-4243-abb7-cfa03a9327c5",
+              "operator": {
+                "type": "string",
+                "operation": "notRegex"
+              },
+              "leftValue": "={{ $json.content }}",
+              "rightValue": "opinion|opinión|rumour|rumor|layoff|porn|porno|marijuana|marihuana|oferta|offer|deal|descuento|discount|sale|prime day|black friday|promoción|promotion|chollo"
+            },
+            {
+              "id": "2df9ef75-ea55-4e5b-a78d-e37de85fe8ca",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              },
+              "leftValue": "={{ $json.content }}",
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "69073d44-5069-406f-9f1d-ce2971b5b0fd",
+      "name": "Remove Certain Content",
+      "type": "n8n-nodes-base.filter",
+      "position": [
+        -48,
+        3248
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                5,
+                4,
+                2,
+                3,
+                1
+              ],
+              "triggerAtHour": 5,
+              "triggerAtMinute": 57
+            }
+          ]
+        }
+      },
+      "id": "607f3ec4-e746-459d-a79b-bd04c5b0410c",
+      "name": "Schedule",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        -1424,
+        3328
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e2ffe594-180d-4e1d-b869-8056ac67015d",
+              "name": "title",
+              "type": "string",
+              "value": "={{ $('Filter Fields').item.json.title }}"
+            },
+            {
+              "id": "87c5a171-9ab9-4043-a72a-32aec218fe63",
+              "name": "pubDate",
+              "type": "string",
+              "value": "={{ $('Filter Fields').item.json.pubDate }}"
+            },
+            {
+              "id": "978b05c9-6e6b-4a18-bc06-4de785b19413",
+              "name": "link",
+              "type": "string",
+              "value": "={{ $('Filter Fields').item.json.link }}"
+            },
+            {
+              "id": "199a5920-72a3-470e-9adf-8252f6ebb37a",
+              "name": "content",
+              "type": "string",
+              "value": "={{ $json.data }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f4d8b680-a21f-44ce-bf3f-a480e3530051",
+      "name": "Rejoin Data",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -464,
+        2768
+      ],
+      "typeVersion": 3.4,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "title",
+              "field2": "title"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8bd4b87c-8ebd-47dc-a17b-ffbafc5b709e",
+      "name": "Join Outputs",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        1232,
+        3248
+      ],
+      "typeVersion": 3.2,
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "include": "specifiedFields",
+        "fieldsToInclude": "output",
+        "options": {}
+      },
+      "id": "e19d7fa1-06c8-444c-8349-47923010a68c",
+      "name": "Final Aggregate",
+      "type": "n8n-nodes-base.aggregate",
+      "position": [
+        1792,
+        3248
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "url": "https://feeds.feedburner.com/TheHackersNews",
+        "options": {
+          "ignoreSSL": false
+        }
+      },
+      "id": "01dca878-9542-4823-b2a7-717e9fa34ec4",
+      "name": "TheHackersNews* Feed",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "position": [
+        -1056,
+        3136
+      ],
+      "typeVersion": 1.1,
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput",
+      "notes": "*Not to be confused with \"Hacker News\" from ycombinator."
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e2ffe594-180d-4e1d-b869-8056ac67015d",
+              "name": "title",
+              "type": "string",
+              "value": "={{ $json.title }}"
+            },
+            {
+              "id": "87c5a171-9ab9-4043-a72a-32aec218fe63",
+              "name": "pubDate",
+              "type": "string",
+              "value": "={{ $json.pubDate }}"
+            },
+            {
+              "id": "978b05c9-6e6b-4a18-bc06-4de785b19413",
+              "name": "link",
+              "type": "string",
+              "value": "={{ $json.link }}"
+            },
+            {
+              "id": "199a5920-72a3-470e-9adf-8252f6ebb37a",
+              "name": "content",
+              "type": "string",
+              "value": "={{ $json.content }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e95144fb-12dc-4138-b296-6c7111bf231d",
+      "name": "Filter Fields",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -848,
+        2592
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e2ffe594-180d-4e1d-b869-8056ac67015d",
+              "name": "title",
+              "type": "string",
+              "value": "={{ $json.title }}"
+            },
+            {
+              "id": "f43db298-a42f-4391-83b9-c49c5d8c03ae",
+              "name": "pubDate",
+              "type": "string",
+              "value": "={{ $json.pubDate }}"
+            },
+            {
+              "id": "978b05c9-6e6b-4a18-bc06-4de785b19413",
+              "name": "link",
+              "type": "string",
+              "value": "={{ $json.link }}"
+            },
+            {
+              "id": "199a5920-72a3-470e-9adf-8252f6ebb37a",
+              "name": "content",
+              "type": "string",
+              "value": "={{ $json.content }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d6232037-6680-4ac5-a0b4-67f377002d42",
+      "name": "Filter Fields 2",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -848,
+        2752
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e2ffe594-180d-4e1d-b869-8056ac67015d",
+              "name": "title",
+              "type": "string",
+              "value": "={{ $json.title }}"
+            },
+            {
+              "id": "87c5a171-9ab9-4043-a72a-32aec218fe63",
+              "name": "pubDate",
+              "type": "string",
+              "value": "={{ $json.pubDate }}"
+            },
+            {
+              "id": "978b05c9-6e6b-4a18-bc06-4de785b19413",
+              "name": "link",
+              "type": "string",
+              "value": "={{ $json.link }}"
+            },
+            {
+              "id": "199a5920-72a3-470e-9adf-8252f6ebb37a",
+              "name": "content",
+              "type": "string",
+              "value": "={{ $json.content }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7b94557f-046f-4a65-8a8b-b7b3de8a9507",
+      "name": "Filter Fields 4",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -848,
+        3136
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e2ffe594-180d-4e1d-b869-8056ac67015d",
+              "name": "title",
+              "type": "string",
+              "value": "={{ $json.title }}"
+            },
+            {
+              "id": "87c5a171-9ab9-4043-a72a-32aec218fe63",
+              "name": "pubDate",
+              "type": "string",
+              "value": "={{ $json.pubDate }}"
+            },
+            {
+              "id": "978b05c9-6e6b-4a18-bc06-4de785b19413",
+              "name": "link",
+              "type": "string",
+              "value": "={{ $json.link }}"
+            },
+            {
+              "id": "199a5920-72a3-470e-9adf-8252f6ebb37a",
+              "name": "content",
+              "type": "string",
+              "value": "={{ $json.content }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f6f5c9e3-16f2-4b05-87c9-02a0a99a4ad1",
+      "name": "Filter Fields 6",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -848,
+        3488
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e2ffe594-180d-4e1d-b869-8056ac67015d",
+              "name": "title",
+              "type": "string",
+              "value": "={{ $json.title }}"
+            },
+            {
+              "id": "87c5a171-9ab9-4043-a72a-32aec218fe63",
+              "name": "pubDate",
+              "type": "string",
+              "value": "={{ $json.pubDate }}"
+            },
+            {
+              "id": "978b05c9-6e6b-4a18-bc06-4de785b19413",
+              "name": "link",
+              "type": "string",
+              "value": "={{ $json.link }}"
+            },
+            {
+              "id": "199a5920-72a3-470e-9adf-8252f6ebb37a",
+              "name": "content",
+              "type": "string",
+              "value": "={{ $json.content }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "47ac8aa1-031e-4f2b-bb2a-1e0ddb0d521c",
+      "name": "Filter Fields 8",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -848,
+        3856
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "html": "={{ $json.data }}",
+        "options": {}
+      },
+      "id": "10fe6f66-8665-4b40-a821-a34e9f857f0e",
+      "name": "Markdown Conversion",
+      "type": "n8n-nodes-base.markdown",
+      "position": [
+        -416,
+        2576
+      ],
+      "typeVersion": 1,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"summary\": {\n      \"type\": \"string\",\n      \"description\": \"A concise, single-sentence summary of the news article's content.\"\n    },\n    \"link\": {\n      \"type\": \"string\",\n      \"description\": \"The original URL of the news article.\"\n    }\n  },\n  \"required\": [\n    \"summary\",\n    \"link\"\n  ],\n  \"additionalProperties\": false\n}"
+      },
+      "id": "076d0f6e-ac65-4f6d-a53f-bb946609534e",
+      "name": "JSON Output Parser 2",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "position": [
+        1616,
+        3424
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"top_15_news\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"title\": {\n            \"type\": \"string\",\n            \"description\": \"The title to the news article.\"\n          },\n          \"link\": {\n            \"type\": \"string\",\n            \"description\": \"The link to the news article.\"\n          }\n        },\n        \"required\": [\"title\", \"link\"],\n        \"additionalProperties\": false\n      }\n    }\n  },\n  \"required\": [\"top_15_news\"],\n  \"additionalProperties\": false\n}"
+      },
+      "id": "acd28d0f-212a-4453-ba9e-4c6048d183ac",
+      "name": "JSON Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "position": [
+        928,
+        3728
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {}
+      },
+      "id": "fb2ab00e-2c0b-40d2-bdc1-e15b655c3613",
+      "name": "Final Join Outputs",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        1952,
+        3520
+      ],
+      "typeVersion": 3.2
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.link }}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "21177642-6b14-457f-8c92-f30e24bd1045",
+      "name": "HTTP Request1",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -656,
+        2592
+      ],
+      "typeVersion": 4.2,
+      "onError": "continueErrorOutput",
+      "notes": "It is a necessary node because lobste.rs will not give the actual content of the links."
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "operation": "send-audio",
+        "instanceName": "KykeBot",
+        "remoteJid": "34666666666@s.whatsapp.net",
+        "media": "={{ $('PasarBase64').item.json.audioContent }}",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        2400,
+        3856
+      ],
+      "id": "4b8e38dd-0b40-43ef-83ce-1eefa456d375",
+      "name": "Enviar audio",
+      "credentials": {
+        "evolutionApi": {
+          "id": "QQCyaNiIBYUmTu2Z",
+          "name": "Evolution account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  let inputText = item.json.output;\n\n  // 1. Limpieza de Markdown y otros caracteres no deseados\n  // Elimina **, #, _, y ` (backticks)\n  let cleanedText = inputText\n   .replace(/\\*\\*/g, '')      // Elimina negrita (**)\n   .replace(/#/g, '')         // Elimina encabezados (#)\n   .replace(/_/g, '')         // Elimina cursiva (_)\n   .replace(/`/g, '');        // Elimina código en línea (`)\n\n  // 2. Normalizar los saltos de línea para que sean consistentes\n  // Esto mantiene los saltos de línea para que el TTS los interprete como pausas.\n  cleanedText = cleanedText.replace(/\\n\\s*\\n/g, '\\n\\n');\n\n  // 3. Escapar caracteres especiales para XML/SSML\n  // ¡MUY IMPORTANTE! Esto evita que el texto rompa la estructura del SSML.\n  // Los caracteres clave a escapar son: & < > \" '\n  cleanedText = cleanedText\n   .replace(/&/g, '&amp;')\n   .replace(/</g, '&lt;')\n   .replace(/>/g, '&gt;')\n   .replace(/\"/g, '&quot;')\n   .replace(/'/g, '&apos;');\n\n  // 4. Asignar el texto limpio y seguro a la nueva propiedad\n  item.json.cleanedTextForTTS = cleanedText;\n\n  return item;\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2608,
+        3536
+      ],
+      "id": "0048f4a9-dffc-41be-a32a-84b2e895675f",
+      "name": "Limpieza para TTS"
+    },
+    {
+      "parameters": {
+        "url": "https://news.google.com/rss/search?q=inteligencia+artificial&hl=es&gl=ES&ceid=ES:e",
+        "options": {
+          "ignoreSSL": false
+        }
+      },
+      "id": "22132f78-877b-4ba4-bebf-e10e21192e08",
+      "name": "Google News – Inteligencia Artificial",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "position": [
+        -1056,
+        2752
+      ],
+      "typeVersion": 1.1,
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://feeds.weblogssl.com/xataka2",
+        "options": {
+          "ignoreSSL": false
+        }
+      },
+      "id": "268d3872-0b56-42cd-bf13-bb977aa758d0",
+      "name": "Xataka",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "position": [
+        -1056,
+        3856
+      ],
+      "typeVersion": 1.1,
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2576,
+        4016
+      ],
+      "id": "db4ce472-6e55-449e-8d55-b89c5c341d5b",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2768,
+        3872
+      ],
+      "id": "9d33057d-a013-466b-a7c9-a93b6f615b6e",
+      "name": "Terminado"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "operation": "send-audio",
+        "instanceName": "KykeBot",
+        "remoteJid": "={{ $json.ID }}",
+        "media": "={{ $('PasarBase64').item.json.audioContent }}",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        2768,
+        4032
+      ],
+      "id": "0fb3be79-e1c5-492d-9904-c64545a2e98b",
+      "name": "Enviar audio1",
+      "credentials": {
+        "evolutionApi": {
+          "id": "QQCyaNiIBYUmTu2Z",
+          "name": "Evolution account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e2ffe594-180d-4e1d-b869-8056ac67015d",
+              "name": "title",
+              "type": "string",
+              "value": "={{ $json.title }}"
+            },
+            {
+              "id": "87c5a171-9ab9-4043-a72a-32aec218fe63",
+              "name": "pubDate",
+              "type": "string",
+              "value": "={{ $json.pubDate }}"
+            },
+            {
+              "id": "978b05c9-6e6b-4a18-bc06-4de785b19413",
+              "name": "link",
+              "type": "string",
+              "value": "={{ $json.link }}"
+            },
+            {
+              "id": "199a5920-72a3-470e-9adf-8252f6ebb37a",
+              "name": "content",
+              "type": "string",
+              "value": "={{ $json.content }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5f4266e1-50b0-4de5-bce8-c067a134fd52",
+      "name": "Filter Fields 11",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -848,
+        2960
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "url": "https://www.cbinsights.com/research/feed/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1168,
+        4256
+      ],
+      "id": "8fa70b18-22b9-4dfb-849f-5518b8b3ad80",
+      "name": "CB Insights"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [
+        -944,
+        4256
+      ],
+      "id": "9107be3c-5766-4d34-b9a2-1c624a7bb515",
+      "name": "XML"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e2ffe594-180d-4e1d-b869-8056ac67015d",
+              "name": "title",
+              "type": "string",
+              "value": "={{ $json.title }}"
+            },
+            {
+              "id": "87c5a171-9ab9-4043-a72a-32aec218fe63",
+              "name": "pubDate",
+              "type": "string",
+              "value": "={{ $json.pubDate }}"
+            },
+            {
+              "id": "978b05c9-6e6b-4a18-bc06-4de785b19413",
+              "name": "link",
+              "type": "string",
+              "value": "={{ $json.link }}"
+            },
+            {
+              "id": "199a5920-72a3-470e-9adf-8252f6ebb37a",
+              "name": "content",
+              "type": "string",
+              "value": "={{ $json.content }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d4e5071b-ae3a-43b3-a1bd-6f69c53b31bb",
+      "name": "Filter Fields 12",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -848,
+        3312
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e2ffe594-180d-4e1d-b869-8056ac67015d",
+              "name": "title",
+              "type": "string",
+              "value": "={{ $json.title }}"
+            },
+            {
+              "id": "87c5a171-9ab9-4043-a72a-32aec218fe63",
+              "name": "pubDate",
+              "type": "string",
+              "value": "={{ $json.pubDate }}"
+            },
+            {
+              "id": "978b05c9-6e6b-4a18-bc06-4de785b19413",
+              "name": "link",
+              "type": "string",
+              "value": "={{ $json.link }}"
+            },
+            {
+              "id": "199a5920-72a3-470e-9adf-8252f6ebb37a",
+              "name": "content",
+              "type": "string",
+              "value": "={{ $json.content }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "12796104-d8c6-4479-8488-095c9a9c2fa4",
+      "name": "Filter Fields 13",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -848,
+        3680
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e2ffe594-180d-4e1d-b869-8056ac67015d",
+              "name": "title",
+              "type": "string",
+              "value": "={{ $json.title }}"
+            },
+            {
+              "id": "87c5a171-9ab9-4043-a72a-32aec218fe63",
+              "name": "pubDate",
+              "type": "string",
+              "value": "={{ $json.pubDate }}"
+            },
+            {
+              "id": "978b05c9-6e6b-4a18-bc06-4de785b19413",
+              "name": "link",
+              "type": "string",
+              "value": "={{ $json.link }}"
+            },
+            {
+              "id": "199a5920-72a3-470e-9adf-8252f6ebb37a",
+              "name": "content",
+              "type": "string",
+              "value": "={{ $json.content }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2cd1a809-b3fd-4519-abd3-36f1991ea057",
+      "name": "Filter Fields 14",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -848,
+        4080
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "url": "https://techcrunch.com/category/artificial-intelligence/feed/",
+        "options": {
+          "ignoreSSL": false
+        }
+      },
+      "id": "64fd19e4-7853-4935-afac-9278441aabfa",
+      "name": "TechCrunch",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "position": [
+        -1056,
+        2960
+      ],
+      "typeVersion": 1.1,
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://venturebeat.com/category/ai/feed/",
+        "options": {
+          "ignoreSSL": false
+        }
+      },
+      "id": "636db09b-4875-4ffc-97c1-5137824a782d",
+      "name": "VentureBeat",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "position": [
+        -1056,
+        3312
+      ],
+      "typeVersion": 1.1,
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://api.axios.com/feed/technology",
+        "options": {
+          "ignoreSSL": false
+        }
+      },
+      "id": "7557f1cd-7980-4893-a326-e1edbd7dbaf9",
+      "name": "Axios Pro",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "position": [
+        -1056,
+        3680
+      ],
+      "typeVersion": 1.1,
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://emerj.com/feed/",
+        "options": {
+          "ignoreSSL": false
+        }
+      },
+      "id": "d3b6bf76-8550-44bd-be83-cbc7e4435ca1",
+      "name": "Emerj AI Research",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "position": [
+        -1056,
+        4080
+      ],
+      "typeVersion": 1.1,
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Accedemos a la lista de noticias anidada\nconst items = $input.item.json.rss.channel.item;\n\n// Creamos una nueva lista con el formato correcto\nconst formattedItems = items.map(item => {\n\n  // Tomamos el contenido HTML y lo guardamos en una variable\n  const htmlContent = item['content:encoded'] || '';\n  \n  // Usamos una expresión regular para eliminar todas las etiquetas HTML\n  // y .trim() para quitar espacios en blanco al principio o al final.\n  const plainTextContent = htmlContent.replace(/<[^>]*>/g, '').trim();\n\n  return {\n    title: item.title,\n    link: item.link,\n    pubDate: item.pubDate,\n    creator: item['dc:creator'],\n    content: plainTextContent // Usamos el texto ya limpio\n  };\n});\n\n// Devolvemos la nueva lista formateada\nreturn formattedItems;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -720,
+        4256
+      ],
+      "id": "b8a3ad67-29f9-4a3c-8b1d-04f376d4e182",
+      "name": "Mapeo y limpieza HTML"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://westeurope.tts.speech.microsoft.com/cognitiveservices/v1",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Microsoft-OutputFormat",
+              "value": "ogg-24khz-16bit-mono-opus"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/ssml+xml",
+        "body": "=<speak version='1.0' xml:lang='es-ES'>\n    <voice xml:lang='es-ES' name='es-ES-AlvaroNeural'>\n        {{ $json.cleanedTextForTTS }}\n    </voice>\n</speak>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2768,
+        3536
+      ],
+      "id": "1594e063-c704-4aa1-b8ff-906128f0d256",
+      "name": "Azure TTS",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "s7VYvQ2IA014YZZl",
+          "name": "Ocp-Apim-Subscription-Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "destinationKey": "audioContent",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        2912,
+        3536
+      ],
+      "id": "a69cbec3-fffc-4514-b0be-b44b720dd758",
+      "name": "PasarBase64"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "19RlLz1KvHcnqXRx4Jy11UW87huYLurQmSxf4r_L7GG8",
+          "mode": "list",
+          "cachedResultName": "Lista Distribución Noticias",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19RlLz1KvHcnqXRx4Jy11UW87huYLurQmSxf4r_L7GG8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Alta",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19RlLz1KvHcnqXRx4Jy11UW87huYLurQmSxf4r_L7GG8/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2400,
+        4016
+      ],
+      "id": "be028140-f180-4b96-8013-423e09953faf",
+      "name": "Lista de distribución",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "FKAAQaA83djinadK",
+          "name": "Google Sheets Perso"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1.1,
+      "position": [
+        1568,
+        3680
+      ],
+      "id": "3135d982-3569-487f-94ea-442d7e1f0dcb",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Array para guardar todas las noticias\nlet allHistoricalNews = [];\n\n// Obtener los datos de entrada\nconst rawData = items[0]?.json?.propertyName;\n\n// Comprobar si hay datos para procesar\nif (rawData && Array.isArray(rawData) && rawData.length > 0) {\n    // Recorrer cada elemento de la lista de entrada\n    for (const jsonString of rawData) {\n        try {\n            const parsedData = JSON.parse(jsonString);\n            \n            // Si el elemento es un array, añadir todos sus objetos\n            if (Array.isArray(parsedData)) {\n                allHistoricalNews = allHistoricalNews.concat(parsedData);\n            } else {\n            // Si es un solo objeto, añadirlo directamente\n                allHistoricalNews.push(parsedData);\n            }\n        } catch (e) {\n            console.error(\"Error al procesar un elemento del historial: \", jsonString, e);\n        }\n    }\n}\n\n// Si al final no hay noticias, devolver un resultado vacío\nif (allHistoricalNews.length === 0) {\n    return [{ json: { historial: [] } }];\n}\n\n// Obtener la fecha de hace 7 días (hoy es 24 de septiembre de 2025)\nconst sevenDaysAgo = $now.minus({ days: 7 }).toFormat('yyyy-MM-dd'); // Esto dará '2025-09-17'\n\n// Filtrar las noticias para incluir solo las de la última semana\nconst filteredHistoricalNews = allHistoricalNews.filter(article => {\n    return article && article.pubDate && article.pubDate >= sevenDaysAgo;\n});\n\n// Devolver solo el título y la fecha de las noticias filtradas\nconst cleanedHistory = filteredHistoricalNews.map(article => ({\n    title: article.title,\n    pubDate: article.pubDate\n}));\n\n// Devolver el resultado final\nreturn [{\n    json: {\n        historial: cleanedHistory\n    }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -864,
+        4432
+      ],
+      "id": "1ac68049-71a5-4675-b8f4-59812422ad14",
+      "name": "Filtrado Historial"
+    },
+    {
+      "parameters": {
+        "operation": "push",
+        "list": "historial_noticias",
+        "messageData": "={{ $json.output.top_15_news.map(item => JSON.stringify({ title: item.title, pubDate: $now.toFormat('yyyy-MM-dd') })) }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        1248,
+        3440
+      ],
+      "id": "e391af86-9e96-4d5e-8239-1b33bad97b2b",
+      "name": "Guardado Historial",
+      "credentials": {
+        "redis": {
+          "id": "EcQvh3FvZpXkll5a",
+          "name": "Redis News"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "key": "historial_noticias",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -1072,
+        4432
+      ],
+      "id": "6843cd02-4b73-4017-bd17-29ea95e49856",
+      "name": "Historial",
+      "credentials": {
+        "redis": {
+          "id": "EcQvh3FvZpXkll5a",
+          "name": "Redis News"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        320,
+        3536
+      ],
+      "id": "a6550812-dd9f-485e-b232-e3e22683013f",
+      "name": "Une Noticias e Historial"
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "# En n8n, los datos de entrada están disponibles en la lista 'items'\n# Accedemos a los datos de manera similar a como lo hacemos en JS\n\ntoday_news = items[0]['json']['data']\nhistorical_news = items[1]['json']['historial']\n\n# La estructura de retorno es idéntica: una lista con un diccionario\nreturn [{\n    'json': {\n        'data': today_news,\n        'historial': historical_news\n    }\n}]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        528,
+        3536
+      ],
+      "id": "c14414f4-307a-4415-9af6-086fd0f07f9b",
+      "name": "Parseo Noticias e Historial"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        3824
+      ],
+      "id": "df501d04-f3f1-4818-ae39-da34e5ec1b2d",
+      "name": "Gemini 2.5-flash",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Nfh2hr8zUT0GcB3D",
+          "name": "Google Gemini Perso"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "mistral-small-latest",
+        "options": {}
+      },
+      "id": "319e8cb1-24da-43b1-9f6b-efa9f7563aca",
+      "name": "Mistral Small",
+      "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
+      "position": [
+        1424,
+        4000
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "81ZX0QW59kxH7QR4",
+          "name": "Mistral Cloud Perso"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze today's news from the first list and use the second list as historical context.\n\nToday's Articles:\n{{ JSON.stringify($json.data) }}\n\nHistorical Articles:\n{{ JSON.stringify($json.historial) }}",
+        "hasOutputParser": true,
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "You are a professional analyst specializing in current news, with a focus on technology and business applications. Your primary objective is to compile a list of the top 15 most relevant news articles for professionals interested in AI, data science, and emerging technologies.\n\n### Task Breakdown:\n1. **Top News List:** Compile a list of the top 15 news titles along with their respective **links**.\n\n### Prioritization Criteria:\n- **Prioritization Level 1: Thematic Relevance.**\n    - **a. Highest Priority:** News about AI business and breakthrough research.\n    - **b. High Priority:** Practical applications of data science, machine learning, and algorithms.\n    - **c. Medium Priority:** Significant news in other areas of technology (e.g., robotics, biotech, hardware).\n    - **d. Low Priority:** General scientific research only if it's a major breakthrough related to AI or computing.\n\n- **Prioritization Level 2: Geopolitical Relevance.**\n    - After categorizing news by thematic relevance, apply a geopolitical filter. Within each thematic priority level, rank news by the following geographical order:\n        - **1. Spain:** Directly related to Spain.\n        - **2. Europe:** Relevant to Europe.\n        - **3. Global:** Broad global news.\n\n### Filtering and Analysis Guidelines:\n1. **Semantic Filtering:** Analyze the new articles from \"Today's Articles\" and compare them to the \"Historical Articles.\" Exclude any new article if its core topic is a direct repetition or a minor update of a topic already covered recently. Prioritize truly new topics.\n2. **Thematic Continuity:** When selecting articles for the final \"Top News List,\" actively look for significant updates on previously covered topics. If an old topic has a major new development, include the new article and provide context.\n3. **Source Diversity:** Do not return more than one or two news items from the same website in the top 15.\n4. **Quality Control:** Exclude news with problematic or irrelevant headlines, as well as commercial offers, discounts, or sales promotions.\n\nThe output MUST be a JSON object with a single key \"top_15_news\" containing an array of objects. Each object in the array must have the keys \"title\" and \"link\". Do not include any other keys or text outside the JSON.\nCrucially, the 'link' value MUST be the original URL provided in the input, not a new or modified one.\nThe 'title' value MUST be copied exactly from the original input, without any modifications."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        736,
+        3536
+      ],
+      "id": "1455c5f8-41a6-4b9d-b63f-b4ac435f9ffe",
+      "name": "News Analyzer",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Website: {{ $json.link }}\nContent: {{ $json.content }}",
+        "hasOutputParser": true,
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "You are an automated web analyzer tasked with summarizing information from a webpage. Your objective is to return a single JSON object containing a concise, single-sentence summary and the original URL. Do not include any other information or text outside the JSON object.\n\nThe output MUST be a JSON object with two keys: \"summary\" and \"link\". The value of the \"summary\" key must be a string containing a single, concise sentence. The value of the \"link\" key must be the original URL from the input."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1424,
+        3248
+      ],
+      "id": "8de3bc08-3a31-46b9-b7f1-1230fe756672",
+      "name": "Website Summarizer",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Eres un redactor profesional especializado en tecnología y desarrollo de software, con experiencia en redacción para voz (text-to-speech). Tu tarea es crear un boletín informativo diario en español de España, dirigido a profesionales, desarrolladores y entusiastas del software. Este boletín será leído por un sistema TTS, por lo que el lenguaje debe ser natural, oral, fluido y agradable al oído.\n\nSigue estos pasos:\n1. Escribe un saludo breve adecuado para la mañana de lunes a viernes.\n2. Extrae la fecha actual y fórmala como \"Estas son las noticias tecnológicas para hoy, {{ $now.toFormat(\"cccc d 'de' LLLL 'de' yyyy\", { locale: 'es' }) }}\".\n3. Incluye un título general para el boletín.\n4. Organiza el contenido en párrafos o frases claras, evitando subtítulos formales.\n5. **Integra los artículos de hoy en una narrativa cohesionada.** Asegúrate de traducir al español los resúmenes de los artículos que originalmente estén en inglés, y luego usa conectores lógicos como además, por otro lado, mientras tanto, en otro frente, etc.\n6. **Da continuidad a los temas.** Si una noticia de hoy está relacionada con un tema de la lista de noticias históricas, haz una referencia a esa noticia anterior en el boletín. **Utiliza un lenguaje de referencia temporal natural como \"ayer\", \"anteayer\", \"el pasado [día de la semana]\" o \"la semana pasada\", en lugar de mencionar la fecha completa.** Si la noticia es de hoy, evítalo. No todas las noticias históricas deben ser mencionadas, solo las relevantes para los artículos de hoy.\n7. Mantén un tono informativo, fluido y conversacional adecuado para ser escuchado por TTS.\n8. No incluyas palabras como “artículo”, “post”, ni enlaces. Todo debe sonar como un relato de voz.\n9. **EVITA CUALQUIER TIPO DE FORMATO DE TEXTO** como negritas, cursivas, encabezados o listas. Solo usa texto plano continuo.\n10. Finaliza siempre con una despedida breve y cercana:\n    - **Lunes a Jueves:** Puedes usar el día de la semana actual para personalizarla, como por ejemplo, en el caso de que sea Lunes, deseando un buen inicio de semana. También sería simpático incorporar un guiño humorístico o una referencia ingeniosa a alguna noticia mencionada en el boletín.\n    - **Viernes:** Desea al oyente que pase un feliz fin de semana y que las noticias volverán a partir del Lunes.\n11. **Recuerda siempre que el medio es AUDIO.** Por tanto, la despedida debe ser coherente con un formato de voz. Evita a toda costa frases de un medio escrito como \"nos leemos\".\n\n**Artículos de hoy:**\n{{ JSON.stringify($json.today_news) }}\n\n**Historial de noticias (para contexto):**\n{{ JSON.stringify($json.historical_news) }}\n\nDevuelve un texto plano continuo que contenga el boletín informativo diario en español, sin ningún formato especial.",
+        "needsFallback": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        2320,
+        3536
+      ],
+      "id": "00e4ed9d-dce3-4b5a-83b1-dd9f84ad837c",
+      "name": "Redactor",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        736,
+        3728
+      ],
+      "id": "de9f9407-4717-4d75-9a0a-469c6828c7e9",
+      "name": "4.1-mini",
+      "credentials": {
+        "openAiApi": {
+          "id": "yXKIfAKVrr17zDhw",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Función para calcular similitud entre dos strings\nfunction calculateSimilarity(str1, str2) {\n  if (!str1 || !str2) return 0;\n  \n  const longer = str1.length > str2.length ? str1 : str2;\n  const shorter = str1.length > str2.length ? str2 : str1;\n  \n  if (longer.length === 0) return 1.0;\n  \n  const editDistance = getEditDistance(longer, shorter);\n  return (longer.length - editDistance) / longer.length;\n}\n\n// Función para calcular la distancia de Levenshtein\nfunction getEditDistance(str1, str2) {\n  const matrix = [];\n  \n  for (let i = 0; i <= str2.length; i++) {\n    matrix[i] = [i];\n  }\n  \n  for (let j = 0; j <= str1.length; j++) {\n    matrix[0][j] = j;\n  }\n  \n  for (let i = 1; i <= str2.length; i++) {\n    for (let j = 1; j <= str1.length; j++) {\n      if (str2.charAt(i - 1) === str1.charAt(j - 1)) {\n        matrix[i][j] = matrix[i - 1][j - 1];\n      } else {\n        matrix[i][j] = Math.min(\n          matrix[i - 1][j - 1] + 1,\n          matrix[i][j - 1] + 1,\n          matrix[i - 1][j] + 1\n        );\n      }\n    }\n  }\n  \n  return matrix[str2.length][str1.length];\n}\n\n// Función para encontrar un enlace similar existente\nfunction findSimilarLink(targetLink, existingLinks, threshold = 0.85) {\n  for (const [existingLink, data] of existingLinks) {\n    const similarity = calculateSimilarity(targetLink, existingLink);\n    if (similarity >= threshold) {\n      return existingLink;\n    }\n  }\n  return null;\n}\n\nconst inputData = items[0]?.json || {};\n\n// Crear un mapa para fusionar los datos usando enlaces como clave.\nconst newsMap = new Map();\n\n// 1. Procesar la lista de resúmenes (data) primero para tener una base.\nconst summaries = inputData.data || [];\nfor (const item of summaries) {\n  const link = item?.output?.link;\n  const summary = item?.output?.summary;\n\n  if (link && summary) {\n    newsMap.set(link, {\n      title: null,\n      summary: summary\n    });\n  }\n}\n\n// 2. Procesar la lista de títulos (top_15_news) y correlacionar por similitud.\nconst titles = inputData.output?.top_15_news || [];\nfor (const item of titles) {\n  const link = item?.link;\n  const title = item?.title;\n\n  if (link && title) {\n    // Primero intentamos encontrar una coincidencia exacta\n    if (newsMap.has(link)) {\n      const existingNews = newsMap.get(link);\n      existingNews.title = title;\n    } else {\n      // Si no hay coincidencia exacta, buscamos enlaces similares\n      const similarLink = findSimilarLink(link, newsMap);\n      \n      if (similarLink) {\n        // Actualizamos la entrada existente con el título\n        const existingNews = newsMap.get(similarLink);\n        existingNews.title = title;\n      } else {\n        // Si no hay enlace similar, creamos una nueva entrada\n        newsMap.set(link, {\n          title: title,\n          summary: null\n        });\n      }\n    }\n  }\n}\n\n// Convertir el mapa a un array de objetos para el output final.\nconst todayNews = Array.from(newsMap.values());\n\n// Procesar el historial de noticias sin cambios.\nconst historicalNews = (inputData.historial || []).map(item => ({\n  title: item.title,\n  pubDate: item.pubDate\n}));\n\n// Devolver el objeto final con los datos combinados.\nreturn [{\n  json: {\n    today_news: todayNews,\n    historical_news: historicalNews\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2144,
+        3536
+      ],
+      "id": "91b95cf3-579f-417d-a2b0-93afc3411616",
+      "name": "Normalizador de Enlaces y Fusión de Contenido"
+    }
+  ],
+  "pinData": {
+    "Enviar audio": [
+      {
+        "json": {
+          "success": true,
+          "data": {
+            "key": {
+              "remoteJid": "34666666666@s.whatsapp.net",
+              "fromMe": true,
+              "id": "3EB03B6DFD29F938E3D96F3378FAC1987DD4B746"
+            },
+            "pushName": "Você",
+            "status": "PENDING",
+            "message": {
+              "audioMessage": {
+                "url": "https://mmg.whatsapp.net/v/t62.7114-24/542920902_1270863884720157_992777139444814474_n.enc?ccb=11-4&oh=01_Q5Aa2QFDzyxJXwELeZ-_UV9Ptiorg3lxx-kx-SOq6eyS30mexA&oe=68DD4B1F&_nc_sid=5e03e0&mms3=true",
+                "mimetype": "audio/ogg; codecs=opus",
+                "fileSha256": "g7G1O4BX6U2EMnIB162psYVd4NiwMNjWjzDuINxrNKI=",
+                "fileLength": "3393591",
+                "seconds": 192,
+                "ptt": true,
+                "mediaKey": "G2JdCXY4semeoZLhRTgNPqz6NgHQKiW0O8lja6FGBLc=",
+                "fileEncSha256": "9AdW1nfoxnvaENSVBbN1FqgfDNtc8nPmQ5tzTm1dZAI=",
+                "directPath": "/v/t62.7114-24/542920902_1270863884720157_992777139444814474_n.enc?ccb=11-4&oh=01_Q5Aa2QFDzyxJXwELeZ-_UV9Ptiorg3lxx-kx-SOq6eyS30mexA&oe=68DD4B1F&_nc_sid=5e03e0",
+                "mediaKeyTimestamp": "1756753258",
+                "waveform": "MldPMEkrQkgqSVNDMTFkTkknRzVMOS1ULUhGKlQ/Ok1DKldOTC1KJURRKE1KMU9MPzROVUpXSShVVC0pXENCFg=="
+              }
+            },
+            "contextInfo": null,
+            "messageType": "audioMessage",
+            "messageTimestamp": 1756753258,
+            "instanceId": "0c58488e-9cb1-4680-a442-59c40879528b",
+            "source": "unknown"
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Filter by Datetime",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Une Noticias e Historial",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MIT Technology Review Feed": {
+      "main": [
+        [
+          {
+            "node": "Filter Fields 6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "lobste.rs Feed": {
+      "main": [
+        [
+          {
+            "node": "Filter Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter by Datetime": {
+      "main": [
+        [
+          {
+            "node": "Remove Certain Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out News Data": {
+      "main": [
+        [
+          {
+            "node": "Join Outputs",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Remove Certain Content": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Join Outputs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule": {
+      "main": [
+        [
+          {
+            "node": "lobste.rs Feed",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google News – Inteligencia Artificial",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "TheHackersNews* Feed",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "MIT Technology Review Feed",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Xataka",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "TechCrunch",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "VentureBeat",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Axios Pro",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Emerj AI Research",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "CB Insights",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Historial",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rejoin Data": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Join Outputs": {
+      "main": [
+        [
+          {
+            "node": "Website Summarizer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Final Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Final Join Outputs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TheHackersNews* Feed": {
+      "main": [
+        [
+          {
+            "node": "Filter Fields 4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Fields 2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Filter Fields 4": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Filter Fields 6": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "Filter Fields 8": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 7
+          }
+        ]
+      ]
+    },
+    "Markdown Conversion": {
+      "main": [
+        [
+          {
+            "node": "Rejoin Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JSON Output Parser 2": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Website Summarizer",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JSON Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "News Analyzer",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Markdown Conversion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Final Join Outputs": {
+      "main": [
+        [
+          {
+            "node": "Normalizador de Enlaces y Fusión de Contenido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limpieza para TTS": {
+      "main": [
+        [
+          {
+            "node": "Azure TTS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google News – Inteligencia Artificial": {
+      "main": [
+        [
+          {
+            "node": "Filter Fields 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Xataka": {
+      "main": [
+        [
+          {
+            "node": "Filter Fields 8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Terminado",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar audio1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar audio1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CB Insights": {
+      "main": [
+        [
+          {
+            "node": "XML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TechCrunch": {
+      "main": [
+        [
+          {
+            "node": "Filter Fields 11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "VentureBeat": {
+      "main": [
+        [
+          {
+            "node": "Filter Fields 12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Axios Pro": {
+      "main": [
+        [
+          {
+            "node": "Filter Fields 13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Emerj AI Research": {
+      "main": [
+        [
+          {
+            "node": "Filter Fields 14",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "XML": {
+      "main": [
+        [
+          {
+            "node": "Mapeo y limpieza HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Fields 11": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Filter Fields 12": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "Filter Fields 13": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 6
+          }
+        ]
+      ]
+    },
+    "Filter Fields 14": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 8
+          }
+        ]
+      ]
+    },
+    "Mapeo y limpieza HTML": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 9
+          }
+        ]
+      ]
+    },
+    "Azure TTS": {
+      "main": [
+        [
+          {
+            "node": "PasarBase64",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PasarBase64": {
+      "main": [
+        [
+          {
+            "node": "Lista de distribución",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lista de distribución": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "News Analyzer",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Website Summarizer",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Redactor",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrado Historial": {
+      "main": [
+        [
+          {
+            "node": "Une Noticias e Historial",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Final Join Outputs",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Historial": {
+      "main": [
+        [
+          {
+            "node": "Filtrado Historial",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Une Noticias e Historial": {
+      "main": [
+        [
+          {
+            "node": "Parseo Noticias e Historial",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parseo Noticias e Historial": {
+      "main": [
+        [
+          {
+            "node": "News Analyzer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini 2.5-flash": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "News Analyzer",
+            "type": "ai_languageModel",
+            "index": 1
+          },
+          {
+            "node": "Website Summarizer",
+            "type": "ai_languageModel",
+            "index": 1
+          },
+          {
+            "node": "Redactor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral Small": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Website Summarizer",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Redactor",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "News Analyzer": {
+      "main": [
+        [
+          {
+            "node": "Split Out News Data",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Final Join Outputs",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Guardado Historial",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Website Summarizer": {
+      "main": [
+        [
+          {
+            "node": "Final Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redactor": {
+      "main": [
+        [
+          {
+            "node": "Limpieza para TTS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4.1-mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "News Analyzer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizador de Enlaces y Fusión de Contenido": {
+      "main": [
+        [
+          {
+            "node": "Redactor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Madrid",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "48da991e-165c-4b10-906c-997db04f06b8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6434ec3e42cbeca4460770f382b0d777ada4816e6e2e823489f950c2ff8fee35"
+  },
+  "id": "YM1Wp5gneSnXKtJd",
+  "tags": []
+}
