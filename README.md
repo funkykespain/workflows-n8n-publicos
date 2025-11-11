@@ -53,6 +53,12 @@ Workflows diseñados para automatizar tareas de desarrollo y mantenimiento, incl
 
 ---
 
+## ⚠️ Nota del Autor
+
+Los *workflows* de este repositorio son una selección de proyectos personales y ejemplos educativos compartidos con la comunidad.
+
+Existen numerosos flujos de trabajo adicionales, mucho más complejos y orientados a soluciones empresariales, que fueron desarrollados para clientes específicos. Debido a su naturaleza y a acuerdos de confidencialidad, dichos *workflows* no se divulgan públicamente.
+
 ## 🧑‍💻 Autor
 
 Desarrollado por [**Enrique Aranda**](https.www.linkedin.com/in/earanda/)
