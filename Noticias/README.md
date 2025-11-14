@@ -37,11 +37,13 @@ Para que este workflow funcione, necesitarás:
   * Una puerta de enlace de **WhatsApp API**, como **Evolution API** (usada en este flujo).
   * Una base de datos **Redis** (para el historial de noticias).
   * Una cuenta de **Google Sheets** (para leer la lista de distribución).
+  * Una instancia de un servicio de navegador headless (ej. **browserless**) para el scraping profundo de contenido.
   * Credenciales de API para:
-      * **OpenAI** (para el Agente Analista).
-      * **Mistral Cloud** (para el Agente Summarizer).
-      * **Google Gemini** (para el Agente Guionista).
-      * **Azure Cognitive Services (TTS)** (para la generación de audio).
+    * **OpenAI** (para el Agente Analista y el **Extractor de Contenido**).
+    * **Mistral Cloud** (para el Agente Summarizer).
+    * **Google Gemini** (para el Agente Guionista).
+    * **Azure Cognitive Services (TTS)** (para la voz principal).
+    * **ElevenLabs** (para la voz de *fallback*).
 
 -----
 
@@ -67,15 +69,22 @@ Para que este workflow funcione, necesitarás:
 
 ## 🧩 6. Estructura del Workflow
 
-Este workflow se inicia con un nodo `Schedule` que se ejecuta todos los días laborables a las 5:57 AM.
+Este workflow se inicia con un nodo `Schedule` que se ejecuta todos los días laborables a las 5:40 AM.
 ![n8n Workflow](schema.png)
 
 El flujo se puede dividir en cinco fases principales:
 
 ### Fase 1: Recolección y Filtrado (El "Curador")
 
-1.  **Disparador:** El nodo `Schedule` inicia el flujo (L-V, 5:57 AM).
-2.  **Recolección:** Múltiples nodos `RSS Feed Read` y `HTTP Request` (para *CB Insights*) extraen las últimas noticias de más de 10 fuentes (Lobste.rs, Google News IA, TheHackersNews, MIT, Xataka, TechCrunch, VentureBeat, Axios, Emerj).
+1.  **Disparador:** El nodo `Schedule` inicia el flujo (L-V, **5:40 AM**).
+2.  **Recolección (Multicanal):**
+      * **Lectura RSS/API:** La mayoría de las fuentes (Xataka, MIT, etc.) se leen vía `RSS Feed Read` o `HTTP Request` estándar.
+      * **Scraping Profundo:** Para fuentes clave (ej. *Lobste.rs*), el flujo ahora es mucho más robusto:
+        1.  Lee el RSS (`lobste.rs Feed`) para obtener el enlace.
+        2.  Envía el enlace a un servicio **browserless** (`HTTP Request` a `browserless:3000`) para obtener el HTML completo de la página.
+        3.  Convierte el HTML a Markdown (`Markdown Conversion`).
+        4.  Un nodo `Information Extractor` (usando IA de OpenAI) **limpia este Markdown** y extrae únicamente el contenido principal del artículo, descartando menús, anuncios y pies de página.
+        5.  Se reestructura el dato (`Restructurar`) antes de unificarlo.
 3.  **Estandarización:** Varios nodos `Set` (`Filter Fields`) unifican los datos en un formato común (título, pubDate, link, content).
 4.  **Filtro de Fecha:** Un nodo `Filter` (`Filter by Datetime`) descarta noticias con más de 24 horas (o 72h los lunes).
 5.  **Filtro de Contenido:** Un nodo `Filter` (`Remove Certain Content`) elimina artículos irrelevantes usando palabras clave (opinion, rumour, layoff, offer, discount, etc.).
@@ -104,8 +113,15 @@ Esta es la lógica central donde tres agentes colaboran, cada uno con un LLM y u
       * **Tarea:** Su *prompt* le ordena devolver un JSON con un resumen de una sola frase concisa para cada artículo.
       * **Salida:** Devuelve 15 resúmenes.
 
-3.  **Agente 3: El Guionista (`Redactor`)**
+2.1. **Normalización y Fusión Inteligente**
 
+  * **Nodo:** `Normalizador de Enlaces y Fusión de Contenido`.
+  * **Tarea:** Este nodo de código crucial recibe los **15 resúmenes** del Agente 2 y las **15 noticias** del Agente 1. Compara las URLs de ambas listas usando un cálculo de similitud (distancia de Levenshtein, como se ve en las funciones `getEditDistance` y `calculateSimilarity` del código).
+  * **Salida:** Logra emparejar resúmenes con sus titulares incluso si las URLs difieren ligeramente (ej. `http` vs `https`), asegurando la integridad de los datos que recibe el Guionista.
+
+<!-- end list -->
+
+3.  **Agente 3: El Guionista (`Redactor`)**
       * **Entrada:** Recibe los 15 resúmenes y el historial de 7 días (para contexto).
       * **LLM:** Utiliza `Gemini 2.5-flash` con fallback a `Mistral Small`.
       * **Tarea:** Su *prompt* es el más complejo. Le exige actuar como redactor de guiones para audio (formato TTS). Debe escribir un guion fluido en español, natural, con un saludo y despedida, conectando las noticias, y haciendo referencias al contexto histórico (ej. "dando continuidad a lo que vimos la semana pasada..."). Se le prohíbe explícitamente usar cualquier formato (negritas, markdown, etc.).
@@ -113,11 +129,14 @@ Esta es la lógica central donde tres agentes colaboran, cada uno con un LLM y u
 
 ### Fase 4: Generación y Distribución de Audio
 
-1.  **Limpieza de Texto:** Un nodo `Code` (`Limpieza para TTS`) prepara el texto del guionista, eliminando saltos de línea y escapando caracteres especiales para SSML.
-2.  **Generación de Audio:** Un nodo `HTTP Request` (`Azure TTS`) envía el texto limpio a la API de Azure Text-to-Speech, configurada para usar la voz `es-ES-AlvaroNeural` y devolver un archivo `.ogg`.
-3.  **Conversión:** El nodo `PasarBase64` convierte el audio binario a formato Base64 para la API de WhatsApp.
-4.  **Lista de Suscriptores:** Un nodo `Google Sheets` (`Lista de distribución`) lee la hoja de cálculo donde KykeBot gestiona las altas.
-5.  **Envío:** Un nodo `Loop Over Items` itera sobre cada suscriptor, y un nodo `Evolution API` (`Enviar audio1`) envía el archivo de audio (`send-audio`) a cada `remoteJid`.
+1.  **Pausa Estratégica:** Tras finalizar la IA, un nodo `Wait` detiene el flujo. Espera hasta que sean exactamente las 6:00 AM CET para continuar. Si el procesamiento (iniciado a las 5:40 AM) terminara después de las 6:00 AM, el flujo continuaría inmediatamente. Esto desacopla el tiempo de procesamiento del de entrega, asegurando un envío predecible.
+2.  **Limpieza de Texto:** Un nodo `Code` (`Limpieza para TTS`) prepara el texto del guionista, eliminando saltos de línea y escapando caracteres especiales para SSML.
+3.  **Generación de Audio Resiliente:**
+      * **Intento 1 (Azure):** El flujo primero intenta generar el audio con `Azure TTS` (voz `es-ES-AlvaroNeural`).
+      * **Intento 2 (Fallback):** Si Azure falla (el nodo `Azure TTS` tiene `onError: "continueErrorOutput"`), la ejecución pasa automáticamente al nodo `ElevenLabs TTS`. Este nodo usa una voz de respaldo (`Jaime Tu Locutor Online`) y un mensaje personalizado que bromea con que "Álvaro está resfriado", asegurando la entrega del audio.
+4.  **Conversión:** El nodo `PasarBase64` convierte el audio binario a formato Base64 para la API de WhatsApp.
+5.  **Lista de Suscriptores:** Un nodo `Google Sheets` (`Lista de distribución`) lee la hoja de cálculo donde KykeBot gestiona las altas.
+6.  **Envío:** Un nodo `Loop Over Items` itera sobre cada suscriptor, y un nodo `Evolution API` (`Enviar audio1`) envía el archivo de audio (`send-audio`) a cada `remoteJid`.
 
 ### Fase 5: Retroalimentación (Logging)
 
@@ -132,6 +151,9 @@ Esta es la lógica central donde tres agentes colaboran, cada uno con un LLM y u
   * **Optimización para Audio (TTS):** El *prompt* del Guionista y el nodo de limpieza (`Limpieza para TTS`) están diseñados específicamente para generar un texto que suene natural y profesional cuando es procesado por una voz neural, evitando formatos de texto escrito.
   * **Filtrado Robusto:** El flujo no solo filtra por palabras clave (`Remove Certain Content`), sino también por fecha (`Filter by Datetime`) y, lo más importante, semánticamente (Agente 1), asegurando una alta calidad y relevancia del contenido final.
   * **Gestión de Fuentes:** El flujo agrega más de 10 fuentes de primer nivel y es capaz de manejar formatos distintos (RSS y scraping de XML/HTML), unificándolos antes de pasarlos a la IA.
+  * **Alta Resiliencia de Audio (Fallback):** El flujo no depende de un único proveedor de TTS. El *fallback* automático de Azure a ElevenLabs (incluyendo un mensaje de audio personalizado) garantiza la entrega del boletín incluso si el servicio principal de Microsoft falla.
+  * **Scraping de Contenido Profundo:** En lugar de depender de resúmenes de RSS (a menudo incompletos), el flujo puede activar un navegador *headless* (`browserless`) y usar IA (`Information Extractor`) para leer y limpiar el contenido real del artículo, proporcionando resúmenes de mucha mayor calidad al **Agente 2**.
+  * **Fusión Inteligente de Datos:** El nodo `Normalizador de Enlaces` actúa como un "control de calidad", usando la distancia de Levenshtein para emparejar títulos y resúmenes aunque sus URLs no coincidan perfectamente.
 
 -----
 
