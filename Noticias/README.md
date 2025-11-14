@@ -39,11 +39,11 @@ Para que este workflow funcione, necesitarás:
   * Una cuenta de **Google Sheets** (para leer la lista de distribución).
   * Una instancia de un servicio de navegador headless (ej. **browserless**) para el scraping profundo de contenido.
   * Credenciales de API para:
-    * **OpenAI** (para el Agente Analista y el **Extractor de Contenido**).
-    * **Mistral Cloud** (para el Agente Summarizer).
-    * **Google Gemini** (para el Agente Guionista).
-    * **Azure Cognitive Services (TTS)** (para la voz principal).
-    * **ElevenLabs** (para la voz de *fallback*).
+    * **OpenAI** (para el Agente Analista y el **Extractor de Contenido**).
+    * **Mistral Cloud** (para el Agente Summarizer).
+    * **Google Gemini** (para el Agente Guionista).
+    * **Azure Cognitive Services (TTS)** (para la voz principal).
+    * **ElevenLabs** (para la voz de *fallback*).
 
 -----
 
@@ -79,7 +79,7 @@ El flujo se puede dividir en cinco fases principales:
 1.  **Disparador:** El nodo `Schedule` inicia el flujo (L-V, **5:40 AM**).
 2.  **Recolección (Multicanal):**
       * **Lectura RSS/API:** La mayoría de las fuentes (Xataka, MIT, etc.) se leen vía `RSS Feed Read` o `HTTP Request` estándar.
-      * **Scraping Profundo:** Para fuentes clave (ej. *Lobste.rs*), el flujo ahora es mucho más robusto:
+      * **Scraping Profundo:** Para fuentes clave (ej. *Lobste.rs*), el flujo es mucho más robusto:
         1.  Lee el RSS (`lobste.rs Feed`) para obtener el enlace.
         2.  Envía el enlace a un servicio **browserless** (`HTTP Request` a `browserless:3000`) para obtener el HTML completo de la página.
         3.  Convierte el HTML a Markdown (`Markdown Conversion`).
