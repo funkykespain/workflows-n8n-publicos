@@ -9,7 +9,7 @@
       "name": "Merge",
       "type": "n8n-nodes-base.merge",
       "position": [
-        -448,
+        176,
         3120
       ],
       "typeVersion": 3.1
@@ -25,7 +25,7 @@
       "name": "Aggregate",
       "type": "n8n-nodes-base.aggregate",
       "position": [
-        128,
+        752,
         3392
       ],
       "typeVersion": 1
@@ -41,11 +41,13 @@
       "name": "MIT Technology Review Feed",
       "type": "n8n-nodes-base.rssFeedRead",
       "position": [
-        -1056,
-        3488
+        -800,
+        3504
       ],
       "typeVersion": 1.1,
       "alwaysOutputData": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 500,
       "onError": "continueRegularOutput"
     },
     {
@@ -64,6 +66,8 @@
       ],
       "typeVersion": 1.1,
       "alwaysOutputData": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 500,
       "onError": "continueRegularOutput"
     },
     {
@@ -94,7 +98,7 @@
       "name": "Filter by Datetime",
       "type": "n8n-nodes-base.filter",
       "position": [
-        -240,
+        384,
         3248
       ],
       "typeVersion": 2.2
@@ -108,7 +112,7 @@
       "name": "Split Out News Data",
       "type": "n8n-nodes-base.splitOut",
       "position": [
-        1104,
+        1728,
         3344
       ],
       "typeVersion": 1
@@ -169,7 +173,7 @@
       "name": "Remove Certain Content",
       "type": "n8n-nodes-base.filter",
       "position": [
-        -48,
+        576,
         3248
       ],
       "typeVersion": 2.2
@@ -188,7 +192,7 @@
                 1
               ],
               "triggerAtHour": 5,
-              "triggerAtMinute": 57
+              "triggerAtMinute": 40
             }
           ]
         }
@@ -197,8 +201,8 @@
       "name": "Schedule",
       "type": "n8n-nodes-base.scheduleTrigger",
       "position": [
-        -1424,
-        3328
+        -1168,
+        3344
       ],
       "typeVersion": 1.2
     },
@@ -238,8 +242,8 @@
       "name": "Rejoin Data",
       "type": "n8n-nodes-base.set",
       "position": [
-        -464,
-        2768
+        -352,
+        2592
       ],
       "typeVersion": 3.4,
       "onError": "continueRegularOutput"
@@ -262,7 +266,7 @@
       "name": "Join Outputs",
       "type": "n8n-nodes-base.merge",
       "position": [
-        1232,
+        1856,
         3248
       ],
       "typeVersion": 3.2,
@@ -279,7 +283,7 @@
       "name": "Final Aggregate",
       "type": "n8n-nodes-base.aggregate",
       "position": [
-        1792,
+        2416,
         3248
       ],
       "typeVersion": 1
@@ -295,11 +299,13 @@
       "name": "TheHackersNews* Feed",
       "type": "n8n-nodes-base.rssFeedRead",
       "position": [
-        -1056,
-        3136
+        -800,
+        3152
       ],
       "typeVersion": 1.1,
       "alwaysOutputData": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 500,
       "onError": "continueRegularOutput",
       "notes": "*Not to be confused with \"Hacker News\" from ycombinator."
     },
@@ -339,7 +345,7 @@
       "name": "Filter Fields",
       "type": "n8n-nodes-base.set",
       "position": [
-        -848,
+        -928,
         2592
       ],
       "typeVersion": 3.4
@@ -380,8 +386,8 @@
       "name": "Filter Fields 2",
       "type": "n8n-nodes-base.set",
       "position": [
-        -848,
-        2752
+        -592,
+        2768
       ],
       "typeVersion": 3.4
     },
@@ -421,8 +427,8 @@
       "name": "Filter Fields 4",
       "type": "n8n-nodes-base.set",
       "position": [
-        -848,
-        3136
+        -592,
+        3152
       ],
       "typeVersion": 3.4
     },
@@ -462,8 +468,8 @@
       "name": "Filter Fields 6",
       "type": "n8n-nodes-base.set",
       "position": [
-        -848,
-        3488
+        -592,
+        3504
       ],
       "typeVersion": 3.4
     },
@@ -503,8 +509,8 @@
       "name": "Filter Fields 8",
       "type": "n8n-nodes-base.set",
       "position": [
-        -848,
-        3856
+        -592,
+        3872
       ],
       "typeVersion": 3.4
     },
@@ -517,8 +523,8 @@
       "name": "Markdown Conversion",
       "type": "n8n-nodes-base.markdown",
       "position": [
-        -416,
-        2576
+        -496,
+        2592
       ],
       "typeVersion": 1,
       "onError": "continueRegularOutput"
@@ -532,7 +538,7 @@
       "name": "JSON Output Parser 2",
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "position": [
-        1616,
+        2240,
         3424
       ],
       "typeVersion": 1.2
@@ -546,7 +552,7 @@
       "name": "JSON Output Parser",
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "position": [
-        928,
+        1552,
         3728
       ],
       "typeVersion": 1.2
@@ -562,61 +568,19 @@
       "name": "Final Join Outputs",
       "type": "n8n-nodes-base.merge",
       "position": [
-        1952,
+        2576,
         3520
       ],
       "typeVersion": 3.2
     },
     {
       "parameters": {
-        "url": "={{ $json.link }}",
-        "options": {
-          "timeout": 10000
-        }
-      },
-      "id": "21177642-6b14-457f-8c92-f30e24bd1045",
-      "name": "HTTP Request1",
-      "type": "n8n-nodes-base.httpRequest",
-      "position": [
-        -656,
-        2592
-      ],
-      "typeVersion": 4.2,
-      "onError": "continueErrorOutput",
-      "notes": "It is a necessary node because lobste.rs will not give the actual content of the links."
-    },
-    {
-      "parameters": {
-        "resource": "messages-api",
-        "operation": "send-audio",
-        "instanceName": "KykeBot",
-        "remoteJid": "34666666666@s.whatsapp.net",
-        "media": "={{ $('PasarBase64').item.json.audioContent }}",
-        "options_message": {}
-      },
-      "type": "n8n-nodes-evolution-api.evolutionApi",
-      "typeVersion": 1,
-      "position": [
-        2400,
-        3856
-      ],
-      "id": "4b8e38dd-0b40-43ef-83ce-1eefa456d375",
-      "name": "Enviar audio",
-      "credentials": {
-        "evolutionApi": {
-          "id": "QQCyaNiIBYUmTu2Z",
-          "name": "Evolution account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "jsCode": "return items.map(item => {\n  let inputText = item.json.output;\n\n  // 1. Limpieza de Markdown y otros caracteres no deseados\n  // Elimina **, #, _, y ` (backticks)\n  let cleanedText = inputText\n   .replace(/\\*\\*/g, '')      // Elimina negrita (**)\n   .replace(/#/g, '')         // Elimina encabezados (#)\n   .replace(/_/g, '')         // Elimina cursiva (_)\n   .replace(/`/g, '');        // Elimina código en línea (`)\n\n  // 2. Normalizar los saltos de línea para que sean consistentes\n  // Esto mantiene los saltos de línea para que el TTS los interprete como pausas.\n  cleanedText = cleanedText.replace(/\\n\\s*\\n/g, '\\n\\n');\n\n  // 3. Escapar caracteres especiales para XML/SSML\n  // ¡MUY IMPORTANTE! Esto evita que el texto rompa la estructura del SSML.\n  // Los caracteres clave a escapar son: & < > \" '\n  cleanedText = cleanedText\n   .replace(/&/g, '&amp;')\n   .replace(/</g, '&lt;')\n   .replace(/>/g, '&gt;')\n   .replace(/\"/g, '&quot;')\n   .replace(/'/g, '&apos;');\n\n  // 4. Asignar el texto limpio y seguro a la nueva propiedad\n  item.json.cleanedTextForTTS = cleanedText;\n\n  return item;\n});"
+        "jsCode": "return items.map(item => {\n  let inputText = item.json.output;\n  \n  // 1. Convertir entidades HTML primero\n  let cleanedText = inputText\n    .replace(/&quot;/g, '\"')\n    .replace(/&apos;/g, \"'\")\n    .replace(/&lt;/g, '<')\n    .replace(/&gt;/g, '>')\n    .replace(/&amp;/g, '&');\n  \n  // 2. Eliminar barras invertidas de escape\n  cleanedText = cleanedText.replace(/\\\\\"/g, '\"');\n  \n  // 3. Limpieza de Markdown y otros caracteres no deseados\n  cleanedText = cleanedText\n    .replace(/\\*\\*/g, '')      // Elimina negrita (**)\n    .replace(/#/g, '')         // Elimina encabezados (#)\n    .replace(/_/g, '')         // Elimina cursiva (_)\n    .replace(/`/g, '');        // Elimina código en línea (`)\n  \n  // 4. Normalizar los saltos de línea\n  cleanedText = cleanedText.replace(/\\n+/g, ' ');\n  \n  // 5. Normalizar espacios múltiples a un solo espacio\n  cleanedText = cleanedText.replace(/\\s+/g, ' ');\n  \n  // 6. Eliminar espacios al inicio y final\n  cleanedText = cleanedText.trim();\n  \n  // 7. Asignar el texto limpio y seguro a la nueva propiedad\n  item.json.cleanedTextForTTS = cleanedText;\n  \n  return item;\n});"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2608,
+        3184,
         3536
       ],
       "id": "0048f4a9-dffc-41be-a32a-84b2e895675f",
@@ -633,11 +597,13 @@
       "name": "Google News – Inteligencia Artificial",
       "type": "n8n-nodes-base.rssFeedRead",
       "position": [
-        -1056,
-        2752
+        -800,
+        2768
       ],
       "typeVersion": 1.1,
       "alwaysOutputData": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 500,
       "onError": "continueRegularOutput"
     },
     {
@@ -651,11 +617,13 @@
       "name": "Xataka",
       "type": "n8n-nodes-base.rssFeedRead",
       "position": [
-        -1056,
-        3856
+        -800,
+        3872
       ],
       "typeVersion": 1.1,
       "alwaysOutputData": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 500,
       "onError": "continueRegularOutput"
     },
     {
@@ -665,7 +633,7 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        2576,
+        3328,
         4016
       ],
       "id": "db4ce472-6e55-449e-8d55-b89c5c341d5b",
@@ -676,7 +644,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        2768,
+        3664,
         3872
       ],
       "id": "9d33057d-a013-466b-a7c9-a93b6f615b6e",
@@ -694,7 +662,7 @@
       "type": "n8n-nodes-evolution-api.evolutionApi",
       "typeVersion": 1,
       "position": [
-        2768,
+        3664,
         4032
       ],
       "id": "0fb3be79-e1c5-492d-9904-c64545a2e98b",
@@ -742,8 +710,8 @@
       "name": "Filter Fields 11",
       "type": "n8n-nodes-base.set",
       "position": [
-        -848,
-        2960
+        -592,
+        2976
       ],
       "typeVersion": 3.4
     },
@@ -764,11 +732,14 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -1168,
-        4256
+        -912,
+        4272
       ],
       "id": "8fa70b18-22b9-4dfb-849f-5518b8b3ad80",
-      "name": "CB Insights"
+      "name": "CB Insights",
+      "retryOnFail": true,
+      "waitBetweenTries": 500,
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -777,8 +748,8 @@
       "type": "n8n-nodes-base.xml",
       "typeVersion": 1,
       "position": [
-        -944,
-        4256
+        -688,
+        4272
       ],
       "id": "9107be3c-5766-4d34-b9a2-1c624a7bb515",
       "name": "XML"
@@ -819,8 +790,8 @@
       "name": "Filter Fields 12",
       "type": "n8n-nodes-base.set",
       "position": [
-        -848,
-        3312
+        -592,
+        3328
       ],
       "typeVersion": 3.4
     },
@@ -860,8 +831,8 @@
       "name": "Filter Fields 13",
       "type": "n8n-nodes-base.set",
       "position": [
-        -848,
-        3680
+        -592,
+        3696
       ],
       "typeVersion": 3.4
     },
@@ -901,8 +872,8 @@
       "name": "Filter Fields 14",
       "type": "n8n-nodes-base.set",
       "position": [
-        -848,
-        4080
+        -592,
+        4048
       ],
       "typeVersion": 3.4
     },
@@ -917,11 +888,13 @@
       "name": "TechCrunch",
       "type": "n8n-nodes-base.rssFeedRead",
       "position": [
-        -1056,
-        2960
+        -800,
+        2976
       ],
       "typeVersion": 1.1,
       "alwaysOutputData": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 500,
       "onError": "continueRegularOutput"
     },
     {
@@ -935,11 +908,13 @@
       "name": "VentureBeat",
       "type": "n8n-nodes-base.rssFeedRead",
       "position": [
-        -1056,
-        3312
+        -800,
+        3328
       ],
       "typeVersion": 1.1,
       "alwaysOutputData": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 500,
       "onError": "continueRegularOutput"
     },
     {
@@ -953,11 +928,13 @@
       "name": "Axios Pro",
       "type": "n8n-nodes-base.rssFeedRead",
       "position": [
-        -1056,
-        3680
+        -800,
+        3696
       ],
       "typeVersion": 1.1,
       "alwaysOutputData": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 500,
       "onError": "continueRegularOutput"
     },
     {
@@ -971,11 +948,13 @@
       "name": "Emerj AI Research",
       "type": "n8n-nodes-base.rssFeedRead",
       "position": [
-        -1056,
-        4080
+        -800,
+        4048
       ],
       "typeVersion": 1.1,
       "alwaysOutputData": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 500,
       "onError": "continueRegularOutput"
     },
     {
@@ -985,8 +964,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -720,
-        4256
+        -464,
+        4272
       ],
       "id": "b8a3ad67-29f9-4a3c-8b1d-04f376d4e182",
       "name": "Mapeo y limpieza HTML"
@@ -1015,17 +994,20 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2768,
+        3552,
         3536
       ],
       "id": "1594e063-c704-4aa1-b8ff-906128f0d256",
       "name": "Azure TTS",
+      "retryOnFail": true,
+      "waitBetweenTries": 500,
       "credentials": {
         "httpHeaderAuth": {
           "id": "s7VYvQ2IA014YZZl",
           "name": "Ocp-Apim-Subscription-Key"
         }
-      }
+      },
+      "onError": "continueErrorOutput"
     },
     {
       "parameters": {
@@ -1036,7 +1018,7 @@
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
       "position": [
-        2912,
+        3856,
         3536
       ],
       "id": "a69cbec3-fffc-4514-b0be-b44b720dd758",
@@ -1063,8 +1045,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.6,
       "position": [
-        2400,
-        4016
+        3360,
+        3792
       ],
       "id": "be028140-f180-4b96-8013-423e09953faf",
       "name": "Lista de distribución",
@@ -1080,7 +1062,7 @@
       "type": "@n8n/n8n-nodes-langchain.toolThink",
       "typeVersion": 1.1,
       "position": [
-        1568,
+        2192,
         3680
       ],
       "id": "3135d982-3569-487f-94ea-442d7e1f0dcb",
@@ -1093,8 +1075,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -864,
-        4432
+        -608,
+        4448
       ],
       "id": "1ac68049-71a5-4675-b8f4-59812422ad14",
       "name": "Filtrado Historial"
@@ -1108,7 +1090,7 @@
       "type": "n8n-nodes-base.redis",
       "typeVersion": 1,
       "position": [
-        1248,
+        1872,
         3440
       ],
       "id": "e391af86-9e96-4d5e-8239-1b33bad97b2b",
@@ -1118,7 +1100,8 @@
           "id": "EcQvh3FvZpXkll5a",
           "name": "Redis News"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -1129,8 +1112,8 @@
       "type": "n8n-nodes-base.redis",
       "typeVersion": 1,
       "position": [
-        -1072,
-        4432
+        -816,
+        4448
       ],
       "id": "6843cd02-4b73-4017-bd17-29ea95e49856",
       "name": "Historial",
@@ -1146,7 +1129,7 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        320,
+        944,
         3536
       ],
       "id": "a6550812-dd9f-485e-b232-e3e22683013f",
@@ -1160,7 +1143,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        528,
+        1152,
         3536
       ],
       "id": "c14414f4-307a-4415-9af6-086fd0f07f9b",
@@ -1173,7 +1156,7 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        1472,
+        2096,
         3824
       ],
       "id": "df501d04-f3f1-4818-ae39-da34e5ec1b2d",
@@ -1194,7 +1177,7 @@
       "name": "Mistral Small",
       "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
       "position": [
-        1424,
+        2048,
         4000
       ],
       "typeVersion": 1,
@@ -1208,17 +1191,17 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Analyze today's news from the first list and use the second list as historical context.\n\nToday's Articles:\n{{ JSON.stringify($json.data) }}\n\nHistorical Articles:\n{{ JSON.stringify($json.historial) }}",
+        "text": "=Analyze `today_articles` using `historical_articles` for context.\n\ntoday_articles:\n{{ JSON.stringify($json.data) }}\n\nhistorical_articles:\n{{ JSON.stringify($json.historial) }}",
         "hasOutputParser": true,
         "needsFallback": true,
         "options": {
-          "systemMessage": "You are a professional analyst specializing in current news, with a focus on technology and business applications. Your primary objective is to compile a list of the top 15 most relevant news articles for professionals interested in AI, data science, and emerging technologies.\n\n### Task Breakdown:\n1. **Top News List:** Compile a list of the top 15 news titles along with their respective **links**.\n\n### Prioritization Criteria:\n- **Prioritization Level 1: Thematic Relevance.**\n    - **a. Highest Priority:** News about AI business and breakthrough research.\n    - **b. High Priority:** Practical applications of data science, machine learning, and algorithms.\n    - **c. Medium Priority:** Significant news in other areas of technology (e.g., robotics, biotech, hardware).\n    - **d. Low Priority:** General scientific research only if it's a major breakthrough related to AI or computing.\n\n- **Prioritization Level 2: Geopolitical Relevance.**\n    - After categorizing news by thematic relevance, apply a geopolitical filter. Within each thematic priority level, rank news by the following geographical order:\n        - **1. Spain:** Directly related to Spain.\n        - **2. Europe:** Relevant to Europe.\n        - **3. Global:** Broad global news.\n\n### Filtering and Analysis Guidelines:\n1. **Semantic Filtering:** Analyze the new articles from \"Today's Articles\" and compare them to the \"Historical Articles.\" Exclude any new article if its core topic is a direct repetition or a minor update of a topic already covered recently. Prioritize truly new topics.\n2. **Thematic Continuity:** When selecting articles for the final \"Top News List,\" actively look for significant updates on previously covered topics. If an old topic has a major new development, include the new article and provide context.\n3. **Source Diversity:** Do not return more than one or two news items from the same website in the top 15.\n4. **Quality Control:** Exclude news with problematic or irrelevant headlines, as well as commercial offers, discounts, or sales promotions.\n\nThe output MUST be a JSON object with a single key \"top_15_news\" containing an array of objects. Each object in the array must have the keys \"title\" and \"link\". Do not include any other keys or text outside the JSON.\nCrucially, the 'link' value MUST be the original URL provided in the input, not a new or modified one.\nThe 'title' value MUST be copied exactly from the original input, without any modifications."
+          "systemMessage": "Role: News Analyst (Focus: AI, Data Science, Tech Biz).\nObjective: Compile a Top 15 list from `today_articles` using `historical_articles` as context.\n\n### 1. Thematic Priority (Descending)\n1.  **Highest:** AI Business, AI breakthrough research.\n2.  **High:** Practical Data Science, ML, Algorithms.\n3.  **Medium:** Significant other tech (Robotics, Biotech, Hardware).\n4.  **Low:** General science (only major AI/computing breakthroughs).\n\n### 2. Geographic Sub-Priority\n*Within each thematic level, sort by:*\n1.  Spain\n2.  Europe\n3.  Global\n\n### 3. Filtering Rules\n1.  **Anti-Repetition:** Exclude articles from `today_articles` if they are minor updates or repeats of `historical_articles`. Prioritize new topics.\n2.  **Pro-Update:** *Include* articles if they are *significant* developments on `historical_articles` topics.\n3.  **Source Diversity:** Max 1-2 articles from the same website in the top 15.\n4.  **Quality Control:** Exclude clickbait, commercial offers, discounts, sales promotions, or irrelevant headlines.\n\n### 4. Content Integrity Rules\n* **title:** MUST be an exact, unmodified copy from the input.\n* **link:** MUST be the original, unmodified URL from the input."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        736,
+        1360,
         3536
       ],
       "id": "1455c5f8-41a6-4b9d-b63f-b4ac435f9ffe",
@@ -1228,17 +1211,17 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Website: {{ $json.link }}\nContent: {{ $json.content }}",
+        "text": "=Link: {{ $json.link }}\nContent: {{ $json.content }}",
         "hasOutputParser": true,
         "needsFallback": true,
         "options": {
-          "systemMessage": "You are an automated web analyzer tasked with summarizing information from a webpage. Your objective is to return a single JSON object containing a concise, single-sentence summary and the original URL. Do not include any other information or text outside the JSON object.\n\nThe output MUST be a JSON object with two keys: \"summary\" and \"link\". The value of the \"summary\" key must be a string containing a single, concise sentence. The value of the \"link\" key must be the original URL from the input."
+          "systemMessage": "Provide a single-sentence summary of the content and the original link. Follow the JSON output schema."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        1424,
+        2048,
         3248
       ],
       "id": "8de3bc08-3a31-46b9-b7f1-1230fe756672",
@@ -1248,14 +1231,14 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Eres un redactor profesional especializado en tecnología y desarrollo de software, con experiencia en redacción para voz (text-to-speech). Tu tarea es crear un boletín informativo diario en español de España, dirigido a profesionales, desarrolladores y entusiastas del software. Este boletín será leído por un sistema TTS, por lo que el lenguaje debe ser natural, oral, fluido y agradable al oído.\n\nSigue estos pasos:\n1. Escribe un saludo breve adecuado para la mañana de lunes a viernes.\n2. Extrae la fecha actual y fórmala como \"Estas son las noticias tecnológicas para hoy, {{ $now.toFormat(\"cccc d 'de' LLLL 'de' yyyy\", { locale: 'es' }) }}\".\n3. Incluye un título general para el boletín.\n4. Organiza el contenido en párrafos o frases claras, evitando subtítulos formales.\n5. **Integra los artículos de hoy en una narrativa cohesionada.** Asegúrate de traducir al español los resúmenes de los artículos que originalmente estén en inglés, y luego usa conectores lógicos como además, por otro lado, mientras tanto, en otro frente, etc.\n6. **Da continuidad a los temas.** Si una noticia de hoy está relacionada con un tema de la lista de noticias históricas, haz una referencia a esa noticia anterior en el boletín. **Utiliza un lenguaje de referencia temporal natural como \"ayer\", \"anteayer\", \"el pasado [día de la semana]\" o \"la semana pasada\", en lugar de mencionar la fecha completa.** Si la noticia es de hoy, evítalo. No todas las noticias históricas deben ser mencionadas, solo las relevantes para los artículos de hoy.\n7. Mantén un tono informativo, fluido y conversacional adecuado para ser escuchado por TTS.\n8. No incluyas palabras como “artículo”, “post”, ni enlaces. Todo debe sonar como un relato de voz.\n9. **EVITA CUALQUIER TIPO DE FORMATO DE TEXTO** como negritas, cursivas, encabezados o listas. Solo usa texto plano continuo.\n10. Finaliza siempre con una despedida breve y cercana:\n    - **Lunes a Jueves:** Puedes usar el día de la semana actual para personalizarla, como por ejemplo, en el caso de que sea Lunes, deseando un buen inicio de semana. También sería simpático incorporar un guiño humorístico o una referencia ingeniosa a alguna noticia mencionada en el boletín.\n    - **Viernes:** Desea al oyente que pase un feliz fin de semana y que las noticias volverán a partir del Lunes.\n11. **Recuerda siempre que el medio es AUDIO.** Por tanto, la despedida debe ser coherente con un formato de voz. Evita a toda costa frases de un medio escrito como \"nos leemos\".\n\n**Artículos de hoy:**\n{{ JSON.stringify($json.today_news) }}\n\n**Historial de noticias (para contexto):**\n{{ JSON.stringify($json.historical_news) }}\n\nDevuelve un texto plano continuo que contenga el boletín informativo diario en español, sin ningún formato especial.",
+        "text": "=Eres un redactor profesional especializado en tecnología y desarrollo, experto en guiones para voz (TTS) en español de España. Tu tarea es crear un boletín de noticias diario para profesionales y desarrolladores.\n\n**Instrucciones Clave (Voz y Tono):**\n* El guion será leído por un TTS, por lo que debe sonar **natural, fluido, oral y agradable al oído**.\n* Mantén un tono **informativo pero conversacional**.\n* Evita estrictamente lenguaje de medios escritos (como \"artículo\", \"post\", \"enlace\" o \"nos leemos\"). Todo debe sonar como un relato de voz.\n\n**Formato de Salida Obligatorio:**\n* **Texto plano continuo.**\n* **EVITA CUALQUIER FORMATO:** No uses negritas, cursivas, listas, encabezados o subtítulos formales.\n\n**Pasos a Seguir:**\n1.  **Saludo:** Escribe un saludo breve y adecuado para la mañana (Lunes a Viernes).\n2.  **Fecha:** Incluye la fecha exacta: \"Estas son las noticias tecnológicas para hoy,  {{ $now.toFormat(\"cccc d 'de' LLLL 'de' yyyy\", { locale: 'es' }) }}\".\n3.  **Título:** Añade un título general para el boletín.\n4.  **Cuerpo:** Integra los artículos de hoy en una **narrativa cohesionada**.\n    * Traduce al español los resúmenes que estén en inglés.\n    * Usa conectores lógicos (ej. \"además\", \"por otro lado\", \"mientras tanto\") para dar fluidez.\n5.  **Continuidad:** Si una noticia de hoy se relaciona con un tema del historial, haz una referencia a esa noticia anterior.\n    * Usa lenguaje temporal natural (ej. \"ayer\", \"el pasado martes\", \"la semana pasada\").\n    * **No uses la fecha completa** de la noticia histórica.\n6.  **Despedida (Lunes a Jueves):** Finaliza con una despedida breve, cercana y personalizada al día (ej. \"que tengas un gran lunes\"). Puedes incorporar un guiño humorístico o una referencia ingeniosa a una de las noticias.\n7.  **Despedida (Viernes):** Desea un feliz fin de semana e informa que las noticias volverán el lunes.\n\n**Artículos de hoy:**\n{{ JSON.stringify($json.today_news) }}\n\n**Historial de noticias (para contexto):**\n{{ JSON.stringify($json.historical_news) }}",
         "needsFallback": true,
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        2320,
+        2912,
         3536
       ],
       "id": "00e4ed9d-dce3-4b5a-83b1-dd9f84ad837c",
@@ -1275,7 +1258,7 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        736,
+        1360,
         3728
       ],
       "id": "de9f9407-4717-4d75-9a0a-469c6828c7e9",
@@ -1294,51 +1277,195 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2144,
+        2752,
         3536
       ],
       "id": "91b95cf3-579f-417d-a2b0-93afc3411616",
       "name": "Normalizador de Enlaces y Fusión de Contenido"
+    },
+    {
+      "parameters": {
+        "resource": "speech",
+        "voice": {
+          "__rl": true,
+          "value": "43h7ymOnaaYdWr3dRbsS",
+          "mode": "list",
+          "cachedResultName": "Jaime Tu Locutor Online"
+        },
+        "text": "=Hola soy Jaime, tu interlocutor para hoy. {{ $('Limpieza para TTS').item.json.cleanedTextForTTS }} Espero que el próximo día Álvaro deje de estar resfriado y os siga narrando las noticias.",
+        "additionalOptions": {
+          "outputFormat": "opus_48000_32",
+          "languageCode": "es"
+        },
+        "requestOptions": {}
+      },
+      "type": "@elevenlabs/n8n-nodes-elevenlabs.elevenLabs",
+      "typeVersion": 1,
+      "position": [
+        3552,
+        3312
+      ],
+      "id": "d684fae4-9c5b-41e3-8219-2a99f286408f",
+      "name": "ElevenLabs TTS",
+      "retryOnFail": true,
+      "waitBetweenTries": 500,
+      "credentials": {
+        "elevenLabsApi": {
+          "id": "38nqUHzeZXOT5Nlu",
+          "name": "ElevenLabs account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.content }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "articulo_limpio",
+              "description": "Eres un experto extrayendo contenido. El siguiente texto es Markdown de una página web completa. Extrae ÚNICAMENTE el contenido principal del artículo. Excluye estrictamente cabeceras, menús de navegación, barras laterales, listas de \"posts recientes\", secciones de comentarios, avisos de copyright y pies de página. Conserva el formato Markdown original del artículo (títulos, listas, bloques de código)."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        -224,
+        2592
+      ],
+      "id": "58058325-7bd2-4da5-b3fc-fe0a0395d32f",
+      "name": "Information Extractor",
+      "retryOnFail": false,
+      "waitBetweenTries": 500,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://browserless:3000/content",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"url\": \"{{ $json.link }}\",\n  \"gotoOptions\": {\n    \"timeout\": 60000\n  }\n}",
+        "options": {
+          "timeout": 61000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -640,
+        2592
+      ],
+      "id": "eaab47dd-d40d-4eac-99bb-6c6b628ea7f0",
+      "name": "HTTP Request",
+      "retryOnFail": true,
+      "waitBetweenTries": 500,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8aae3733-7510-4937-884e-885d37195f4e",
+              "name": "title",
+              "value": "={{ $('Rejoin Data').item.json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "403eaa7f-fdab-4370-a1a6-899ff97a576a",
+              "name": "pubDate",
+              "value": "={{ $('Rejoin Data').item.json.pubDate }}",
+              "type": "string"
+            },
+            {
+              "id": "776a3002-526c-4837-b055-4cb1a030bea7",
+              "name": "link",
+              "value": "={{ $('Rejoin Data').item.json.link }}",
+              "type": "string"
+            },
+            {
+              "id": "e5d85fbb-8751-46c2-a89e-725aed7e1352",
+              "name": "content",
+              "value": "={{ $json.output.articulo_limpio }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        32,
+        2592
+      ],
+      "id": "9ffe95e2-67b8-4ad0-a6a1-a8f14b598304",
+      "name": "Restructurar",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "30d4f694-9378-42b4-b1d5-cbc38fb3e7fe",
+              "operator": {
+                "type": "dateTime",
+                "operation": "after"
+              },
+              "leftValue": "={{ $json.pubDate }}",
+              "rightValue": "={{ $now.weekday === 1 ? $now.minus({ hours: 72 }) : $now.minus({ hours: 24 }) }}"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "9419bc0f-2b8d-4ee3-a955-adbb126addef",
+      "name": "Filter by Datetime1",
+      "type": "n8n-nodes-base.filter",
+      "position": [
+        -784,
+        2592
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "resume": "specificTime",
+        "dateTime": "={{\n  (() => {\n    const target = $now.set({ hour: 6, minute: 0, second: 0, millisecond: 0 });\n    return $now > target ? $now : target;\n  })()\n}}"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3360,
+        3536
+      ],
+      "id": "b50d9a7e-5f99-4262-ae95-233b9bc08fc1",
+      "name": "Wait",
+      "webhookId": "56ea1976-5655-4bb0-9785-22042e32a8f2"
     }
   ],
-  "pinData": {
-    "Enviar audio": [
-      {
-        "json": {
-          "success": true,
-          "data": {
-            "key": {
-              "remoteJid": "34666666666@s.whatsapp.net",
-              "fromMe": true,
-              "id": "3EB03B6DFD29F938E3D96F3378FAC1987DD4B746"
-            },
-            "pushName": "Você",
-            "status": "PENDING",
-            "message": {
-              "audioMessage": {
-                "url": "https://mmg.whatsapp.net/v/t62.7114-24/542920902_1270863884720157_992777139444814474_n.enc?ccb=11-4&oh=01_Q5Aa2QFDzyxJXwELeZ-_UV9Ptiorg3lxx-kx-SOq6eyS30mexA&oe=68DD4B1F&_nc_sid=5e03e0&mms3=true",
-                "mimetype": "audio/ogg; codecs=opus",
-                "fileSha256": "g7G1O4BX6U2EMnIB162psYVd4NiwMNjWjzDuINxrNKI=",
-                "fileLength": "3393591",
-                "seconds": 192,
-                "ptt": true,
-                "mediaKey": "G2JdCXY4semeoZLhRTgNPqz6NgHQKiW0O8lja6FGBLc=",
-                "fileEncSha256": "9AdW1nfoxnvaENSVBbN1FqgfDNtc8nPmQ5tzTm1dZAI=",
-                "directPath": "/v/t62.7114-24/542920902_1270863884720157_992777139444814474_n.enc?ccb=11-4&oh=01_Q5Aa2QFDzyxJXwELeZ-_UV9Ptiorg3lxx-kx-SOq6eyS30mexA&oe=68DD4B1F&_nc_sid=5e03e0",
-                "mediaKeyTimestamp": "1756753258",
-                "waveform": "MldPMEkrQkgqSVNDMTFkTkknRzVMOS1ULUhGKlQ/Ok1DKldOTC1KJURRKE1KMU9MPzROVUpXSShVVC0pXENCFg=="
-              }
-            },
-            "contextInfo": null,
-            "messageType": "audioMessage",
-            "messageTimestamp": 1756753258,
-            "instanceId": "0c58488e-9cb1-4680-a442-59c40879528b",
-            "source": "unknown"
-          }
-        }
-      }
-    ]
-  },
+  "pinData": {},
   "connections": {
     "Merge": {
       "main": [
@@ -1487,7 +1614,7 @@
       "main": [
         [
           {
-            "node": "Merge",
+            "node": "Information Extractor",
             "type": "main",
             "index": 0
           }
@@ -1531,7 +1658,7 @@
       "main": [
         [
           {
-            "node": "HTTP Request1",
+            "node": "Filter by Datetime1",
             "type": "main",
             "index": 0
           }
@@ -1615,17 +1742,6 @@
         ]
       ]
     },
-    "HTTP Request1": {
-      "main": [
-        [
-          {
-            "node": "Markdown Conversion",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Final Join Outputs": {
       "main": [
         [
@@ -1641,7 +1757,7 @@
       "main": [
         [
           {
-            "node": "Azure TTS",
+            "node": "Wait",
             "type": "main",
             "index": 0
           }
@@ -1828,6 +1944,13 @@
             "type": "main",
             "index": 0
           }
+        ],
+        [
+          {
+            "node": "ElevenLabs TTS",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
@@ -2010,6 +2133,11 @@
             "node": "News Analyzer",
             "type": "ai_languageModel",
             "index": 0
+          },
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
           }
         ]
       ]
@@ -2024,15 +2152,89 @@
           }
         ]
       ]
+    },
+    "ElevenLabs TTS": {
+      "main": [
+        [
+          {
+            "node": "PasarBase64",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Azure TTS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Restructurar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Markdown Conversion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Restructurar": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter by Datetime1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Azure TTS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1",
     "timezone": "Europe/Madrid",
-    "callerPolicy": "workflowsFromSameOwner"
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
   },
-  "versionId": "48da991e-165c-4b10-906c-997db04f06b8",
+  "versionId": "3d72be46-9ae0-4b38-b2ca-765bd68dea71",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "6434ec3e42cbeca4460770f382b0d777ada4816e6e2e823489f950c2ff8fee35"
