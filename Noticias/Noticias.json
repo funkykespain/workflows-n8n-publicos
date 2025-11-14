@@ -1100,8 +1100,7 @@
           "id": "EcQvh3FvZpXkll5a",
           "name": "Redis News"
         }
-      },
-      "disabled": true
+      }
     },
     {
       "parameters": {
@@ -2234,7 +2233,7 @@
     "callerPolicy": "workflowsFromSameOwner",
     "availableInMCP": false
   },
-  "versionId": "3d72be46-9ae0-4b38-b2ca-765bd68dea71",
+  "versionId": "5a9e97ce-fbc8-4772-881d-390400145248",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "6434ec3e42cbeca4460770f382b0d777ada4816e6e2e823489f950c2ff8fee35"
