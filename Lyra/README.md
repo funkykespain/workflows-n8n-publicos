@@ -8,7 +8,7 @@ Este workflow de n8n implementa a **"Lyra"**, una agente de IA experta diseñada
 
 El bot, accesible a través de un **chat web**, utiliza una arquitectura de Agente de IA con RAG (Retrieval-Augmented Generation). Su objetivo es transformar solicitudes vagas en prompts precisos y de alto impacto. Para lograrlo, consulta una base de conocimiento vectorial interna (alimentada desde Google Drive) sobre ingeniería de prompts y aplica metodologías avanzadas (como la 4-D: Deconstruir, Diagnosticar, Desarrollar, Entregar) para mejorar cualquier solicitud.
 
-Este proyecto fue creado para experimentación educacional y como herramienta de trabajo interna para mejorar los prompts de sistema en proyectos de IA en la empresa **Universitas Hub**.
+Este proyecto fue creado para experimentación educacional y como herramienta de trabajo interna para mejorar los prompts de sistema en proyectos de IA en la empresa **Universitas Hub**, como ejemplo de cómo se aplica la **ingeniería de prompts** y las **metodologías estructuradas (4-D)** en un entorno de trabajo real.
 
 -----
 
