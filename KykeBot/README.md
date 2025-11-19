@@ -12,7 +12,7 @@ Utiliza un nodo `Switch` principal para enrutar la intención del usuario a dife
 1.  **Gestión de Suscripciones:** Permite a los usuarios darse de alta o baja de un boletín de noticias.
 2.  **Gestión de Archivos:** Responde amablemente a formatos no soportados (audio, vídeo, etc.).
 3.  **Filtro de Conversación:** Detecta si es el propio Enrique quien escribe para no interferir.
-4.  **Agente de IA Conversacional:** Activa una arquitectura avanzada de Agente (con RAG y herramientas) para gestionar conversaciones complejas, agendar citas y responder preguntas.
+4.  **Agente de IA Conversacional:** Activa una arquitectura avanzada de Agente (con RAG y herramientas) para gestionar conversaciones complejas, agendar citas y responder preguntas. Es el **Agente Orquestador**.
 
 El flujo está diseñado para ser robusto, gestionando el estado del usuario en Redis y utilizando agentes subordinados para tareas específicas.
 
