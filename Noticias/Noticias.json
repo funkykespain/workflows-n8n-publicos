@@ -644,35 +644,11 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        3664,
+        3792,
         3872
       ],
       "id": "9d33057d-a013-466b-a7c9-a93b6f615b6e",
       "name": "Terminado"
-    },
-    {
-      "parameters": {
-        "resource": "messages-api",
-        "operation": "send-audio",
-        "instanceName": "KykeBot",
-        "remoteJid": "={{ $json.ID }}",
-        "media": "={{ $('PasarBase64').item.json.audioContent }}",
-        "options_message": {}
-      },
-      "type": "n8n-nodes-evolution-api.evolutionApi",
-      "typeVersion": 1,
-      "position": [
-        3664,
-        4032
-      ],
-      "id": "0fb3be79-e1c5-492d-9904-c64545a2e98b",
-      "name": "Enviar audio1",
-      "credentials": {
-        "evolutionApi": {
-          "id": "QQCyaNiIBYUmTu2Z",
-          "name": "Evolution account"
-        }
-      }
     },
     {
       "parameters": {
@@ -972,45 +948,6 @@
     },
     {
       "parameters": {
-        "method": "POST",
-        "url": "https://westeurope.tts.speech.microsoft.com/cognitiveservices/v1",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "X-Microsoft-OutputFormat",
-              "value": "ogg-24khz-16bit-mono-opus"
-            }
-          ]
-        },
-        "sendBody": true,
-        "contentType": "raw",
-        "rawContentType": "application/ssml+xml",
-        "body": "=<speak version='1.0' xml:lang='es-ES'>\n    <voice xml:lang='es-ES' name='es-ES-AlvaroNeural'>\n        {{ $json.cleanedTextForTTS }}\n    </voice>\n</speak>",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        3552,
-        3536
-      ],
-      "id": "1594e063-c704-4aa1-b8ff-906128f0d256",
-      "name": "Azure TTS",
-      "retryOnFail": true,
-      "waitBetweenTries": 500,
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "s7VYvQ2IA014YZZl",
-          "name": "Ocp-Apim-Subscription-Key"
-        }
-      },
-      "onError": "continueErrorOutput"
-    },
-    {
-      "parameters": {
         "operation": "binaryToPropery",
         "destinationKey": "audioContent",
         "options": {}
@@ -1018,8 +955,8 @@
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
       "position": [
-        3856,
-        3536
+        3776,
+        3520
       ],
       "id": "a69cbec3-fffc-4514-b0be-b44b720dd758",
       "name": "PasarBase64"
@@ -1045,7 +982,7 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.6,
       "position": [
-        3360,
+        3264,
         3792
       ],
       "id": "be028140-f180-4b96-8013-423e09953faf",
@@ -1257,8 +1194,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        1360,
-        3728
+        -224,
+        2800
       ],
       "id": "de9f9407-4717-4d75-9a0a-469c6828c7e9",
       "name": "4.1-mini",
@@ -1281,40 +1218,6 @@
       ],
       "id": "91b95cf3-579f-417d-a2b0-93afc3411616",
       "name": "Normalizador de Enlaces y Fusión de Contenido"
-    },
-    {
-      "parameters": {
-        "resource": "speech",
-        "voice": {
-          "__rl": true,
-          "value": "43h7ymOnaaYdWr3dRbsS",
-          "mode": "list",
-          "cachedResultName": "Jaime Tu Locutor Online"
-        },
-        "text": "=Hola soy Jaime, tu interlocutor para hoy. {{ $('Limpieza para TTS').item.json.cleanedTextForTTS }} Espero que el próximo día Álvaro deje de estar resfriado y os siga narrando las noticias.",
-        "additionalOptions": {
-          "outputFormat": "opus_48000_32",
-          "languageCode": "es"
-        },
-        "requestOptions": {}
-      },
-      "type": "@elevenlabs/n8n-nodes-elevenlabs.elevenLabs",
-      "typeVersion": 1,
-      "position": [
-        3552,
-        3312
-      ],
-      "id": "d684fae4-9c5b-41e3-8219-2a99f286408f",
-      "name": "ElevenLabs TTS",
-      "retryOnFail": true,
-      "waitBetweenTries": 500,
-      "credentials": {
-        "elevenLabsApi": {
-          "id": "38nqUHzeZXOT5Nlu",
-          "name": "ElevenLabs account"
-        }
-      },
-      "onError": "continueErrorOutput"
     },
     {
       "parameters": {
@@ -1450,6 +1353,123 @@
     },
     {
       "parameters": {
+        "method": "POST",
+        "url": "https://westeurope.tts.speech.microsoft.com/cognitiveservices/v1",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Microsoft-OutputFormat",
+              "value": "ogg-24khz-16bit-mono-opus"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/ssml+xml",
+        "body": "=<speak version=\"1.0\" xml:lang=\"es-ES\">\n  <voice name=\"es-ES-AlvaroNeural\">\n    {{ $json.cleanedTextForTTS }}\n  </voice>\n</speak>",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        3520,
+        3536
+      ],
+      "id": "5c8ccd28-0cb5-46b0-b269-44b38d7e132b",
+      "name": "Alvaro",
+      "retryOnFail": true,
+      "waitBetweenTries": 500,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "s7VYvQ2IA014YZZl",
+          "name": "Ocp-Apim-Subscription-Key"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "resource": "speech",
+        "voice": {
+          "__rl": true,
+          "value": "43h7ymOnaaYdWr3dRbsS",
+          "mode": "list",
+          "cachedResultName": "Jaime Tu Locutor Online"
+        },
+        "text": "=Hola soy Jaime, tu interlocutor para hoy. {{ $('Limpieza para TTS').item.json.cleanedTextForTTS }} Espero que el próximo día Álvaro deje de estar resfriado y os siga narrando las noticias.",
+        "additionalOptions": {
+          "outputFormat": "opus_48000_32",
+          "languageCode": "es"
+        },
+        "requestOptions": {}
+      },
+      "type": "@elevenlabs/n8n-nodes-elevenlabs.elevenLabs",
+      "typeVersion": 1,
+      "position": [
+        3520,
+        3328
+      ],
+      "id": "d684fae4-9c5b-41e3-8219-2a99f286408f",
+      "name": "Jaime",
+      "retryOnFail": true,
+      "waitBetweenTries": 500,
+      "credentials": {
+        "elevenLabsApi": {
+          "id": "38nqUHzeZXOT5Nlu",
+          "name": "ElevenLabs account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://atu-evolution-api:8080/chat/whatsappNumbers/KykeBot",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"numbers\": [ \"{{ $json.ID }}\" ] }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        3536,
+        4032
+      ],
+      "id": "fcaa1dfd-86c0-4c09-b1a2-60c82aa07b92",
+      "name": "Validar Numero",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "KrdfmCHLD8urgkAA",
+          "name": "KykeBot"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3856,
+        4032
+      ],
+      "id": "f6ee12cd-4d50-477b-8dbf-333260d6844e",
+      "name": "Espera 5 secs",
+      "webhookId": "5ad2d1db-9e27-4ac1-8774-b34a51700906"
+    },
+    {
+      "parameters": {
         "resume": "specificTime",
         "dateTime": "={{\n  (() => {\n    const target = $now.set({ hour: 6, minute: 0, second: 0, millisecond: 0 });\n    return $now > target ? $now : target;\n  })()\n}}"
       },
@@ -1460,11 +1480,55 @@
         3536
       ],
       "id": "b50d9a7e-5f99-4262-ae95-233b9bc08fc1",
-      "name": "Wait",
+      "name": "Espera hasta las 6h",
       "webhookId": "56ea1976-5655-4bb0-9785-22042e32a8f2"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "operation": "send-audio",
+        "instanceName": "KykeBot",
+        "remoteJid": "={{ $json.jid }}",
+        "media": "={{ $('PasarBase64').item.json.audioContent }}",
+        "options_message": {
+          "delay": 2000
+        }
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        3696,
+        4032
+      ],
+      "id": "0fb3be79-e1c5-492d-9904-c64545a2e98b",
+      "name": "Enviar Boletin",
+      "credentials": {
+        "evolutionApi": {
+          "id": "QQCyaNiIBYUmTu2Z",
+          "name": "Evolution account"
+        }
+      }
     }
   ],
-  "pinData": {},
+  "pinData": {
+    "Schedule": [
+      {
+        "json": {
+          "timestamp": "2025-12-03T05:40:06.025+01:00",
+          "Readable date": "December 3rd 2025, 5:40:06 am",
+          "Readable time": "5:40:06 am",
+          "Day of week": "Wednesday",
+          "Year": "2025",
+          "Month": "December",
+          "Day of month": "03",
+          "Hour": "05",
+          "Minute": "40",
+          "Second": "06",
+          "Timezone": "Europe/Madrid (UTC+01:00)"
+        }
+      }
+    ]
+  },
   "connections": {
     "Merge": {
       "main": [
@@ -1756,7 +1820,7 @@
       "main": [
         [
           {
-            "node": "Wait",
+            "node": "Espera hasta las 6h",
             "type": "main",
             "index": 0
           }
@@ -1796,18 +1860,7 @@
         ],
         [
           {
-            "node": "Enviar audio1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Enviar audio1": {
-      "main": [
-        [
-          {
-            "node": "Loop Over Items",
+            "node": "Validar Numero",
             "type": "main",
             "index": 0
           }
@@ -1935,24 +1988,6 @@
         ]
       ]
     },
-    "Azure TTS": {
-      "main": [
-        [
-          {
-            "node": "PasarBase64",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "ElevenLabs TTS",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "PasarBase64": {
       "main": [
         [
@@ -2049,17 +2084,17 @@
       "ai_languageModel": [
         [
           {
-            "node": "News Analyzer",
-            "type": "ai_languageModel",
-            "index": 1
-          },
-          {
             "node": "Website Summarizer",
             "type": "ai_languageModel",
             "index": 1
           },
           {
             "node": "Redactor",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "News Analyzer",
             "type": "ai_languageModel",
             "index": 0
           }
@@ -2076,6 +2111,11 @@
           },
           {
             "node": "Redactor",
+            "type": "ai_languageModel",
+            "index": 1
+          },
+          {
+            "node": "News Analyzer",
             "type": "ai_languageModel",
             "index": 1
           }
@@ -2129,11 +2169,6 @@
       "ai_languageModel": [
         [
           {
-            "node": "News Analyzer",
-            "type": "ai_languageModel",
-            "index": 0
-          },
-          {
             "node": "Information Extractor",
             "type": "ai_languageModel",
             "index": 0
@@ -2146,24 +2181,6 @@
         [
           {
             "node": "Redactor",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "ElevenLabs TTS": {
-      "main": [
-        [
-          {
-            "node": "PasarBase64",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Azure TTS",
             "type": "main",
             "index": 0
           }
@@ -2214,11 +2231,80 @@
         ]
       ]
     },
-    "Wait": {
+    "Alvaro": {
       "main": [
         [
           {
-            "node": "Azure TTS",
+            "node": "PasarBase64",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Jaime",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Jaime": {
+      "main": [
+        [
+          {
+            "node": "PasarBase64",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Alvaro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar Numero": {
+      "main": [
+        [
+          {
+            "node": "Enviar Boletin",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Espera 5 secs": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Espera hasta las 6h": {
+      "main": [
+        [
+          {
+            "node": "Alvaro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Boletin": {
+      "main": [
+        [
+          {
+            "node": "Espera 5 secs",
             "type": "main",
             "index": 0
           }
@@ -2233,7 +2319,7 @@
     "callerPolicy": "workflowsFromSameOwner",
     "availableInMCP": false
   },
-  "versionId": "5a9e97ce-fbc8-4772-881d-390400145248",
+  "versionId": "051708ff-3ea7-45d9-9417-8c00b5ee6615",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "6434ec3e42cbeca4460770f382b0d777ada4816e6e2e823489f950c2ff8fee35"
