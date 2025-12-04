@@ -167,10 +167,10 @@ El flujo ahora implementa un patrón **"Validar antes de Enviar"** (Check-then-S
     *   **Destinatario:** Ya no usa el número crudo del Excel, sino el `{{ $json.jid }}` obtenido del paso de validación.
     *   **Delay:** Se ha configurado un retraso interno (`delay: 2000` ms) que muestra "Grabando audio..." al usuario. Esto cumple doble función: mejora la experiencia de usuario y da tiempo a la API para consolidar la sesión de cifrado iniciada en el paso 1.
 
-4.  **Control de Frecuencia (Wait Node):**
-    *   **Ubicación:** Se inserta al final del flujo, justo después de enviar el audio y antes de que el ciclo vuelva a comenzar.
-    *   **Configuración:** `Wait Amount: 5`, `Unit: Seconds`.
-    *   **Propósito Técnico:** Introduce una latencia artificial entre iteraciones para gestionar el *Rate Limiting*. Esto evita la saturación del hilo de procesamiento de mensajes salientes y reduce drásticamente la probabilidad de bloqueo (ban) por parte de WhatsApp al evitar patrones de envío robóticos o instantáneos masivos.
+4.  **Control de Cadencia (Wait Node):**
+    *   **Ubicación:** Cierra el ciclo del bucle, ejecutándose tras el envío del audio y antes de procesar el siguiente suscriptor.
+    *   **Configuración:** Retraso fijo de **5 segundos**.
+    *   **Propósito Técnico:** Implementa un *Rate Limiting* a nivel de aplicación. Esto cumple dos funciones críticas: libera la cola de procesamiento de la instancia de Evolution API (evitando cuellos de botella en la encriptación) y protege la reputación del número ante los algoritmos anti-spam de Meta, simulando un comportamiento de envío humano no instantáneo.
 
 **Resultado:**
 Esta estructura garantiza que cada mensaje de la lista de distribución se envíe a través de un "túnel" de encriptación verificado y activo, eliminando los mensajes ilegibles por desincronización de claves.
@@ -187,6 +187,7 @@ Esta estructura garantiza que cada mensaje de la lista de distribución se enví
   * **Alta Resiliencia de Audio (Fallback):** El flujo no depende de un único proveedor de TTS. El *fallback* automático de Azure a ElevenLabs (incluyendo un mensaje de audio personalizado) garantiza la entrega del boletín incluso si el servicio principal de Microsoft falla.
   * **Scraping de Contenido Profundo:** En lugar de depender de resúmenes de RSS (a menudo incompletos), el flujo puede activar un navegador *headless* (`browserless`) y usar IA (`Information Extractor`) para leer y limpiar el contenido real del artículo, proporcionando resúmenes de mucha mayor calidad al **Agente 2**.
   * **Fusión Inteligente de Datos:** El nodo `Normalizador de Enlaces` actúa como un "control de calidad", usando la distancia de Levenshtein para emparejar títulos y resúmenes aunque sus URLs no coincidan perfectamente.
+  *   **Gestión Activa de Sesiones (Zero-Fail E2EE):** A diferencia de los bots tradicionales que envían mensajes "a ciegas", este flujo implementa un patrón *Check-then-Send*. Valida criptográficamente la sesión del usuario contra los servidores de Meta antes de enviar archivos pesados, resolviendo dinámicamente la dualidad de identificadores (`LID` vs `PN`) y eliminando virtualmente el error "Esperando mensaje. Esto puede tomar tiempo" en la arquitectura multidispositivo.
 
 -----
 
