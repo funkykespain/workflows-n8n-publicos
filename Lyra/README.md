@@ -40,6 +40,7 @@ Para que este workflow funcione, necesitarás:
   * `schema.png`: Diagrama visual del workflow.
   * `Prompt Engineering_ Artículos Científicos.md`: Archivo de ejemplo para la base de conocimiento RAG.
   * `47 prompts para generar prompts de ventas.md`: Archivo de ejemplo para la base de conocimiento RAG.
+  * `Mejora_de_ingenieria_de_prompts_científicos.md`: Archivo de ejemplo para la base de conocimiento RAG.
   * `README.md`: Este documento explicativo.
 
 -----
