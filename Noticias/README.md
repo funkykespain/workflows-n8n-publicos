@@ -142,6 +142,39 @@ Esta es la lógica central donde tres agentes colaboran, cada uno con un LLM y u
 
   * **Guardado de Historial:** En paralelo a la distribución, un nodo `Redis` (`Guardado Historial`) toma la salida del Top 15 del **Agente 1** y la guarda en la lista `historial_noticias` en Redis. Esto asegura que el agente de mañana tenga el contexto de las noticias de hoy.
 
+
+### 🔄 Actualización del Flujo: Validación de Identidad y Pre-calentamiento (Fix v2.3.6)
+
+Se ha refactorizado la lógica dentro del bucle de la lista de distribución (`Loop Over Items`) para mitigar el error *"Esperando mensaje. Esto puede tomar tiempo"* y asegurar la entrega en la arquitectura Multi-Dispositivo (MD) de WhatsApp.
+
+**Problema Solucionado:**
+Anteriormente, el envío directo al número de teléfono (`@s.whatsapp.net`) sin una sesión activa provocaba fallos de desencriptación en destinatarios que utilizan la nueva arquitectura de identificadores privados (`@lid`).
+
+**Nueva Arquitectura del Bucle:**
+
+El flujo ahora implementa un patrón **"Validar antes de Enviar"** (Check-then-Send) que consta de los siguientes pasos para cada usuario:
+
+1.  **Validar Número (HTTP Request):**
+    *   **Endpoint:** `/chat/whatsappNumbers`
+    *   **Acción:** Antes de enviar el multimedia, se consulta el estado del número en la API.
+    *   **Propósito Técnico:** Esta consulta fuerza a Evolution API a refrescar la caché de mapeo `LID ↔ Phone Number` y negocia las claves de cifrado (PreKeys) con los servidores de Meta en tiempo real. Actúa como un "pre-calentamiento" de la sesión.
+
+2.  **Normalizar Respuesta (Code Node):**
+    *   Procesa la respuesta de la API para extraer el **JID canónico** (`jid`).
+    *   Este JID es la dirección exacta (sea `@lid` o `@s.whatsapp.net`) que WhatsApp espera recibir en ese preciso milisegundo, garantizando que el canal de encriptación sea el correcto.
+
+3.  **Enviar Audio (Evolution API Node):**
+    *   **Destinatario:** Ya no usa el número crudo del Excel, sino el `{{ $json.jid }}` obtenido del paso de validación.
+    *   **Delay:** Se ha configurado un retraso interno (`delay: 2000` ms) que muestra "Grabando audio..." al usuario. Esto cumple doble función: mejora la experiencia de usuario y da tiempo a la API para consolidar la sesión de cifrado iniciada en el paso 1.
+
+4.  **Control de Frecuencia (Wait Node):**
+    *   **Ubicación:** Se inserta al final del flujo, justo después de enviar el audio y antes de que el ciclo vuelva a comenzar.
+    *   **Configuración:** `Wait Amount: 5`, `Unit: Seconds`.
+    *   **Propósito Técnico:** Introduce una latencia artificial entre iteraciones para gestionar el *Rate Limiting*. Esto evita la saturación del hilo de procesamiento de mensajes salientes y reduce drásticamente la probabilidad de bloqueo (ban) por parte de WhatsApp al evitar patrones de envío robóticos o instantáneos masivos.
+
+**Resultado:**
+Esta estructura garantiza que cada mensaje de la lista de distribución se envíe a través de un "túnel" de encriptación verificado y activo, eliminando los mensajes ilegibles por desincronización de claves.
+
 -----
 
 ## 🔧 7. Optimizaciones y Características Clave
