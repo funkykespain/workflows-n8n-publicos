@@ -2,220 +2,258 @@
 <img src="profile.png" alt="KykeBot Profile" width="250"/\>
 </p\>
 
-# 1\. KykeBot: Asistente Personal (Mayordomo Digital) con Orquestación de Agentes
+# 1. KykeBot: Asistente Personal Multimodal con Orquestación de Agentes
 
-Este workflow de n8n implementa a **"KykeBot"**, un asistente personal avanzado que opera a través de **WhatsApp** y actúa como un "mayordomo digital" para **Enrique Aranda**.
+Este workflow de n8n da vida a **"KykeBot"**, un asistente personal avanzado que opera a través de **WhatsApp** y actúa como un "mayordomo digital" para **Enrique Aranda**.
 
-El bot está diseñado para gestionar el primer punto de contacto, actuando como un **filtro inteligente para determinar la intención del usuario**. Su propósito es doble: por un lado, **descongestionar el canal** filtrando consultas de ex-clientes que contactan frecuentemente por esta vía; por otro, actuar como una **tarjeta de presentación interactiva** para nuevos interesados. Para ello, proporciona información profesional (extraída del RAG que incluye el CV de Enrique) y gestiona el primer contacto o agendamiento.
-Utiliza un nodo `Switch` principal para enrutar la intención del usuario a diferentes lógicas:
+El bot ha evolucionado de ser un simple chatbot de texto a una **IA Multimodal Completa**. Ahora es capaz de **escuchar notas de voz, ver imágenes y leer documentos**, actuando como un filtro inteligente de primera línea. Su propósito estratégico es doble:
+1.  **Descongestionar el canal:** Filtra consultas recurrentes de ex-clientes, resolviéndolas o desviándolas automáticamente.
+2.  **Tarjeta de Presentación Interactiva:** Para nuevas oportunidades, actúa como un representante profesional, utilizando una arquitectura de **Agentes Orquestados** (potenciada por **OpenRouter**) para agendar citas y responder preguntas técnicas sobre el perfil de Enrique basándose en su CV (RAG).
 
-1.  **Gestión de Suscripciones:** Permite a los usuarios darse de alta o baja de un boletín de noticias.
-2.  **Gestión de Archivos:** Responde amablemente a formatos no soportados (audio, vídeo, etc.).
-3.  **Filtro de Conversación:** Detecta si es el propio Enrique quien escribe para no interferir.
-4.  **Agente de IA Conversacional:** Activa una arquitectura avanzada de Agente (con RAG y herramientas) para gestionar conversaciones complejas, agendar citas y responder preguntas. Es el **Agente Orquestador**.
+El núcleo del sistema es un nodo `Switch` avanzado que utiliza **Expresiones Regulares (Regex)** para enrutar la intención del usuario o el tipo de archivo con precisión quirúrgica:
 
-El flujo está diseñado para ser robusto, gestionando el estado del usuario en Redis y utilizando agentes subordinados para tareas específicas.
+1.  **Gestión de Suscripciones:** Comandos directos (`alta`/`baja`) para la gestión del boletín de noticias en Google Sheets.
+2.  **Filtro de Identidad:** Detecta y silencia los mensajes del propio Enrique para permitir el uso normal de WhatsApp.
+3.  **Procesamiento Multimodal:** Una nueva capa de percepción que transcribe audios (Whisper), describe imágenes (Ollama Vision) y extrae texto de PDFs antes de invocar a la IA.
+4.  **Gestión de Formatos:** Intercepta archivos no soportados (Office/Video) y devuelve respuestas amables solicitando formatos legibles, ahorrando costes de IA.
+5.  **Agente de IA Conversacional (Orquestador):** El cerebro del sistema. Una arquitectura modular que coordina sub-agentes especialistas (Calendario, Email, Memoria) seleccionando dinámicamente el mejor LLM para cada tarea vía **OpenRouter**.
 
------
+---
 
 ## 📍 2. Despliegue en Producción
 
 Puedes interactuar con este workflow en tiempo real a través del canal principal de WhatsApp de Enrique Aranda:
 
-  * **Canal de WhatsApp:** [**+34 665 656 404**](https://wa.me/34665656404)
+  * **Canal de WhatsApp:** [**+34 665 65 64 04**](https://wa.me/34665656404)
 
------
+---
 
 ## ⚙️ 3. Requisitos previos
 
-Para que este workflow funcione, necesitarás:
+Para que este workflow funcione con todas sus capacidades, necesitarás:
 
-  * Una instancia de **n8n** (local o en la nube).
-  * Una puerta de enlace de **WhatsApp API**, como **Evolution API** (usada en este flujo).
-  * Una base de datos vectorial **Qdrant** (para RAG).
-  * Una base de datos **Redis** (para la memoria del chat y el estado del usuario).
-  * Una cuenta de **Google Sheets** (para la gestión del boletín de noticias).
-  * Credenciales de API para:
-      * **OpenAI** (para Embeddings).
-      * **Mistral Cloud** (para el Chat Model).
-      * **Google Gemini** (para el Chat Model).
-      * **Gmail** (para la herramienta de envío de emails).
-      * **SerpAPI** (para la herramienta de búsqueda web).
+  * Una instancia de **n8n** (versión reciente para soporte de LangChain).
+  * **Evolution API** como puerta de enlace de WhatsApp.
+  * **Qdrant** (Base de datos vectorial para RAG).
+  * **Redis** (Para memoria de chat y persistencia de estado de usuario).
+  * **Google Sheets** (Gestión de suscriptores).
+  * **Servicios Locales (Docker):**
+    * **Whisper ASR Webservice:** Para transcripción de audio local (sin coste de API).
+    * **Ollama (con DeepSeek/LLaVA):** Para análisis de visión (OCR e imágenes).
+  * **Credenciales de API:**
+      * **OpenRouter:** (Clave principal) Para acceder a modelos como Llama 3.3, Qwen 2.5, Gemini Flash, etc.
+      * **CloudConvert:** Para renderizado de PDFs complejos (fallback).
+      * **Gmail y Google Calendar:** Para las herramientas de los agentes.
+      * **SerpAPI:** Para búsqueda web.
 
------
+---
 
-## 📦 4. Archivos incluidos
+## 🐳 4. Despliegue de Servicios Locales (Docker)
+
+Para garantizar la soberanía de los datos y reducir costes, los módulos de percepción (Audio y Visión) se ejecutan en contenedores locales.
+
+### Whisper (Transcripción de Audio)
+El bot utiliza una API local de Whisper para transcribir notas de voz sin coste. Debes desplegar este contenedor en tu servidor (accesible desde n8n):
+
+```bash
+docker run -d \
+  --name whisper-asr \
+  -p 9000:9000 \
+  -e ASR_MODEL=large-v3 \
+  -e ASR_ENGINE=faster_whisper \
+  onerahmet/openai-whisper-asr-webservice:latest
+````
+
+  * **Configuración en n8n:** El nodo *Whisper Local* debe apuntar a `http://nombre-del-contenedor:9000/asr`.
+  * **Variables:** Se recomienda `ASR_MODEL=large-v3` para máxima precisión en español y `faster_whisper` para evitar *timeouts* en audios largos.
+
+### Ollama (Visión e Imágenes)
+
+Para el análisis de imágenes (OCR y descripción), se requiere una instancia de Ollama con un modelo multimodal:
+
+```bash
+docker run -d \
+  --name ollama \
+  -p 11434:11434 \
+  -v ollama:/root/.ollama \
+  ollama/ollama
+```
+
+  * **Modelo recomendado:** Ejecuta `ollama run deepseek-ocr` (o `llava`) dentro del contenedor para descargar el modelo necesario.
+
+---
+
+## 📦 5. Archivos incluidos
 
   * `KykeBot.json`: El export completo del workflow de n8n.
   * `profile.png`: Imagen de perfil del bot.
-  * `schema.png`: Diagrama visual del workflow.
+  * `schema.png`: Diagrama visual actualizado del workflow.
   * `README.md`: Este documento explicativo.
 
------
+---
 
-## 🚀 5. Instalación e Importación del Workflow
+## 🚀 6. Instalación e Importación
 
 1.  Descarga el archivo `KykeBot.json`.
-2.  En tu instancia de n8n, ve a **Import \> From File**.
+2.  En tu instancia de n8n, ve a **Import > From File**.
 3.  Selecciona el archivo `KykeBot.json` y guarda el workflow.
-4.  **Importante:** Este flujo utiliza múltiples credenciales (ver sección de Requisitos). Deberás crear y asignar cada una de ellas en los nodos correspondientes (ej: `Respuesta KykeBot`, `Qdrant Vector Store`, `Redis Memo`, `Medium-latest`, `Gemini 2.5 flash`, `Añadir a noticias`, `Gmail`, etc.).
-5.  Configura el nodo `Webhook` para recibir los *callbacks* de tu instancia de Evolution API.
-6.  Activa el workflow.
+4.  **Configuración de Credenciales:** Deberás crear y asignar las credenciales correspondientes en los nodos (ver sección 8).
+5.  **Configuración de Webhook:** Apunta el nodo `Webhook` para recibir los *callbacks* de tu instancia de Evolution API.
+6.  **Servicios Externos:** Asegúrate de que tus contenedores Docker de Whisper y Ollama son accesibles desde n8n.
 
------
+---
 
-## 🧩 6. Estructura del Workflow
+## 🧩 7. Estructura del Workflow
 
-Este workflow se inicia con un `Webhook` que recibe los mensajes de WhatsApp. Un nodo `MapeaDatos` estandariza la información de entrada (como `sessionId`, `wsp_text`, `messageType`, etc.).
+El flujo inicia con un `Webhook` y un preprocesado (`MapeaDatos`) que gestiona la dualidad de identificadores de WhatsApp: utiliza el `sessionId` para el envío de mensajes (compatible con `@lid`) pero estandariza el `codeID` (`@s.whatsapp.net`) para guardar el histórico en Redis y permitir retomar conversaciones antiguas.
 ![n8n Workflow](schema.png)
 
-El flujo se dirige a un nodo `Switch` principal (`Alta Noticias?`) que actúa como un enrutador inteligente, dividiendo el trabajo en cuatro ramas lógicas principales:
+El flujo se dirige a un nodo `Switch` principal (`Alta Noticias?`) que actúa como un enrutador inteligente basado en Regex, dividiendo el trabajo en las siguientes ramas lógicas:
 
-### 1\. Rama 1: Gestión del Boletín de Noticias
+### 1. Rama 1: Gestión del Boletín de Noticias
+Gestiona comandos simples de suscripción sin necesidad de invocar a la IA.
+* **Intención:** El usuario escribe `alta noticias` o `baja noticias`.
+* **Acción:** El workflow interactúa directamente con **Google Sheets** (`Añadir a noticias`, `Comprobar en BBDD`, `Dar de baja`) para añadir o eliminar el `sessionId` del usuario de la lista de distribución.
+* **Respuesta:** Envía una confirmación simple (`Confirma Alta`, `Confirma Baja`) al usuario.
+* **Proyecto relacionado:** [Workflow de Envío de Noticias](https://github.com/funkykespain/workflows-n8n-publicos/tree/main/Noticias)
 
-Esta rama gestiona comandos simples de suscripción sin necesidad de invocar a la IA.
-
-  * **Intención:** El usuario escribe `alta noticias` o `baja noticias`.
-  * **Acción:** El workflow interactúa directamente con **Google Sheets** (`Añadir a noticias`, `Comprobar en BBDD`, `Dar de baja`) para añadir o eliminar el `sessionId` del usuario de la lista de distribución.
-  * **Respuesta:** Envía una confirmación simple (`Confirma Alta`, `Confirma Baja`) al usuario.
-  * **Proyecto relacionado:** [Workflow de Envío de Noticias](https://github.com/funkykespain/workflows-n8n-publicos/tree/main/Noticias)
-
-### 2\. Rama 2: Filtro de Mensajes de Enrique
-
+### 2. Rama 2: Filtro de Mensajes de Enrique
 Esta es una rama de "no operación" (NoOp) crucial para un asistente personal.
+* **Intención:** El mensaje proviene del propio Enrique Aranda (identificado por su `name` o `pushName`).
+* **Acción:** El flujo se dirige a un nodo `Nada` (NoOp) y termina.
+* **Propósito:** Esto evita que el bot responda a los mensajes de Enrique o intente tener una conversación consigo mismo, permitiéndole usar su WhatsApp con normalidad.
 
-  * **Intención:** El mensaje proviene del propio Enrique Aranda (identificado por su `name` o `pushName`).
-  * **Acción:** El flujo se dirige a un nodo `Nada` (NoOp) y termina.
-  * **Propósito:** Esto evita que el bot responda a los mensajes de Enrique o intente tener una conversación consigo mismo, permitiéndole usar su WhatsApp con normalidad.
+### 3. Rama 3: Procesamiento Multimodal
+Es el "aparato sensorial" antes de que la IA "piense".
+* **Audio:** Se envía al nodo `Whisper Local` (Docker) para transcripción STT.
+* **Imagen:** Se envía a `Ollama` (Vision Model) para descripción y OCR en local.
+* **PDF/Documentos:** Se intenta la extracción nativa de texto. Si falla (PDF escaneado), se procesa con **CloudConvert** para convertirlo a imagen y luego pasarlo por visión.
+* **Resultado:** El contenido extraído se inyecta en el contexto del sistema mediante el nodo `Procesar Estado`, generando una nota interna: `[SYSTEM NOTE: El usuario envió un audio que dice...]`.
 
-### 3\. Rama 3: Gestión de Archivos (Audio/Vídeo/Documento)
+### 4. Rama 4: Archivos No Soportados
+* **Intención:** Detección de formatos Office (Word/Excel) o Video.
+* **Acción:** Devuelve una respuesta aleatoria amable solicitando el envío en PDF, imagen o texto plano.
+* **Propósito:** Ahorrar recursos y evitar alucinaciones del LLM con binarios ilegibles.
 
-Esta rama gestiona los tipos de mensajes que la IA aún no puede procesar.
+### 5. Rama 5: Conversación con Agente AI (Orquestador)
 
-  * **Intención:** El `messageType` es `audioMessage`, `imageMessage`, `videoMessage` o `documentMessage`.
-  * **Acción:** El flujo selecciona una de las tres respuestas predefinidas de forma aleatoria (usando el nodo `3 opciones aleatorias` y `Reparto`).
-  * **Propósito:** Informa al usuario amablemente que el bot no puede procesar archivos, solicitando que escriba su consulta en texto. El uso de 3 variantes evita que el bot suene repetitivo.
+Esta es la rama principal y más compleja, que se activa cuando el `messageType` es `conversation` (texto) o tras procesar un archivo en la rama anterior.
 
-### 4\. Rama 4: Conversación con Agente AI (KykeBot)
+El propósito de este agente va más allá de una simple charla; está diseñado para **filtrar y cualificar al usuario**. Detecta si es un ex-cliente con una consulta recurrente (desviándolo de forma eficiente) o un nuevo contacto interesado en el perfil profesional de Enrique. En este último caso, el bot actúa como una tarjeta de presentación proactiva, utilizando RAG para ofrecer detalles del CV y gestionando el agendamiento de citas, asegurando que solo las interacciones de valor lleguen a Enrique.
 
-Esta es la rama principal y más compleja, que se activa cuando el `messageType` es `conversation`.
+El flujo de ejecución es el siguiente:
 
-El propósito de este agente va más allá de una simple conversación; está diseñado para **filtrar y cualificar al usuario**. Detecta si es un ex-cliente con una consulta recurrente (desviándolo de forma eficiente) o un nuevo contacto interesado en el perfil profesional de Enrique. En este último caso, el bot actúa como una tarjeta de presentación proactiva, utilizando RAG para ofrecer detalles del CV y gestionando el agendamiento de citas, asegurando que solo las interacciones de valor lleguen a Enrique.
+1.  **Carga de Estado y Contexto Enriquecido:**
+    * El flujo primero lee **Redis** (`Leer Estado de Redis`) para obtener el perfil persistente del usuario (nombre, email, resumen de charlas anteriores).
+    * **El Corazón Lógico:** Un nodo de código JavaScript (`Procesar Estado y Definir Flags`) actúa como *pre-procesador*. Combina el historial del usuario con el input actual. Si hubo un archivo adjunto (audio, imagen, PDF), inyecta la transcripción o el OCR generado en la rama anterior dentro de una nota de sistema (`[SYSTEM NOTE: ...]`). Esto permite al Agente "ver" y "escuchar" sin procesar archivos directamente.
 
-1.  **Carga de Estado y Contexto:**
+2.  **El Agente AI (Orquestador vía OpenRouter):**
+    Este es el cerebro del bot. Técnicamente, es un **Agente Orquestador (Orchestrator)** bajo una arquitectura *Plan-and-Execute*. No es un agente monolítico; su función principal es analizar la intención y delegar la tarea en especialistas.
 
-      * El flujo primero lee **Redis** (`Leer Estado de Redis`) para obtener el estado persistente del usuario (nombre, email, notas previas, etc.).
-      * Un nodo `Code` (`Procesar Estado y Definir Flags`) prepara esta información, junto con los datos del mensaje actual, para inyectarla en el *system prompt* del agente.
+    Gracias a la integración con **OpenRouter**, el agente no depende de un solo modelo. Puede utilizar modelos potentes (como **GPT-4o** o **Mistral Large**) para el razonamiento complejo, manteniendo la flexibilidad de cambiar de proveedor sin tocar el código.
 
-2.  **El Agente AI (`AI Agent`):**
-    Este es el cerebro del bot. Técnicamente, está implementado como un **Agente Orquestador (Orchestrator)**. En lugar de ser un agente monolítico que intenta hacerlo todo, su función principal (definida en el *system prompt*) es analizar la petición del usuario y, siguiendo una lógica de **Plan-and-Execute**, determinar qué herramienta o agente subordinado es el más adecuado para la tarea.
+    * **Memoria:** Utiliza `Redis Memo` para mantener el hilo de la conversación con latencia ultrabaja.
+    * **RAG (Retrieval-Augmented Generation):** Conectado a `Qdrant Vector Store` para extraer información veraz sobre la trayectoria, stack técnico y proyectos de Enrique, reduciendo alucinaciones.
 
-    Este diseño modular, inspirado en los *multi-agent frameworks* de LangChain, permite invocar a otros agentes especializados (`Gestor Email`, `Gestor Calendario`, `Gestor Redis`) o herramientas directas (`RAG/Qdrant`, `SerpAPI`). Esto incrementa la fiabilidad, facilita el mantenimiento y especializa la lógica de cada componente.
+3.  **Ecosistema de Agentes Subordinados (Tools):**
+    El agente principal invoca a otros agentes especializados para ejecutar acciones. OpenRouter permite asignar a cada uno el modelo más eficiente (coste/rendimiento) para su tarea:
 
-      * **LLM:** Utiliza `Mistral (Medium-latest)` como modelo principal, con `Gemini 2.5 flash` como modelo de *fallback* (contingencia).
-      * **Memoria:** Utiliza `Redis Memo` para mantener el historial de la conversación.
-      * **RAG (Retrieval-Augmented Generation):** Conectado a `Qdrant Vector Store` y `Embedding 3 small` (OpenAI) para extraer información relevante sobre Enrique Aranda (historial laboral, proyectos, etc.) que no está en el conocimiento base del LLM.
-
-3.  **Agentes Subordinados y Herramientas:**
-    El agente principal puede invocar varias herramientas, que a su vez son otros agentes, para realizar tareas:
-
-      * **`Gestor Email` (Agente):** Utiliza la herramienta `Gmail` para enviar notificaciones por correo a Enrique cuando se detecta una oportunidad de proyecto o una solicitud de contacto importante.
-      * **`Gestor Calendario` (Agente):** Utiliza una herramienta `Calendar` (un cliente MCP) para comprobar la disponibilidad de Enrique y crear eventos en su calendario.
-          * **Proyecto relacionado:** [Servidor MCP-Calendar](https://github.com/funkykespain/workflows-n8n-publicos/tree/main/MCP-Calendar)
-      * **`Gestor Redis` (Agente):** Utiliza una herramienta `Redis` (cliente MCP) para guardar de forma proactiva la información recopilada sobre el usuario (nombre, email, motivo de contacto) en la base de datos de estado.
-          * **Proyecto relacionado:** [Resumen de Conversación](https://github.com/funkykespain/workflows-n8n-publicos/tree/main/Resumen-Conversacion)
-      * **`SerpAPI`:** Herramienta de búsqueda web para consultas de actualidad que no están en el RAG.
-      * **`Think`:** Herramienta de razonamiento interno para planificación compleja.
+    * **`Gestor Email` (Agente):** Utiliza la herramienta `Gmail` para redactar y enviar notificaciones. Se beneficia de modelos con alta capacidad de redacción (ej. **Llama 3.3 70B**).
+    * **`Gestor Calendario` (Agente):** Utiliza un cliente MCP (`Calendar`) para gestionar la agenda. Usa modelos rápidos y precisos en estructuras JSON (ej. **Gemini 2.0 Flash**) para no fallar en las fechas.
+        * *Proyecto relacionado:* [Servidor MCP-Calendar](https://github.com/funkykespain/workflows-n8n-publicos/tree/main/MCP-Calendar)
+    * **`Gestor Redis` (Agente):** Utiliza un cliente MCP (`Redis`) para guardar silenciosamente los datos que el usuario proporciona (nombre, email) en la base de datos de estado.
+        * *Proyecto relacionado:* [Resumen de Conversación](https://github.com/funkykespain/workflows-n8n-publicos/tree/main/Resumen-Conversacion)
+    * **`SerpAPI`:** Herramienta de búsqueda web para datos en tiempo real.
+    * **`Think`:** Herramienta de razonamiento interno para planificar pasos complejos antes de responder.
 
 4.  **Respuesta y Contingencia:**
+    * La respuesta final generada por el `AI Agent` se envía a WhatsApp mediante el nodo `Respuesta KykeBot`.
+    * **Alta Disponibilidad:** Si el Agente falla (por ejemplo, por un error de "active run" o sobrecarga de API), el flujo activa automáticamente una **rama de contingencia** (`Error active run?`) que espera unos segundos y reintenta la ejecución, garantizando que el usuario nunca se quede sin respuesta.
 
-      * La respuesta generada por el `AI Agent` se envía al usuario a través del nodo `Respuesta KykeBot` (Evolution API).
-      * Si el `AI Agent` falla (por ejemplo, un error de "active run" del LLM), el flujo activa una **rama de contingencia** (`Error active run?`) que espera 3 segundos (`Esperar antes de Reintentar`) y vuelve a intentar la ejecución del agente.
+---
 
------
+## 🔧 8. Optimizaciones y Características Clave
 
-## 🔧 7. Optimizaciones y Características Clave
+Este workflow no es solo un chat; es una arquitectura diseñada para la eficiencia de costes, la robustez técnica y la utilidad comercial real.
 
-  * **Enrutamiento por Intención (Switch):** El uso de un nodo `Switch` al inicio ahorra costes de LLM al gestionar tareas simples (como `alta noticias` o archivos) con lógica de n8n nativa, reservando el Agente de IA solo para conversaciones complejas.
-  * **Gestión de Estado Persistente:** El bot no solo usa Redis para la memoria del chat, sino como una base de datos de "estado de usuario", permitiéndole recordar quién es el usuario (`nombre`, `email`) entre conversaciones.
-  * **Contingencia de "Active Run":** El bucle de reintento con espera (`Esperar antes de Reintentar`) proporciona una alta disponibilidad, asegurando que un fallo temporal de la API del LLM no resulte en un silencio del bot.
-  * **Modelo de Orquestación (Multi-Agente):** El beneficio de usar un agente orquestador (en lugar de un solo agente con 10 herramientas) es la **reducción de la carga cognitiva del LLM**. El agente principal solo necesita saber *a quién* pasar la tarea (ej. al `Gestor Calendario`), y los agentes subordinados son expertos en *cómo* ejecutarla. Esto reduce errores, simplifica los *prompts* y optimiza los costes de inferencia: haciendo que el *prompt* principal sea más limpio, económico en tokens y las tareas más fiables.
-  * **Filtrado como "Tarjeta de Presentación":** El diseño del agente como un "filtro" cualificador es un beneficio estratégico clave. Ahorra tiempo a Enrique al gestionar automáticamente las consultas de bajo valor (ex-clientes) y potenciar las de alto valor (nuevos proyectos o *networking*), a las que atiende usando el CV y los datos del RAG para dar respuestas completas.
-  * **Beneficios de las Herramientas Específicas:** La elección de herramientas especializadas es fundamental:
-    * **Redis:** Ofrece una persistencia de estado y memoria de chat con latencia ultrabaja, crucial para un diálogo fluido e instantáneo.
-    * **Qdrant (RAG):** Permite "inyectar" el CV y datos personales de Enrique en el contexto del LLM, asegurando respuestas precisas y actualizadas sobre su perfil profesional, algo imposible para un LLM genérico.
-    * **Clientes MCP (para Calendario y Redis):** El uso de un servidor MCP (como el del [proyecto relacionado](https://github.com/funkykespain/workflows-n8n-publicos/tree/main/MCP-Calendar)) centraliza la lógica de las herramientas, permitiendo que el bot principal solo necesite hacer una llamada API simple, en lugar de gestionar toda la lógica de conexión y ejecución de esas herramientas.
+### 🧠 Arquitectura de Orquestación (Multi-Agente + OpenRouter)
+El sistema evoluciona el concepto de IA monolítica hacia una **orquestación modular** potenciada por **OpenRouter**:
+* **Reducción de Carga Cognitiva:** En lugar de un solo LLM intentando manejar 10 herramientas (propenso a alucinaciones), el **Agente Orquestador** actúa como un gerente: solo decide *a quién* delegar.
+* **Especialización de Modelos (Coste/Eficacia):** Gracias a OpenRouter, asignamos el modelo ideal para cada sub-agente, optimizando drásticamente el coste por token:
+    * *Orquestador:* **GPT-4o / Mistral Large** (Razonamiento complejo).
+    * *Calendario/Email:* **Llama 3 / Gemini Flash** (Rapidez y precisión en JSON).
+    * *Memoria:* **Qwen 2.5** (Resumen eficiente).
+* **Alta Disponibilidad (Fallback):** Si un proveedor de IA cae, OpenRouter redirige automáticamente a otro modelo equivalente, garantizando que el bot nunca se quede mudo.
 
------
+### 🛡️ Filtrado Estratégico ("Tarjeta de Presentación")
+El bot actúa como un **cualificador de leads** diseñado para ahorrar tiempo real a Enrique:
+* **Gestión de Ex-Clientes:** Detecta consultas recurrentes de bajo valor comercial y las resuelve o desvía automáticamente.
+* **Potenciación de Nuevas Oportunidades:** Identifica *networking* o nuevos proyectos y despliega todo su potencial (RAG + CV) para actuar como una tarjeta de presentación interactiva de alto nivel.
+* **Enrutamiento Preventivo (Switch + Regex):** Ahorra costes de inferencia filtrando peticiones simples (`alta noticias`) o archivos no soportados (`Word/Excel`) *antes* de que lleguen a la IA, devolviendo respuestas predefinidas inmediatas.
 
-## ⚙️ 8. Variables y Credenciales
+### 👁️ Percepción Multimodal (Contexto Enriquecido)
+Antes de "pensar", el bot "percibe". Al procesar audios e imágenes en una capa previa (Whisper/Ollama):
+* **Humanización:** Permite responder naturalmente a *"Mira esta foto"* o *"Escucha mi audio"*, algo que un chatbot de texto tradicional no puede hacer.
+* **Ahorro de Tokens:** El LLM recibe una transcripción limpia en lugar de tener que procesar binarios pesados, reduciendo la ventana de contexto necesaria y mejorando la precisión de la respuesta.
 
-Asegúrate de configurar las siguientes credenciales en tu instancia de n8n:
+### 💾 Persistencia y Robustez Técnica
+* **Estandarización de IDs (LID vs JID):** Soluciona la fragmentación de identificadores de WhatsApp. El bot fuerza el formato `@s.whatsapp.net` internamente, garantizando que el historial se mantenga unificado independientemente de si el usuario escribe desde el móvil (JID) o un dispositivo vinculado (LID).
+* **Estado de Usuario en Redis:** No solo guarda el chat, sino el "perfil" del usuario (`nombre`, `email`, `preferencias`). Esto permite al bot saludar por el nombre a un usuario que vuelve meses después.
+* **Contingencia de "Active Run":** Implementa un bucle de espera inteligente (`Wait` + `Retry`) que gestiona los errores de concurrencia de la API, evitando que el bot falle silenciosamente si hay picos de tráfico.
 
-  * `evolutionApi`: Para los nodos de Evolution API (WhatsApp).
-  * `googleSheetsOAuth2Api`: Para los nodos de Google Sheets (Noticias).
-  * `redis`: (Dos credenciales) Una para `Redis Memo` (memoria de chat) y otra para `Leer Estado de Redis` (estado de usuario).
-  * `qdrantApi`: Para la base de datos vectorial Qdrant (RAG).
-  * `mistralCloudApi`: Para el modelo de chat de Mistral.
-  * `googlePalmApi`: (Google Gemini) Para el modelo de chat de Gemini.
-  * `openAiApi`: Para el nodo `Embedding 3 small`.
-  * `gmailOAuth2`: Para la herramienta de `Gmail`.
-  * `serpApi`: Para la herramienta de `SerpAPI`.
+### 🛠️ Herramientas Especializadas (Docker & MCP)
+* **Soberanía de Datos (Docker):** Servicios críticos como la transcripción (Whisper) o la visión (Ollama) corren en contenedores locales, reduciendo la dependencia de APIs externas y costes recurrentes.
+* **Clientes MCP (Model Context Protocol):** La integración de servidores MCP para Calendario y Redis centraliza la lógica compleja fuera del flujo visual, haciendo que el mantenimiento sea más limpio y modular.
 
------
+---
 
-## 🧾 9. Ejemplo de Ejecución
+## ⚙️ 9. Credenciales Necesarias
 
-**Entrada (Webhook de Evolution API):**
-El JSON de `pinData` muestra un ejemplo de entrada del usuario.
+Asegúrate de configurar estas credenciales en n8n:
 
-```json
-{
-  "body": {
-    "data": {
-      "key": {
-        "remoteJid": "34666666666@s.whatsapp.net"
-      },
-      "pushName": "tu_email",
-      "message": {
-        "conversation": "Igualmente, gracias!"
-      },
-      "messageType": "conversation"
-    },
-    "instance": "KykeBot"
-  }
-}
-```
+* `evolutionApi`: Conexión con WhatsApp.
+* `openRouterApi`: **(Nueva)** Para el acceso unificado a LLMs.
+* `cloudConvertApi`: **(Nueva)** Para renderizado de PDFs complejos.
+* `ollamaApi`: **(Nueva)** Para conexión con tu servidor local de visión.
+* `qdrantApi`: Base de datos vectorial.
+* `redis`: Para memoria y estado.
+* `googleCalendarOAuth2Api` & `gmailOAuth2`: Herramientas de gestión.
+* `serpApi`: Búsqueda web.
+* `googleSheetsOAuth2Api`: Gestión de noticias.
 
-**Lógica interna:**
+---
 
-1.  El `Webhook` recibe el mensaje. `MapeaDatos` extrae `wsp_text = "Igualmente, gracias!"` y `messageType = "conversation"`.
-2.  El `Switch` (`Alta Noticias?`) evalúa la entrada. No coincide con "alta/baja noticias", ni es un archivo, ni es Enrique.
-3.  El flujo se dirige a la **Rama 4 (Conversación)**.
-4.  `Leer Estado de Redis` carga el historial y el estado del usuario `34666666666@s.whatsapp.net`.
-5.  El `AI Agent` recibe el mensaje.
-6.  **`Gestor Redis` (Agente)** se activa en segundo plano para actualizar las `notas` del usuario con un resumen de la conversación que acaba de terminar.
-7.  El **`AI Agent` (LLM)** genera una respuesta de cierre cordial y profesional, como: *"¡Un placer\! Si necesitas cualquier otra cosa, no dudes en escribirme. ¡Que tengas un buen día\!"*
-8.  `Respuesta KykeBot` envía este mensaje de vuelta al usuario por WhatsApp.
+## 🧾 10. Ejemplo de Ejecución
 
------
+**Entrada del Usuario:**
+> "Hola, te mando este audio para ver si Enrique puede reunirse mañana." (Archivo de Audio adjunto)
 
-## 🔧 10. Personalización
+**Flujo Interno:**
+1.  **Webhook:** Recibe el audio.
+2.  **Switch:** Detecta `audioMessage` -> Rama Multimodal.
+3.  **Whisper:** Transcribe el audio a texto: *"Hola, te mando este audio para ver si Enrique puede reunirse mañana."*
+4.  **Procesar Estado:** Genera el prompt: `[SYSTEM NOTE: El usuario envió una nota de voz: "Hola, te mando este audio..."]`.
+5.  **AI Agent (Orquestador):** Lee la nota. Decide invocar al `Gestor Calendario`.
+6.  **Gestor Calendario:** Recibe: *"Revisar disponibilidad para mañana"*. Consulta la herramienta `Calendar`.
+7.  **Respuesta:** El Agente responde: *"He escuchado tu audio. He consultado la agenda y Enrique tiene un hueco mañana a las 11:00. ¿Te va bien?"*.
 
-  * **Cambiar la Persona:** El núcleo del bot reside en el *system prompt* del nodo **`AI Agent`**. Puedes editar este prompt para cambiar radicalmente la personalidad, el tono y las directrices del bot.
-  * **Cambiar Base de Conocimiento (RAG)**: Puedes apuntar el nodo `Qdrant Vector Store` a una colección diferente para cambiar la base de conocimiento del bot.
-  * **Cambiar LLM**: El flujo está conectado a **Mistral** y **Gemini**. Puedes cambiar las conexiones en el nodo `AI Agent` para priorizar el modelo que prefieras.
-  * **Añadir Herramientas:** Puedes añadir más agentes-herramienta (ej. para un CRM, Trello, etc.) y conectarlos al nodo `AI Agent`.
+---
 
------
+## 🔧 11. Personalización
 
-## 🧑‍💻 11. Autor
+* **Cambiar la Persona:** Edita el *system prompt* del nodo **`AI Agent`** para modificar el tono o las directrices.
+* **Cambiar Modelos:** Gracias a OpenRouter, puedes cambiar el modelo de cualquier agente (Principal o Subordinados) simplemente seleccionando otro ID en el nodo correspondiente, sin cambiar la lógica.
+* **Base de Conocimiento:** Apunta el nodo `Qdrant Vector Store` a otra colección para cambiar el "cerebro" de datos del bot.
+
+---
+
+## 🧑‍💻 12. Autor
 
 Desarrollado por [Enrique Aranda](https://www.linkedin.com/in/earanda/)
 (Workflows públicos de `funkykespain`).
 
------
+---
 
-## 📄 12. Licencia
+## 📄 13. Licencia
 
 Este proyecto se distribuye bajo la licencia MIT.
