@@ -16,7 +16,7 @@ Este proyecto fue creado para experimentación educacional y como herramienta de
 
 Puedes interactuar con este workflow en tiempo real en el siguiente enlace:
 
-  * **Chat Web (Webhook):** [Chat con Lyra en Universitas Hub](https://univers.universitashub.com/webhook/582b0ee0-a9cf-4882-8e07-54a00828c12a/chat)
+  * **Chat Web (Webhook):** [Chat con Lyra](https://automat.arrojorock.es/webhook/582b0ee0-a9cf-4882-8e07-54a00828c12a/chat)
 
 -----
 
