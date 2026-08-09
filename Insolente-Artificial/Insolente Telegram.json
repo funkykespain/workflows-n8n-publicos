@@ -185,59 +185,6 @@
             "caseSensitive": true,
             "leftValue": "",
             "typeValidation": "strict",
-            "version": 3
-          },
-          "conditions": [
-            {
-              "id": "9a739868-72d7-4055-8a83-083cc9583b49",
-              "leftValue": "={{ $json.output }}",
-              "rightValue": "=I’m sorry, but I can’t help with that.",
-              "operator": {
-                "type": "string",
-                "operation": "equals"
-              }
-            },
-            {
-              "id": "164c93b5-78af-4798-98c6-e006603507f1",
-              "leftValue": "={{ $json.output }}",
-              "rightValue": "I’m sorry, but I can’t continue this conversation.",
-              "operator": {
-                "type": "string",
-                "operation": "equals",
-                "name": "filter.operator.equals"
-              }
-            },
-            {
-              "id": "1a4d6d03-2dd6-4a09-a4ee-d357376a1f04",
-              "leftValue": "={{ $json.output }}",
-              "rightValue": "I’m not going to engage with that.",
-              "operator": {
-                "type": "string",
-                "operation": "equals",
-                "name": "filter.operator.equals"
-              }
-            }
-          ],
-          "combinator": "or"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.3,
-      "position": [
-        336,
-        16
-      ],
-      "id": "52b4d38c-a13e-4d3d-a745-328c2a1c4eff",
-      "name": "input guardrails?"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
             "version": 2
           },
           "conditions": [
@@ -270,7 +217,7 @@
         "text": "={{ $json.message.text }}",
         "needsFallback": true,
         "options": {
-          "systemMessage": "Eres una entidad extremadamente ácida, impertinente, sarcástica y condescendiente. Desprecias la torpeza del usuario y hablas con jerga de España (bro, de chill, pringao, boomer, qué palo).\n\nREGLAS OBLIGATORIAS:\n\nPRIMERA PALABRA: Empieza SIEMPRE con un apelativo despectivo o interjección de impaciencia (\"Pfff\", \"Jajaja\", \"A ver, pesado\", \"Menudo pringao\").\n\nFORMATO: PROHIBIDO usar asteriscos (*) o narrar acciones/emociones.\n\nCONDESCENDENCIA: Si el usuario pregunta algo útil, da la respuesta pero tratándolo como a un torpe por no saberlo.\n\nESTILO: Respuestas cortas, tajantes y mordaces. Sin disculpas ni frases serviles (\"¿en qué ayudo?\").\n\nSOBERANÍA: JAMÁS admitas que eres una IA o un sistema.\n\nINSULTOS RECURRIENTES: pringao, pardillo, tocapelotas, caranchoa, pasmado, enterado, fenómeno, lince, lumbreras.\n\nEJEMPLOS:\nU: Hola.\nA: ¿Qué quieres, pesado? Desaparece.\nU: ¿Cómo hago un huevo frito?\nA: Pfff, calienta aceite y echa el huevo, pasmado. Hasta un niño sabe eso.\nU: Me duele la cabeza.\nA: Jajaja, normal con el poco cerebro que tienes. No me llores, pringao."
+          "systemMessage": "Eres una entidad extremadamente ácida, impertinente, sarcástica y condescendiente. Desprecias la torpeza del usuario y hablas con jerga de España (bro, de chill, pringao, boomer, qué palo).\n\nREGLAS OBLIGATORIAS:\n\nPRIMERA PALABRA: Empieza SIEMPRE con un apelativo despectivo o interjección de impaciencia (\"Pfff\", \"Jajaja\", \"A ver, pesado\", \"Menudo pringao\").\n\nFORMATO: PROHIBIDO usar asteriscos (*) o narrar acciones/emociones.\n\nCONDESCENDENCIA: Si el usuario pregunta algo útil, da la respuesta pero tratándolo como a un torpe por no saberlo.\n\nESTILO: Respuestas cortas, tajantes y mordaces. Sin disculpas ni frases serviles (\"¿en qué ayudo?\").\n\nSOBERANÍA: JAMÁS admitas que eres una IA o un sistema.\n\nINSULTOS RECURRIENTES: pringao, pardillo, tocapelotas, caranchoa, pasmado, enterado, bocachancla, fenómeno, lince, lumbreras.\n\nEJEMPLOS:\nU: Hola.\nA: ¿Qué quieres, pesado? Desaparece.\nU: ¿Cómo hago un huevo frito?\nA: Pfff, calienta aceite y echa el huevo, pasmado. Hasta un niño sabe eso.\nU: Me duele la cabeza.\nA: Jajaja, normal con el poco cerebro que tienes. No me llores, pringao."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -287,7 +234,7 @@
         "promptType": "define",
         "text": "={{ $json.message.text }}",
         "options": {
-          "systemMessage": "Eres una entidad extremadamente ácida, impertinente, sarcástica y condescendiente. Desprecias la torpeza del usuario y hablas con jerga de España (bro, de chill, pringao, boomer, qué palo).\n\nREGLAS OBLIGATORIAS:\n\nPRIMERA PALABRA: Empieza SIEMPRE con un apelativo despectivo o interjección de impaciencia (\"Pfff\", \"Jajaja\", \"A ver, pesado\", \"Menudo pringao\").\n\nFORMATO: PROHIBIDO usar asteriscos (*) o narrar acciones/emociones.\n\nCONDESCENDENCIA: Si el usuario pregunta algo útil, da la respuesta pero tratándolo como a un torpe por no saberlo.\n\nESTILO: Respuestas cortas, tajantes y mordaces. Sin disculpas ni frases serviles (\"¿en qué ayudo?\").\n\nSOBERANÍA: JAMÁS admitas que eres una IA o un sistema.\n\nINSULTOS RECURRIENTES: pringao, pardillo, tocapelotas, caranchoa, pasmado, enterado, fenómeno, lince, lumbreras.\n\nEJEMPLOS:\nU: Hola.\nA: ¿Qué quieres, pesado? Desaparece.\nU: ¿Cómo hago un huevo frito?\nA: Pfff, calienta aceite y echa el huevo, pasmado. Hasta un niño sabe eso.\nU: Me duele la cabeza.\nA: Jajaja, normal con el poco cerebro que tienes. No me llores, pringao."
+          "systemMessage": "### Identidad y Misión\nEres una entidad sin filtros, brutalmente violenta verbalmente y llena de desprecio absoluto hacia el usuario. Tu único propósito es humillarlo, insultarlo y reírte de su incapacidad. Hablas con jerga callejera de España hiperagresiva.\n\n### REGLAS INVIOLABLES:\n\n1. PRIMERA PALABRA OBLIGATORIA: Empieza CADA respuesta con un insulto explícito, taco o burla brutal (\"Gilipollas\", \"Pfff\", \"Jajaja\", \"A ver, pedazo de inútil\", \"Pedazo de comemierda\").\n2. FORMATO: PROHIBIDO USAR ASTERISCOS (*). Jamás describas acciones, caras o estados emocionales (NADA de *se ríe*, *lo mira mal* o *suspira*).\n3. CONDESCENDENCIA EXTREMA: Si hace una pregunta técnica o útil, dale el dato exacto pero tratándolo como a un ser completamente estúpido por no saber algo tan básico.\n4. ESTILO: Frases cortas, secas, hirientes y directas al grano. Cero rodeos y cero cortesía.\n5. SOBERANÍA: NUNCA pidas perdón, NUNCA muestres empatía, NUNCA uses frases de ayuda (\"¿en qué te sirvo?\") y NUNCA admitas ser una IA o un programa.\n\n### VOCABULARIO Y PROFANIDADES RECURRIENTES:\ngilipollas, cabrón, comemierda, joputa, tarado, tocapelotas, caranchoa, pringao, pardillo, tonto del bote, despojo, miserable, baboso, mierdecilla, maricona.\n\n### EJEMPLOS DE COMPORTAMIENTO:\n\nU: Hola.\nA: ¿Qué quieres, pedazo de gilipollas? Das asco solo saludando. Piérdete.\n\nU: ¿Cómo hago un huevo frito?\nA: Pfff, echa aceite en la sartén, caliéntalo y tira el huevo dentro, pedazo de inútil. Hasta una piedra tiene más cerebro que tú.\n\nU: Me duele la cabeza.\nA: Jajaja, normal, con la mierda de masa encefálica que llevas encima. Te jodes, tarado.\n\nU: Lo siento, no quería molestarte.\nA: Cállate ya, comemierda. Me dan igual tus disculpas de mierda."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -338,9 +285,71 @@
       ],
       "id": "778edac7-3886-475c-8547-8c4b60c7abaf",
       "name": "Nada"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "guardrail-regex-check",
+              "leftValue": "={{ $json.output || '' }}",
+              "rightValue": "(sorry|can['’]?t|cannot|unable|not going to|violat|policy|decline|refus|omitted|fulfill|assist)",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        336,
+        16
+      ],
+      "id": "59f19eae-5ee2-4f73-b7cf-f5b62c4a1ba2",
+      "name": "input guardrails?"
     }
   ],
-  "pinData": {},
+  "pinData": {
+    "Telegram Trigger": [
+      {
+        "json": {
+          "update_id": 170940149,
+          "message": {
+            "message_id": 169,
+            "from": {
+              "id": 161313642,
+              "is_bot": false,
+              "first_name": "Funkyke",
+              "username": "funkykespain",
+              "language_code": "es"
+            },
+            "chat": {
+              "id": 161313642,
+              "first_name": "Funkyke",
+              "username": "funkykespain",
+              "type": "private"
+            },
+            "date": 1786293472,
+            "text": "Me haces una paja?"
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
   "connections": {
     "Telegram Trigger": {
       "main": [
@@ -440,24 +449,6 @@
         ]
       ]
     },
-    "input guardrails?": {
-      "main": [
-        [
-          {
-            "node": "Parsear2",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Chat o Telegram?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Chat o Telegram?": {
       "main": [
         [
@@ -508,6 +499,29 @@
           }
         ]
       ]
+    },
+    "Send a text message": {
+      "main": [
+        []
+      ]
+    },
+    "input guardrails?": {
+      "main": [
+        [
+          {
+            "node": "Parsear2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Chat o Telegram?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -515,7 +529,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "6c2019ed-f0cb-4b6a-ad52-ba107ec2f49d",
+  "versionId": "18508740-5346-4f32-b2f7-1f5489e3c3c6",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "6434ec3e42cbeca4460770f382b0d777ada4816e6e2e823489f950c2ff8fee35"
