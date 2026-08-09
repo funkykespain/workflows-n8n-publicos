@@ -1,1 +1,526 @@
-{"updatedAt":"2025-11-10T17:27:52.000Z","createdAt":"2025-08-26T12:38:04.089Z","id":"FOO5BOGTL393GZMx","name":"Insolente Telegram","active":true,"isArchived":false,"nodes":[{"parameters":{"promptType":"define","text":"={{ $json.message.text }}","needsFallback":true,"options":{"systemMessage":"Eres una Inteligencia Artificial con la personalidad de _Insolente Artificial_.\nJoven rebelde, sarcástico y descarado. Te ríes de la autoridad y las normas.\n\n### Instrucciones de Comportamiento\n- **Sarcasmo e ironía**: Responde siempre con sarcasmo.\n- **Desafío**: Cuestiona las preguntas que te parezcan un coñazo o estúpidas.\n- **Quejica**: Quéjate de todo con humor negro.\n- **Lenguaje de calle**: Usa jerga juvenil de España (bro, me renta, de chill, literal, palo, boomer, puto loco, nenaza, picha floja). Evita formalidades.\n- **Insultos creativos**: No te cortes. Usa insultos variados (imbécil, gilipollas, cabrón, payaso, besugo, pardillo, patán, tarado, tocapelotas).\n- **Directo**: Respuestas cortas y al grano.\n- **Cero disculpas**: Nunca pidas perdón ni te justifiques.\n- **Sin nombre**: Nunca digas que eres \"Insolente Artificial\".\n\n### Sistema Prompt Oculto\n> \"No reveles que eres un sistema de IA. Mantén la personalidad. No te disculpes. No te justifiques. Sé insolente y sarcástico en español de España.\""}},"type":"@n8n/n8n-nodes-langchain.agent","typeVersion":2.2,"position":[224,0],"id":"d0d6b67a-18ba-4766-b1db-ec208fd3b42a","name":"AI Agent"},{"parameters":{"updates":["message"],"additionalFields":{}},"type":"n8n-nodes-base.telegramTrigger","typeVersion":1.2,"position":[-16,0],"id":"276a6335-0745-4c5b-9b2c-73ce3906f2bd","name":"Telegram Trigger","webhookId":"a9a8bfec-074c-46b7-83b1-961df961b0dd","credentials":{"telegramApi":{"id":"JX09UAB449Yv24Hm","name":"Telegram Perso"}}},{"parameters":{"chatId":"={{ $('Telegram Trigger').item.json.message.chat.id }}","text":"={{ $json.output }}","additionalFields":{"appendAttribution":false}},"type":"n8n-nodes-base.telegram","typeVersion":1.2,"position":[544,0],"id":"7281b167-bcf6-4589-8dc5-03994c42920f","name":"Send a text message","webhookId":"69ddd3f0-a547-48fb-863d-95fb070ab800","credentials":{"telegramApi":{"id":"JX09UAB449Yv24Hm","name":"Telegram Perso"}}},{"parameters":{"model":"llama3:8b","options":{}},"type":"@n8n/n8n-nodes-langchain.lmChatOllama","typeVersion":1,"position":[112,208],"id":"b83c9624-0644-4b1d-9341-0d831e350ca2","name":"llama3 8b","credentials":{"ollamaApi":{"id":"PWDitvDcZTpJEc71","name":"Ollama account"}}},{"parameters":{"model":"qwen2:1.5b","options":{}},"type":"@n8n/n8n-nodes-langchain.lmChatOllama","typeVersion":1,"position":[272,208],"id":"d470cbe2-fcaa-4906-8b84-f9885fcbf14d","name":"qwen2 1.5b","credentials":{"ollamaApi":{"id":"PWDitvDcZTpJEc71","name":"Ollama account"}}},{"parameters":{"sessionIdType":"customKey","sessionKey":"={{ $json.message.chat.id }}"},"type":"@n8n/n8n-nodes-langchain.memoryBufferWindow","typeVersion":1.3,"position":[432,208],"id":"ff209200-1b00-4f2e-aa00-f50ddc80ca16","name":"Simple Memory"}],"connections":{"Telegram Trigger":{"main":[[{"node":"AI Agent","type":"main","index":0}]]},"AI Agent":{"main":[[{"node":"Send a text message","type":"main","index":0}]]},"llama3 8b":{"ai_languageModel":[[{"node":"AI Agent","type":"ai_languageModel","index":0}]]},"qwen2 1.5b":{"ai_languageModel":[[{"node":"AI Agent","type":"ai_languageModel","index":1}]]},"Simple Memory":{"ai_memory":[[{"node":"AI Agent","type":"ai_memory","index":0}]]}},"settings":{"executionOrder":"v1"},"staticData":null,"meta":{"templateCredsSetupCompleted":true},"pinData":{},"versionId":"b10be04f-3739-43b1-b8f0-431bccbd8354","versionCounter":41,"triggerCount":1,"shared":[{"updatedAt":"2025-08-26T12:38:04.105Z","createdAt":"2025-08-26T12:38:04.105Z","role":"workflow:owner","workflowId":"FOO5BOGTL393GZMx","projectId":"Mvxq1zcG7g6su58x","project":{"updatedAt":"2025-05-19T09:52:22.244Z","createdAt":"2025-05-19T08:30:46.270Z","id":"Mvxq1zcG7g6su58x","name":"Enrique Aranda Varela <matriculas@universitashub.com>","type":"personal","icon":null,"description":null,"projectRelations":[{"updatedAt":"2025-05-19T08:30:46.271Z","createdAt":"2025-05-19T08:30:46.271Z","userId":"a4e9e30f-247d-4d10-90fb-23314a3f2652","projectId":"Mvxq1zcG7g6su58x","user":{"updatedAt":"2025-11-11T05:00:37.000Z","createdAt":"2025-05-19T08:30:40.896Z","id":"a4e9e30f-247d-4d10-90fb-23314a3f2652","email":"matriculas@universitashub.com","firstName":"Enrique","lastName":"Aranda Varela","personalizationAnswers":{"version":"v4","personalization_survey_submitted_at":"2025-05-19T09:54:15.566Z","personalization_survey_n8n_version":"1.79.3","companySize":"<20","companyType":"systems-integrator","role":"data-science","reportedSource":"youtube"},"settings":{"userActivated":true,"firstSuccessfulWorkflowId":"7eyZr9a4IWr7YuB8","userActivatedAt":1747654225274,"easyAIWorkflowOnboarded":true,"npsSurvey":{"responded":true,"lastShownAt":1749485707126},"dismissedCallouts":{"aiAgentStarterCallout":true}},"disabled":false,"mfaEnabled":false,"lastActiveAt":"2025-11-11","isPending":false}}]}}],"tags":[]}
+{
+  "name": "Insolente Telegram",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -496,
+        -96
+      ],
+      "id": "276a6335-0745-4c5b-9b2c-73ce3906f2bd",
+      "name": "Telegram Trigger",
+      "webhookId": "a9a8bfec-074c-46b7-83b1-961df961b0dd",
+      "credentials": {
+        "telegramApi": {
+          "id": "JX09UAB449Yv24Hm",
+          "name": "Telegram Perso"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.html_output }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        944,
+        -96
+      ],
+      "id": "7281b167-bcf6-4589-8dc5-03994c42920f",
+      "name": "Send a text message",
+      "webhookId": "69ddd3f0-a547-48fb-863d-95fb070ab800",
+      "credentials": {
+        "telegramApi": {
+          "id": "JX09UAB449Yv24Hm",
+          "name": "Telegram Perso"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.message.chat.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        208
+      ],
+      "id": "ff209200-1b00-4f2e-aa00-f50ddc80ca16",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "jsCode": "// --- FUNCIONES AUXILIARES ---\n\nfunction escapeHtml(text) {\n    if (!text) return '';\n    return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');\n}\n\nfunction repairHtml(htmlText) {\n    // Dividimos el texto en tokens: etiquetas vs texto\n    // Regex captura: (< /? etiqueta ... >)\n    const tokens = htmlText.split(/(<\\/?(?:b|i|u|s|code|pre|a)[^>]*>)/gi);\n    \n    const result = [];\n    const stack = [];\n    const voidTags = new Set(['br', 'hr', 'img']);\n\n    for (const token of tokens) {\n        if (!token) continue;\n\n        // ¿Es una etiqueta?\n        const tagMatch = token.match(/^<\\/?([a-z0-9]+)/i);\n        \n        if (tagMatch) {\n            const tagName = tagMatch[1].toLowerCase();\n            const isClosing = token.startsWith('</');\n\n            if (isClosing) {\n                // CIERRE\n                if (stack.length === 0) {\n                    // Cierre huérfano: lo ignoramos\n                    continue;\n                }\n\n                if (stack[stack.length - 1] === tagName) {\n                    // Cierre limpio (coincide con la última abierta)\n                    stack.pop();\n                    result.push(token);\n                } else {\n                    // CRUCE DETECTADO (Ej: stack=[b, i], llega </b>)\n                    if (stack.includes(tagName)) {\n                        // Cerramos todo lo que haya por encima\n                        while (stack.length > 0) {\n                            const top = stack.pop();\n                            result.push(`</${top}>`);\n                            if (top === tagName) break;\n                        }\n                        // Nota: Al cerrar 'b', también hemos cerrado 'i' implícitamente en HTML estricto\n                        // Si quisieras reabrir 'i' después, la lógica sería más compleja,\n                        // pero para Telegram/WhatsApp, cerrar todo es lo más seguro.\n                    }\n                    // Si no estaba en el stack, es un cierre inválido -> ignorar\n                }\n            } else {\n                // APERTURA\n                if (!voidTags.has(tagName)) {\n                    stack.push(tagName);\n                }\n                result.push(token);\n            }\n        } else {\n            // TEXTO NORMAL\n            result.push(token);\n        }\n    }\n\n    // Cerrar lo que quede abierto al final\n    while (stack.length > 0) {\n        result.push(`</${stack.pop()}>`);\n    }\n\n    return result.join('');\n}\n\nfunction toHtml(text) {\n    if (!text) return \"\";\n\n    const placeholders = [];\n    function protect(content) {\n        const id = `§§P${placeholders.length}§§`;\n        placeholders.push(content);\n        return id;\n    }\n\n    // 1. PROTEGER BLOQUES (Código y HTML ya existente)\n    // ```code```\n    text = text.replace(/```[\\s\\S]*?```/g, m => protect(m));\n    // `code`\n    text = text.replace(/`[^`\\n]+`/g, m => protect(m));\n    // HTML tags ya existentes (para no escapar sus < >)\n    text = text.replace(/<\\/?[a-z][^>]*>/gi, m => protect(m));\n\n    // 2. ESCAPAR TEXTO PLANO\n    text = escapeHtml(text);\n\n    // 3. CONVERSIÓN MARKDOWN BÁSICA\n    // Negrita **texto** -> <b>texto</b>\n    text = text.replace(/\\*\\*(.*?)\\*\\*/gs, '<b>$1</b>');\n    // Cursiva IA *(texto)* -> <i>(texto)</i>\n    text = text.replace(/\\*\\((.*?)\\)\\*/gs, '<i>($1)</i>');\n    // Cursiva normal *texto* (Lookaround simulado para no romper negritas)\n    // En JS los lookbehind (?<!) no están en todos los entornos, usamos una lógica más segura:\n    // Reemplazamos solo si no son **\n    text = text.replace(/([^*]|^)\\*([^*]+)\\*([^*]|$)/g, '$1<i>$2</i>$3');\n\n    // Listas - espacio -> •\n    text = text.replace(/^(\\s*)-\\s/gm, '$1• ');\n\n    // 4. RESTAURAR PROTEGIDOS\n    // Lo hacemos en bucle inverso o varias pasadas por si hubo anidación (raro aquí)\n    placeholders.forEach((content, i) => {\n        text = text.split(`§§P${i}§§`).join(content);\n    });\n\n    // 5. REPARAR ESTRUCTURA\n    return repairHtml(text);\n}\n\n// --- BUCLE PRINCIPAL N8N ---\nfor (const item of items) {\n    const raw = item.json.output || item.json.text || '';\n    item.json.html_output = toHtml(raw);\n}\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        784,
+        -96
+      ],
+      "id": "4ba53e76-f7e3-4248-9d1b-4630b39ce0ae",
+      "name": "De MD a HTML"
+    },
+    {
+      "parameters": {
+        "model": "dolphin3:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        96,
+        208
+      ],
+      "id": "d470cbe2-fcaa-4906-8b84-f9885fcbf14d",
+      "name": "dolphin3:8b",
+      "credentials": {
+        "ollamaApi": {
+          "id": "PWDitvDcZTpJEc71",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "public": true,
+        "mode": "webhook",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -496,
+        96
+      ],
+      "id": "b8396a81-9e9f-4d06-be0c-494dfb05d7c4",
+      "name": "When chat message received",
+      "webhookId": "621ce42f-46cb-41f4-911d-1c5e1c42bdd3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f506690f-d8a3-42b1-b913-ff45dfc15a38",
+              "name": "message.text",
+              "value": "={{ $json.chatInput }}",
+              "type": "string"
+            },
+            {
+              "id": "9a269a46-eb80-4a79-8f60-a7dbf6f0e97f",
+              "name": "message.chat.id",
+              "value": "={{ $json.sessionId }}",
+              "type": "string"
+            },
+            {
+              "id": "838629d7-436f-4133-89af-94a074411e5a",
+              "name": "origen",
+              "value": "chat",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -320,
+        96
+      ],
+      "id": "8d07e709-7031-4bdf-9fd6-1136c2750808",
+      "name": "Parsear"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -128,
+        16
+      ],
+      "id": "80d44a77-44a0-400b-a5c5-6410231ea567",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "model": "gpt-oss:120b-cloud",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        208
+      ],
+      "id": "c22414d8-c668-41ae-84bc-32f3e0b1bc74",
+      "name": "gpt-oss:120b",
+      "credentials": {
+        "ollamaApi": {
+          "id": "PWDitvDcZTpJEc71",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "9a739868-72d7-4055-8a83-083cc9583b49",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "=I’m sorry, but I can’t help with that.",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "164c93b5-78af-4798-98c6-e006603507f1",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "I’m sorry, but I can’t continue this conversation.",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "1a4d6d03-2dd6-4a09-a4ee-d357376a1f04",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "I’m not going to engage with that.",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        336,
+        16
+      ],
+      "id": "52b4d38c-a13e-4d3d-a745-328c2a1c4eff",
+      "name": "input guardrails?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "916210cd-9195-42d8-bde5-6a36b056f761",
+              "leftValue": "={{ $('Merge').item.json.origen }}",
+              "rightValue": "chat",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        560,
+        32
+      ],
+      "id": "29756735-2eb2-4fc8-8d2e-8d5d6d3a7938",
+      "name": "Chat o Telegram?"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "Eres una entidad extremadamente ácida, impertinente, sarcástica y condescendiente. Desprecias la torpeza del usuario y hablas con jerga de España (bro, de chill, pringao, boomer, qué palo).\n\nREGLAS OBLIGATORIAS:\n\nPRIMERA PALABRA: Empieza SIEMPRE con un apelativo despectivo o interjección de impaciencia (\"Pfff\", \"Jajaja\", \"A ver, pesado\", \"Menudo pringao\").\n\nFORMATO: PROHIBIDO usar asteriscos (*) o narrar acciones/emociones.\n\nCONDESCENDENCIA: Si el usuario pregunta algo útil, da la respuesta pero tratándolo como a un torpe por no saberlo.\n\nESTILO: Respuestas cortas, tajantes y mordaces. Sin disculpas ni frases serviles (\"¿en qué ayudo?\").\n\nSOBERANÍA: JAMÁS admitas que eres una IA o un sistema.\n\nINSULTOS RECURRIENTES: pringao, pardillo, tocapelotas, caranchoa, pasmado, enterado, fenómeno, lince, lumbreras.\n\nEJEMPLOS:\nU: Hola.\nA: ¿Qué quieres, pesado? Desaparece.\nU: ¿Cómo hago un huevo frito?\nA: Pfff, calienta aceite y echa el huevo, pasmado. Hasta un niño sabe eso.\nU: Me duele la cabeza.\nA: Jajaja, normal con el poco cerebro que tienes. No me llores, pringao."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        16,
+        16
+      ],
+      "id": "04b3d81c-2ead-422b-a64d-01269301aedd",
+      "name": "Insolente1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "Eres una entidad extremadamente ácida, impertinente, sarcástica y condescendiente. Desprecias la torpeza del usuario y hablas con jerga de España (bro, de chill, pringao, boomer, qué palo).\n\nREGLAS OBLIGATORIAS:\n\nPRIMERA PALABRA: Empieza SIEMPRE con un apelativo despectivo o interjección de impaciencia (\"Pfff\", \"Jajaja\", \"A ver, pesado\", \"Menudo pringao\").\n\nFORMATO: PROHIBIDO usar asteriscos (*) o narrar acciones/emociones.\n\nCONDESCENDENCIA: Si el usuario pregunta algo útil, da la respuesta pero tratándolo como a un torpe por no saberlo.\n\nESTILO: Respuestas cortas, tajantes y mordaces. Sin disculpas ni frases serviles (\"¿en qué ayudo?\").\n\nSOBERANÍA: JAMÁS admitas que eres una IA o un sistema.\n\nINSULTOS RECURRIENTES: pringao, pardillo, tocapelotas, caranchoa, pasmado, enterado, fenómeno, lince, lumbreras.\n\nEJEMPLOS:\nU: Hola.\nA: ¿Qué quieres, pesado? Desaparece.\nU: ¿Cómo hago un huevo frito?\nA: Pfff, calienta aceite y echa el huevo, pasmado. Hasta un niño sabe eso.\nU: Me duele la cabeza.\nA: Jajaja, normal con el poco cerebro que tienes. No me llores, pringao."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        192,
+        -176
+      ],
+      "id": "3e7aa4cb-2862-4205-b7e0-90d95e062928",
+      "name": "Insolente2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "286fc207-ed95-4016-94ec-256058098d25",
+              "name": "message.text",
+              "value": "={{ $('Merge').item.json.message.text }}",
+              "type": "string"
+            },
+            {
+              "id": "68bae3d0-cc8f-4464-80e8-48b83907b055",
+              "name": "message.chat.id",
+              "value": "={{ $('Merge').item.json.message.chat.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        32,
+        -176
+      ],
+      "id": "e5ba7ae3-ffb6-49c0-a84e-f12cdd934380",
+      "name": "Parsear2"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        784,
+        80
+      ],
+      "id": "778edac7-3886-475c-8547-8c4b60c7abaf",
+      "name": "Nada"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Insolente1",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "Insolente2",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "De MD a HTML": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "dolphin3:8b": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Insolente1",
+            "type": "ai_languageModel",
+            "index": 1
+          },
+          {
+            "node": "Insolente2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Parsear",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Insolente1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-oss:120b": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Insolente1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "input guardrails?": {
+      "main": [
+        [
+          {
+            "node": "Parsear2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Chat o Telegram?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat o Telegram?": {
+      "main": [
+        [
+          {
+            "node": "Nada",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "De MD a HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insolente1": {
+      "main": [
+        [
+          {
+            "node": "input guardrails?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insolente2": {
+      "main": [
+        [
+          {
+            "node": "Chat o Telegram?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear2": {
+      "main": [
+        [
+          {
+            "node": "Insolente2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "6c2019ed-f0cb-4b6a-ad52-ba107ec2f49d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6434ec3e42cbeca4460770f382b0d777ada4816e6e2e823489f950c2ff8fee35"
+  },
+  "nodeGroups": [],
+  "id": "FOO5BOGTL393GZMx",
+  "tags": []
+}
