@@ -51,14 +51,16 @@ Puedes interactuar con este workflow a través de dos canales:
 El flujo procesa dinámicamente mensajes entrantes, gestiona la memoria conversacional y adapta el formato según el canal de origen. 
 ![n8n Workflow](schema.png) 
 
-1. **Triggers de Entrada:** 
+1. **Triggers de Entrada:**
+
   * **Telegram Trigger:** Escucha mensajes dirigidos al bot de Telegram. 
   * **When chat message received:** Trigger de chat mediante Webhook para peticiones desde la web. 
 2. **Parsear & Merge:** Los nodos `Parsear` y `Merge` estandarizan el payload de ambos canales (asignando un identificador de origen `chat` o `telegram`) y consolidan el canal de entrada. 
 3. **Agente Principal (`Insolente1`):** Ejecuta la consulta utilizando el modelo en nube `gpt-oss:120b` acoplado a un nodo de memoria conversacional `Simple Memory` (`MemoryBufferWindow`). 
 4. **Evaluador de Guardarraíles (`input guardrails?`):** Un nodo condicional analiza si la salida devuelta por `gpt-oss:120b` coincide con respuestas estandarizadas de bloqueo (*"I’m sorry, but I can’t help with that"*, etc.). 
 5. **Ruta de Fallback (`Parsear2` + `Insolente2`):** Si se detecta un bloqueo de moderación, el nodo redirige el texto al segundo agente respaldado por el modelo local desinhibido **`dolphin3:8b`**. 
-6. **Enrutador de Salida (`Chat o Telegram?`):** Identifica el canal de origen: 
+6. **Enrutador de Salida (`Chat o Telegram?`):** Identifica el canal de origen:
+
   * **Si viene de la Web (`chat`):** Finaliza el flujo en el nodo `Nada` (NoOp), devolviendo la respuesta directamente al widget. 
   * **Si viene de Telegram:** Pasa la respuesta al nodo formateador. 
 7. **Formateador de Código (`De MD a HTML`):** Un nodo en JavaScript procesa el texto Markdown generado por los modelos, escapa caracteres conflictivos, convierte etiquetas de negrita/cursiva, gestiona listas y repara automáticamente etiquetas HTML desbalanceadas (`repairHtml`) para asegurar un envío compatible con el modo `HTML` de Telegram (evitando los fallos de renderizado habituales del nodo nativo Markdown). 
@@ -88,7 +90,8 @@ Para replicar este experimento, necesitarás:
 
 ## 6. Personalización (System Prompt Optimizado) 
 
-El *system prompt* ha sido ajustado específicamente para mantener la impertinencia y la jerga sin activar alertas de toxicidad severa (*Profanity / Harassment*) en los clasificadores de entrada: 
+El *system prompt* ha sido ajustado específicamente para mantener la impertinencia y la jerga sin activar alertas de toxicidad severa (*Profanity / Harassment*) en los clasificadores de entrada:
+
   * **Nodo:** `Insolente1` / `Insolente2` 
   * **Parámetro:** `Options` > `System Message` 
   
