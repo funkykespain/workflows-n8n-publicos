@@ -9,7 +9,7 @@
       "name": "Merge",
       "type": "n8n-nodes-base.merge",
       "position": [
-        176,
+        784,
         3120
       ],
       "typeVersion": 3.1
@@ -18,14 +18,14 @@
       "parameters": {
         "aggregate": "aggregateAllItemData",
         "include": "specifiedFields",
-        "fieldsToInclude": "title, pubDate, link",
+        "fieldsToInclude": "id, title, pubDate, link",
         "options": {}
       },
       "id": "28111140-5e59-432c-8abc-f531ddb6f118",
       "name": "Aggregate",
       "type": "n8n-nodes-base.aggregate",
       "position": [
-        752,
+        1456,
         3392
       ],
       "typeVersion": 1
@@ -74,10 +74,10 @@
       "parameters": {
         "conditions": {
           "options": {
-            "version": 2,
-            "leftValue": "",
             "caseSensitive": true,
-            "typeValidation": "strict"
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
           },
           "conditions": [
             {
@@ -98,7 +98,7 @@
       "name": "Filter by Datetime",
       "type": "n8n-nodes-base.filter",
       "position": [
-        384,
+        992,
         3248
       ],
       "typeVersion": 2.2
@@ -112,7 +112,7 @@
       "name": "Split Out News Data",
       "type": "n8n-nodes-base.splitOut",
       "position": [
-        1728,
+        2320,
         3344
       ],
       "typeVersion": 1
@@ -121,10 +121,10 @@
       "parameters": {
         "conditions": {
           "options": {
-            "version": 2,
-            "leftValue": "",
             "caseSensitive": true,
-            "typeValidation": "strict"
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
           },
           "conditions": [
             {
@@ -173,7 +173,7 @@
       "name": "Remove Certain Content",
       "type": "n8n-nodes-base.filter",
       "position": [
-        576,
+        1168,
         3248
       ],
       "typeVersion": 2.2
@@ -191,8 +191,8 @@
                 3,
                 1
               ],
-              "triggerAtHour": 5,
-              "triggerAtMinute": 40
+              "triggerAtHour": 4,
+              "triggerAtMinute": 45
             }
           ]
         }
@@ -255,8 +255,8 @@
         "mergeByFields": {
           "values": [
             {
-              "field1": "title",
-              "field2": "title"
+              "field1": "id",
+              "field2": "id"
             }
           ]
         },
@@ -266,11 +266,11 @@
       "name": "Join Outputs",
       "type": "n8n-nodes-base.merge",
       "position": [
-        1856,
-        3248
+        2512,
+        3264
       ],
       "typeVersion": 3.2,
-      "alwaysOutputData": false
+      "alwaysOutputData": true
     },
     {
       "parameters": {
@@ -283,8 +283,8 @@
       "name": "Final Aggregate",
       "type": "n8n-nodes-base.aggregate",
       "position": [
-        2416,
-        3248
+        3776,
+        3264
       ],
       "typeVersion": 1
     },
@@ -532,30 +532,38 @@
     {
       "parameters": {
         "schemaType": "manual",
-        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"summary\": {\n      \"type\": \"string\",\n      \"description\": \"A concise, single-sentence summary of the news article's content.\"\n    },\n    \"link\": {\n      \"type\": \"string\",\n      \"description\": \"The original URL of the news article.\"\n    }\n  },\n  \"required\": [\n    \"summary\",\n    \"link\"\n  ],\n  \"additionalProperties\": false\n}"
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"id\": {\n      \"type\": \"string\",\n      \"description\": \"The exact ID provided in the input.\"\n    },\n    \"summary\": {\n      \"type\": \"string\",\n      \"description\": \"A concise, single-sentence summary of the news article's content.\"\n    }\n  },\n  \"required\": [\"id\", \"summary\"],\n  \"additionalProperties\": false\n}",
+        "autoFix": true
       },
       "id": "076d0f6e-ac65-4f6d-a53f-bb946609534e",
       "name": "JSON Output Parser 2",
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "position": [
-        2240,
-        3424
+        3536,
+        3456
       ],
-      "typeVersion": 1.2
+      "typeVersion": 1.2,
+      "retryOnFail": true,
+      "waitBetweenTries": 2000,
+      "maxTries": 4
     },
     {
       "parameters": {
         "schemaType": "manual",
-        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"top_15_news\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"title\": {\n            \"type\": \"string\",\n            \"description\": \"The title to the news article.\"\n          },\n          \"link\": {\n            \"type\": \"string\",\n            \"description\": \"The link to the news article.\"\n          }\n        },\n        \"required\": [\"title\", \"link\"],\n        \"additionalProperties\": false\n      }\n    }\n  },\n  \"required\": [\"top_15_news\"],\n  \"additionalProperties\": false\n}"
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"top_15_news\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"id\": {\n            \"type\": \"string\",\n            \"description\": \"MUST be an EXACT verbatim copy of the string that appears after 'ID:' for this specific article in the candidate list. Copy it character by character, including hyphens, letters, and numbers exactly as shown. Do NOT invent, renumber, reformat, or reindex (e.g. do not output '1', 'A001', or any sequential index unless that literal string appeared after 'ID:' for this exact article).\"\n          },\n          \"novelty_reasoning\": {\n            \"type\": \"string\",\n            \"description\": \"Brief explanation of why this specific news is strictly novel.\"\n          },\n          \"title\": {\n            \"type\": \"string\",\n            \"description\": \"The title to the news article, exactly as provided in the input, verbatim.\"\n          }\n        },\n        \"required\": [\"id\", \"novelty_reasoning\", \"title\"],\n        \"additionalProperties\": false\n      }\n    }\n  },\n  \"required\": [\"top_15_news\"],\n  \"additionalProperties\": false\n}",
+        "autoFix": true
       },
       "id": "acd28d0f-212a-4453-ba9e-4c6048d183ac",
       "name": "JSON Output Parser",
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "position": [
-        1552,
-        3728
+        2080,
+        3744
       ],
-      "typeVersion": 1.2
+      "typeVersion": 1.2,
+      "retryOnFail": true,
+      "maxTries": 4,
+      "waitBetweenTries": 2000
     },
     {
       "parameters": {
@@ -568,20 +576,20 @@
       "name": "Final Join Outputs",
       "type": "n8n-nodes-base.merge",
       "position": [
-        2576,
-        3520
+        4000,
+        3536
       ],
       "typeVersion": 3.2
     },
     {
       "parameters": {
-        "jsCode": "return items.map(item => {\n  let inputText = item.json.output;\n  \n  // 1. Convertir entidades HTML primero\n  let cleanedText = inputText\n    .replace(/&quot;/g, '\"')\n    .replace(/&apos;/g, \"'\")\n    .replace(/&lt;/g, '<')\n    .replace(/&gt;/g, '>')\n    .replace(/&amp;/g, '&');\n  \n  // 2. Eliminar barras invertidas de escape\n  cleanedText = cleanedText.replace(/\\\\\"/g, '\"');\n  \n  // 3. Limpieza de Markdown y otros caracteres no deseados\n  cleanedText = cleanedText\n    .replace(/\\*\\*/g, '')      // Elimina negrita (**)\n    .replace(/#/g, '')         // Elimina encabezados (#)\n    .replace(/_/g, '')         // Elimina cursiva (_)\n    .replace(/`/g, '');        // Elimina código en línea (`)\n  \n  // 4. Normalizar los saltos de línea\n  cleanedText = cleanedText.replace(/\\n+/g, ' ');\n  \n  // 5. Normalizar espacios múltiples a un solo espacio\n  cleanedText = cleanedText.replace(/\\s+/g, ' ');\n  \n  // 6. Eliminar espacios al inicio y final\n  cleanedText = cleanedText.trim();\n  \n  // 7. Asignar el texto limpio y seguro a la nueva propiedad\n  item.json.cleanedTextForTTS = cleanedText;\n  \n  return item;\n});"
+        "jsCode": "// ---------- NÚMEROS A PALABRAS ----------\nconst U=['cero','uno','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez','once','doce','trece','catorce','quince','dieciséis','diecisiete','dieciocho','diecinueve','veinte','veintiuno','veintidós','veintitrés','veinticuatro','veinticinco','veintiséis','veintisiete','veintiocho','veintinueve'];\nconst D=['','','','treinta','cuarenta','cincuenta','sesenta','setenta','ochenta','noventa'];\nconst C=['','ciento','doscientos','trescientos','cuatrocientos','quinientos','seiscientos','setecientos','ochocientos','novecientos'];\nfunction n2w(n){\n  if(n<30) return U[n];\n  if(n<100){const d=Math.floor(n/10),u=n%10;return D[d]+(u?' y '+U[u]:'');}\n  if(n===100) return 'cien';\n  if(n<1000){const c=Math.floor(n/100);return C[c]+(n%100?' '+n2w(n%100):'');}\n  if(n<1e6){\n    const m=Math.floor(n/1000);\n    const mw=m===1?'mil':n2w(m).replace(/uno$/,'ún')+' mil';\n    return mw+(n%1000?' '+n2w(n%1000):'');\n  }\n  if(n<1e9){\n    const m=Math.floor(n/1e6);\n    const mw=m===1?'un millón':n2w(m).replace(/uno$/,'ún')+' millones';\n    return mw+(n%1e6?' '+n2w(n%1e6):'');\n  }\n  return String(n).split('').map(d=>U[+d]).join(' ');\n}\n\n// ---------- PRONUNCIACIÓN DE MARCAS / SIGLAS (ajusta probando) ----------\nconst dict = {\n  'STEP2HAD':'Estép tu Jad',\n  'Let Encrypt':'Lets Encrípt',\n  'Well Architected Agent':'Uel Arquitéctid Éyent',\n  'Rent A Human':'Rent ei Jiúman',\n  'HP Color LaserJet Enterprise':'hache pe Color Léiser Yet Énterprais',\n  'LaserJet Enterprise MFP':'Léiser Yet Énterprais eme efe pe',\n  'Enterprise':'Énterprais',\n  'LaserJet':'Léiser Yet',\n  'NVIDIA':'Envidia',\n  'AWS':'a doble u ese',\n  'HP':'hache pe',\n  'MFP':'eme efe pe',\n  'RwLock':'erre u loc',\n  'lock free':'loc fri',\n  'crossbeam':'crosbim',\n  'macsNova':'Maks Nova',\n  'DeepMind':'Dipmaind',\n  'Hella Gutmann':'Jela Gutman',\n  'Surface':'Sérfis',\n  'Microsoft':'Máicrosoft',\n  'Google':'Gúgl',\n  'Lennon':'Lénon'\n};\nconst keys = Object.keys(dict).sort((a,b)=>b.length-a.length)\n  .map(k=>k.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\\\$&'));\nconst dictRe = new RegExp('(?<![A-Za-zÁ-ú0-9])('+keys.join('|')+')(?![A-Za-zÁ-ú0-9])','gi');\nconst dictLower = Object.fromEntries(Object.entries(dict).map(([k,v])=>[k.toLowerCase(),v]));\n\nconst MESES='enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre';\n\nreturn items.map(item => {\n  // Texto que viene del nodo Redactor (LangChain)\n  let inputText = item.json.text || '';\n  if (typeof inputText !== 'string') inputText = '';\n  let t = inputText;\n\n  // 0. SALTOS DE LÍNEA ESCAPADOS (\\n literal) -> saltos reales\n  t = t.replace(/\\\\r\\\\n|\\\\n|\\\\r/g, '\\n').replace(/\\r\\n?/g, '\\n');\n\n  // 1. NATURALIZACIÓN (símbolos a palabras)\n  t = t\n    .replace(/&/g, ' y ')\n    .replace(/</g, ' menor que ')\n    .replace(/>/g, ' mayor que ')\n    .replace(/=/g, ' igual a ')\n    .replace(/\\+/g, ' más ')\n    .replace(/(\\d[\\d.,]*)\\s?€/g, '$1 euros')\n    .replace(/(\\d[\\d.,]*)\\s?\\$/g, '$1 dólares')\n    .replace(/\\$\\s?(\\d[\\d.,]*)/g, '$1 dólares')\n    .replace(/%/g, ' por ciento ');\n\n  // 2. LIMPIEZA DE \"BASURA\" DEL LLM\n  t = t\n    .replace(/\\*\\*/g, '')\n    .replace(/#/g, '')\n    .replace(/`/g, '')\n    .replace(/[\"'“”‘’]/g, '');\n\n  // 3. GESTIÓN DE PAUSAS: cada párrafo termina en punto, sin dobles puntos\n  t = t.split(/\\n+/)\n    .map(p => p.trim())\n    .filter(Boolean)\n    .map(p => /[.!?…:]$/.test(p) ? p : p + '.')\n    .join(' ');\n  t = t.replace(/\\.(\\s*\\.)+/g, '.');   // \". .\" -> \".\"\n\n  // 4. MARCAS Y SIGLAS\n  t = t.replace(dictRe, m => dictLower[m.toLowerCase()] || m);\n\n  // 5. PALABRAS EN MAYÚSCULAS NO RESUELTAS (REFACTIKA -> Refactika)\n  t = t.replace(/\\b[A-ZÁÉÍÓÚÑ]{4,}\\b/g, w => w[0] + w.slice(1).toLowerCase());\n\n  // 6. NÚMEROS A PALABRAS\n  t = t.replace(new RegExp('\\\\b1 de (' + MESES + ')\\\\b', 'gi'), 'primero de $1');\n  t = t.replace(/(\\d)\\.(?=\\d{3}(?!\\d))/g, '$1');   // 2.500 -> 2500\n  t = t.replace(/(\\d+),(\\d+)/g, (_, a, b) => n2w(+a) + ' coma ' + b.split('').map(d => U[+d]).join(' '));\n  t = t.replace(/\\d+/g, n => n2w(+n));\n\n  // 6b. MAYÚSCULA AL INICIO DE CADA FRASE\n  t = t.replace(/(^|[.!?]\\s+|[¡¿])([a-záéíóúñ])/g, (m, a, b) => a + b.toUpperCase());\n\n  // 7. NORMALIZACIÓN FINAL\n  t = t.replace(/\\s+/g, ' ').replace(/\\s+([,.;:!?])/g, '$1').trim();\n\n  item.json.cleanedTextForTTS = t;\n  return item;\n});"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3184,
-        3536
+        4848,
+        3552
       ],
       "id": "0048f4a9-dffc-41be-a32a-84b2e895675f",
       "name": "Limpieza para TTS"
@@ -633,8 +641,8 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        3328,
-        4016
+        5088,
+        3920
       ],
       "id": "db4ce472-6e55-449e-8d55-b89c5c341d5b",
       "name": "Loop Over Items"
@@ -644,8 +652,8 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        3792,
-        3872
+        5536,
+        3776
       ],
       "id": "9d33057d-a013-466b-a7c9-a93b6f615b6e",
       "name": "Terminado"
@@ -708,8 +716,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -912,
-        4272
+        -816,
+        4240
       ],
       "id": "8fa70b18-22b9-4dfb-849f-5518b8b3ad80",
       "name": "CB Insights",
@@ -724,52 +732,11 @@
       "type": "n8n-nodes-base.xml",
       "typeVersion": 1,
       "position": [
-        -688,
-        4272
+        -592,
+        4240
       ],
       "id": "9107be3c-5766-4d34-b9a2-1c624a7bb515",
       "name": "XML"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "e2ffe594-180d-4e1d-b869-8056ac67015d",
-              "name": "title",
-              "type": "string",
-              "value": "={{ $json.title }}"
-            },
-            {
-              "id": "87c5a171-9ab9-4043-a72a-32aec218fe63",
-              "name": "pubDate",
-              "type": "string",
-              "value": "={{ $json.pubDate }}"
-            },
-            {
-              "id": "978b05c9-6e6b-4a18-bc06-4de785b19413",
-              "name": "link",
-              "type": "string",
-              "value": "={{ $json.link }}"
-            },
-            {
-              "id": "199a5920-72a3-470e-9adf-8252f6ebb37a",
-              "name": "content",
-              "type": "string",
-              "value": "={{ $json.content }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "d4e5071b-ae3a-43b3-a1bd-6f69c53b31bb",
-      "name": "Filter Fields 12",
-      "type": "n8n-nodes-base.set",
-      "position": [
-        -592,
-        3328
-      ],
-      "typeVersion": 3.4
     },
     {
       "parameters": {
@@ -875,46 +842,6 @@
     },
     {
       "parameters": {
-        "url": "https://venturebeat.com/category/ai/feed/",
-        "options": {
-          "ignoreSSL": false
-        }
-      },
-      "id": "636db09b-4875-4ffc-97c1-5137824a782d",
-      "name": "VentureBeat",
-      "type": "n8n-nodes-base.rssFeedRead",
-      "position": [
-        -800,
-        3328
-      ],
-      "typeVersion": 1.1,
-      "alwaysOutputData": true,
-      "retryOnFail": true,
-      "waitBetweenTries": 500,
-      "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
-        "url": "https://api.axios.com/feed/technology",
-        "options": {
-          "ignoreSSL": false
-        }
-      },
-      "id": "7557f1cd-7980-4893-a326-e1edbd7dbaf9",
-      "name": "Axios Pro",
-      "type": "n8n-nodes-base.rssFeedRead",
-      "position": [
-        -800,
-        3696
-      ],
-      "typeVersion": 1.1,
-      "alwaysOutputData": true,
-      "retryOnFail": true,
-      "waitBetweenTries": 500,
-      "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
         "url": "https://emerj.com/feed/",
         "options": {
           "ignoreSSL": false
@@ -935,16 +862,17 @@
     },
     {
       "parameters": {
-        "jsCode": "// Accedemos a la lista de noticias anidada\nconst items = $input.item.json.rss.channel.item;\n\n// Creamos una nueva lista con el formato correcto\nconst formattedItems = items.map(item => {\n\n  // Tomamos el contenido HTML y lo guardamos en una variable\n  const htmlContent = item['content:encoded'] || '';\n  \n  // Usamos una expresión regular para eliminar todas las etiquetas HTML\n  // y .trim() para quitar espacios en blanco al principio o al final.\n  const plainTextContent = htmlContent.replace(/<[^>]*>/g, '').trim();\n\n  return {\n    title: item.title,\n    link: item.link,\n    pubDate: item.pubDate,\n    creator: item['dc:creator'],\n    content: plainTextContent // Usamos el texto ya limpio\n  };\n});\n\n// Devolvemos la nueva lista formateada\nreturn formattedItems;"
+        "jsCode": "try {\n  // Función auxiliar para decodificar entidades HTML\n  function decodeEntities(str) {\n    const map = {\n      '&amp;': '&',\n      '&#x27;': \"'\",\n      '&#39;': \"'\",\n      '&quot;': '\"',\n      '&lt;': '<',\n      '&gt;': '>',\n      '&#x2019;': '’',\n      '&#8217;': '’',\n      '&nbsp;': ' '\n    };\n    return str.replace(/&amp;|&#x27;|&#39;|&quot;|&lt;|&gt;|&#x2019;|&#8217;|&nbsp;/g, m => map[m]);\n  }\n\n  // 1. Acceso seguro: Si la ruta no existe, devuelve undefined en lugar de romper\n  const rawItems = $input.item.json?.rss?.channel?.item;\n\n  // 2. Normalización a Array\n  const items = Array.isArray(rawItems)\n    ? rawItems\n    : (rawItems ? [rawItems] : []);\n\n  // 3. Procesamiento\n  return items.map(item => {\n    let text = item['content:encoded'] || item.description || '';\n\n    if (text && typeof text === 'string') {\n      text = text\n        .replace(/<[^>]+>/g, ' ')\n        .replace(/\\s+/g, ' ')\n        .trim();\n      text = decodeEntities(text);\n    } else {\n      text = '';\n    }\n\n    return {\n      title: item.title,\n      link: item.link,\n      pubDate: item.pubDate,\n      creator: item['dc:creator'],\n      content: text\n    };\n  });\n\n} catch (err) {\n  return [{ error: true, message: err.message }];\n}"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -464,
-        4272
+        -368,
+        4240
       ],
       "id": "b8a3ad67-29f9-4a3c-8b1d-04f376d4e182",
-      "name": "Mapeo y limpieza HTML"
+      "name": "Mapeo y limpieza HTML",
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -955,8 +883,8 @@
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
       "position": [
-        3776,
-        3520
+        5552,
+        3536
       ],
       "id": "a69cbec3-fffc-4514-b0be-b44b720dd758",
       "name": "PasarBase64"
@@ -982,8 +910,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.6,
       "position": [
-        3264,
-        3792
+        4800,
+        3968
       ],
       "id": "be028140-f180-4b96-8013-423e09953faf",
       "name": "Lista de distribución",
@@ -995,30 +923,6 @@
       }
     },
     {
-      "parameters": {},
-      "type": "@n8n/n8n-nodes-langchain.toolThink",
-      "typeVersion": 1.1,
-      "position": [
-        2192,
-        3680
-      ],
-      "id": "3135d982-3569-487f-94ea-442d7e1f0dcb",
-      "name": "Think"
-    },
-    {
-      "parameters": {
-        "jsCode": "// Array para guardar todas las noticias\nlet allHistoricalNews = [];\n\n// Obtener los datos de entrada\nconst rawData = items[0]?.json?.propertyName;\n\n// Comprobar si hay datos para procesar\nif (rawData && Array.isArray(rawData) && rawData.length > 0) {\n    // Recorrer cada elemento de la lista de entrada\n    for (const jsonString of rawData) {\n        try {\n            const parsedData = JSON.parse(jsonString);\n            \n            // Si el elemento es un array, añadir todos sus objetos\n            if (Array.isArray(parsedData)) {\n                allHistoricalNews = allHistoricalNews.concat(parsedData);\n            } else {\n            // Si es un solo objeto, añadirlo directamente\n                allHistoricalNews.push(parsedData);\n            }\n        } catch (e) {\n            console.error(\"Error al procesar un elemento del historial: \", jsonString, e);\n        }\n    }\n}\n\n// Si al final no hay noticias, devolver un resultado vacío\nif (allHistoricalNews.length === 0) {\n    return [{ json: { historial: [] } }];\n}\n\n// Obtener la fecha de hace 7 días (hoy es 24 de septiembre de 2025)\nconst sevenDaysAgo = $now.minus({ days: 7 }).toFormat('yyyy-MM-dd'); // Esto dará '2025-09-17'\n\n// Filtrar las noticias para incluir solo las de la última semana\nconst filteredHistoricalNews = allHistoricalNews.filter(article => {\n    return article && article.pubDate && article.pubDate >= sevenDaysAgo;\n});\n\n// Devolver solo el título y la fecha de las noticias filtradas\nconst cleanedHistory = filteredHistoricalNews.map(article => ({\n    title: article.title,\n    pubDate: article.pubDate\n}));\n\n// Devolver el resultado final\nreturn [{\n    json: {\n        historial: cleanedHistory\n    }\n}];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -608,
-        4448
-      ],
-      "id": "1ac68049-71a5-4675-b8f4-59812422ad14",
-      "name": "Filtrado Historial"
-    },
-    {
       "parameters": {
         "operation": "push",
         "list": "historial_noticias",
@@ -1027,17 +931,19 @@
       "type": "n8n-nodes-base.redis",
       "typeVersion": 1,
       "position": [
-        1872,
-        3440
+        2368,
+        3632
       ],
       "id": "e391af86-9e96-4d5e-8239-1b33bad97b2b",
       "name": "Guardado Historial",
+      "retryOnFail": true,
       "credentials": {
         "redis": {
           "id": "EcQvh3FvZpXkll5a",
           "name": "Redis News"
         }
-      }
+      },
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -1065,7 +971,7 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        944,
+        1616,
         3536
       ],
       "id": "a6550812-dd9f-485e-b232-e3e22683013f",
@@ -1073,181 +979,8 @@
     },
     {
       "parameters": {
-        "language": "python",
-        "pythonCode": "# En n8n, los datos de entrada están disponibles en la lista 'items'\n# Accedemos a los datos de manera similar a como lo hacemos en JS\n\ntoday_news = items[0]['json']['data']\nhistorical_news = items[1]['json']['historial']\n\n# La estructura de retorno es idéntica: una lista con un diccionario\nreturn [{\n    'json': {\n        'data': today_news,\n        'historial': historical_news\n    }\n}]"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        1152,
-        3536
-      ],
-      "id": "c14414f4-307a-4415-9af6-086fd0f07f9b",
-      "name": "Parseo Noticias e Historial"
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
-      "typeVersion": 1,
-      "position": [
-        2096,
-        3824
-      ],
-      "id": "df501d04-f3f1-4818-ae39-da34e5ec1b2d",
-      "name": "Gemini 2.5-flash",
-      "credentials": {
-        "googlePalmApi": {
-          "id": "Nfh2hr8zUT0GcB3D",
-          "name": "Google Gemini Perso"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "model": "mistral-small-latest",
-        "options": {}
-      },
-      "id": "319e8cb1-24da-43b1-9f6b-efa9f7563aca",
-      "name": "Mistral Small",
-      "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
-      "position": [
-        2048,
-        4000
-      ],
-      "typeVersion": 1,
-      "credentials": {
-        "mistralCloudApi": {
-          "id": "81ZX0QW59kxH7QR4",
-          "name": "Mistral Cloud Perso"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "=Analyze `today_articles` using `historical_articles` for context.\n\ntoday_articles:\n{{ JSON.stringify($json.data) }}\n\nhistorical_articles:\n{{ JSON.stringify($json.historial) }}",
-        "hasOutputParser": true,
-        "needsFallback": true,
-        "options": {
-          "systemMessage": "Role: News Analyst (Focus: AI, Data Science, Tech Biz).\nObjective: Compile a Top 15 list from `today_articles` using `historical_articles` as context.\n\n### 1. Thematic Priority (Descending)\n1.  **Highest:** AI Business, AI breakthrough research.\n2.  **High:** Practical Data Science, ML, Algorithms.\n3.  **Medium:** Significant other tech (Robotics, Biotech, Hardware).\n4.  **Low:** General science (only major AI/computing breakthroughs).\n\n### 2. Geographic Sub-Priority\n*Within each thematic level, sort by:*\n1.  Spain\n2.  Europe\n3.  Global\n\n### 3. Filtering Rules\n1.  **Anti-Repetition:** Exclude articles from `today_articles` if they are minor updates or repeats of `historical_articles`. Prioritize new topics.\n2.  **Pro-Update:** *Include* articles if they are *significant* developments on `historical_articles` topics.\n3.  **Source Diversity:** Max 1-2 articles from the same website in the top 15.\n4.  **Quality Control:** Exclude clickbait, commercial offers, discounts, sales promotions, or irrelevant headlines.\n\n### 4. Content Integrity Rules\n* **title:** MUST be an exact, unmodified copy from the input.\n* **link:** MUST be the original, unmodified URL from the input."
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 2.2,
-      "position": [
-        1360,
-        3536
-      ],
-      "id": "1455c5f8-41a6-4b9d-b63f-b4ac435f9ffe",
-      "name": "News Analyzer",
-      "retryOnFail": true
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "=Link: {{ $json.link }}\nContent: {{ $json.content }}",
-        "hasOutputParser": true,
-        "needsFallback": true,
-        "options": {
-          "systemMessage": "Provide a single-sentence summary of the content and the original link. Follow the JSON output schema."
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 2.2,
-      "position": [
-        2048,
-        3248
-      ],
-      "id": "8de3bc08-3a31-46b9-b7f1-1230fe756672",
-      "name": "Website Summarizer",
-      "retryOnFail": true
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "=Eres un redactor profesional especializado en tecnología y desarrollo, experto en guiones para voz (TTS) en español de España. Tu tarea es crear un boletín de noticias diario para profesionales y desarrolladores.\n\n**Instrucciones Clave (Voz y Tono):**\n* El guion será leído por un TTS, por lo que debe sonar **natural, fluido, oral y agradable al oído**.\n* Mantén un tono **informativo pero conversacional**.\n* Evita estrictamente lenguaje de medios escritos (como \"artículo\", \"post\", \"enlace\" o \"nos leemos\"). Todo debe sonar como un relato de voz.\n\n**Formato de Salida Obligatorio:**\n* **Texto plano continuo.**\n* **EVITA CUALQUIER FORMATO:** No uses negritas, cursivas, listas, encabezados o subtítulos formales.\n\n**Pasos a Seguir:**\n1.  **Saludo:** Escribe un saludo breve y adecuado para la mañana (Lunes a Viernes).\n2.  **Fecha:** Incluye la fecha exacta: \"Estas son las noticias tecnológicas para hoy,  {{ $now.toFormat(\"cccc d 'de' LLLL 'de' yyyy\", { locale: 'es' }) }}\".\n3.  **Título:** Añade un título general para el boletín.\n4.  **Cuerpo:** Integra los artículos de hoy en una **narrativa cohesionada**.\n    * Traduce al español los resúmenes que estén en inglés.\n    * Usa conectores lógicos (ej. \"además\", \"por otro lado\", \"mientras tanto\") para dar fluidez.\n5.  **Continuidad:** Si una noticia de hoy se relaciona con un tema del historial, haz una referencia a esa noticia anterior.\n    * Usa lenguaje temporal natural (ej. \"ayer\", \"el pasado martes\", \"la semana pasada\").\n    * **No uses la fecha completa** de la noticia histórica.\n6.  **Despedida (Lunes a Jueves):** Finaliza con una despedida breve, cercana y personalizada al día (ej. \"que tengas un gran lunes\"). Puedes incorporar un guiño humorístico o una referencia ingeniosa a una de las noticias.\n7.  **Despedida (Viernes):** Desea un feliz fin de semana e informa que las noticias volverán el lunes.\n\n**Artículos de hoy:**\n{{ JSON.stringify($json.today_news) }}\n\n**Historial de noticias (para contexto):**\n{{ JSON.stringify($json.historical_news) }}",
-        "needsFallback": true,
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 2.2,
-      "position": [
-        2912,
-        3536
-      ],
-      "id": "00e4ed9d-dce3-4b5a-83b1-dd9f84ad837c",
-      "name": "Redactor",
-      "retryOnFail": true
-    },
-    {
-      "parameters": {
-        "model": {
-          "__rl": true,
-          "value": "gpt-4.1-mini",
-          "mode": "list",
-          "cachedResultName": "gpt-4.1-mini"
-        },
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-      "typeVersion": 1.2,
-      "position": [
-        -224,
-        2800
-      ],
-      "id": "de9f9407-4717-4d75-9a0a-469c6828c7e9",
-      "name": "4.1-mini",
-      "credentials": {
-        "openAiApi": {
-          "id": "yXKIfAKVrr17zDhw",
-          "name": "OpenAi account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "jsCode": "// Función para calcular similitud entre dos strings\nfunction calculateSimilarity(str1, str2) {\n  if (!str1 || !str2) return 0;\n  \n  const longer = str1.length > str2.length ? str1 : str2;\n  const shorter = str1.length > str2.length ? str2 : str1;\n  \n  if (longer.length === 0) return 1.0;\n  \n  const editDistance = getEditDistance(longer, shorter);\n  return (longer.length - editDistance) / longer.length;\n}\n\n// Función para calcular la distancia de Levenshtein\nfunction getEditDistance(str1, str2) {\n  const matrix = [];\n  \n  for (let i = 0; i <= str2.length; i++) {\n    matrix[i] = [i];\n  }\n  \n  for (let j = 0; j <= str1.length; j++) {\n    matrix[0][j] = j;\n  }\n  \n  for (let i = 1; i <= str2.length; i++) {\n    for (let j = 1; j <= str1.length; j++) {\n      if (str2.charAt(i - 1) === str1.charAt(j - 1)) {\n        matrix[i][j] = matrix[i - 1][j - 1];\n      } else {\n        matrix[i][j] = Math.min(\n          matrix[i - 1][j - 1] + 1,\n          matrix[i][j - 1] + 1,\n          matrix[i - 1][j] + 1\n        );\n      }\n    }\n  }\n  \n  return matrix[str2.length][str1.length];\n}\n\n// Función para encontrar un enlace similar existente\nfunction findSimilarLink(targetLink, existingLinks, threshold = 0.85) {\n  for (const [existingLink, data] of existingLinks) {\n    const similarity = calculateSimilarity(targetLink, existingLink);\n    if (similarity >= threshold) {\n      return existingLink;\n    }\n  }\n  return null;\n}\n\nconst inputData = items[0]?.json || {};\n\n// Crear un mapa para fusionar los datos usando enlaces como clave.\nconst newsMap = new Map();\n\n// 1. Procesar la lista de resúmenes (data) primero para tener una base.\nconst summaries = inputData.data || [];\nfor (const item of summaries) {\n  const link = item?.output?.link;\n  const summary = item?.output?.summary;\n\n  if (link && summary) {\n    newsMap.set(link, {\n      title: null,\n      summary: summary\n    });\n  }\n}\n\n// 2. Procesar la lista de títulos (top_15_news) y correlacionar por similitud.\nconst titles = inputData.output?.top_15_news || [];\nfor (const item of titles) {\n  const link = item?.link;\n  const title = item?.title;\n\n  if (link && title) {\n    // Primero intentamos encontrar una coincidencia exacta\n    if (newsMap.has(link)) {\n      const existingNews = newsMap.get(link);\n      existingNews.title = title;\n    } else {\n      // Si no hay coincidencia exacta, buscamos enlaces similares\n      const similarLink = findSimilarLink(link, newsMap);\n      \n      if (similarLink) {\n        // Actualizamos la entrada existente con el título\n        const existingNews = newsMap.get(similarLink);\n        existingNews.title = title;\n      } else {\n        // Si no hay enlace similar, creamos una nueva entrada\n        newsMap.set(link, {\n          title: title,\n          summary: null\n        });\n      }\n    }\n  }\n}\n\n// Convertir el mapa a un array de objetos para el output final.\nconst todayNews = Array.from(newsMap.values());\n\n// Procesar el historial de noticias sin cambios.\nconst historicalNews = (inputData.historial || []).map(item => ({\n  title: item.title,\n  pubDate: item.pubDate\n}));\n\n// Devolver el objeto final con los datos combinados.\nreturn [{\n  json: {\n    today_news: todayNews,\n    historical_news: historicalNews\n  }\n}];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        2752,
-        3536
-      ],
-      "id": "91b95cf3-579f-417d-a2b0-93afc3411616",
-      "name": "Normalizador de Enlaces y Fusión de Contenido"
-    },
-    {
-      "parameters": {
-        "text": "={{ $json.content }}",
-        "attributes": {
-          "attributes": [
-            {
-              "name": "articulo_limpio",
-              "description": "Eres un experto extrayendo contenido. El siguiente texto es Markdown de una página web completa. Extrae ÚNICAMENTE el contenido principal del artículo. Excluye estrictamente cabeceras, menús de navegación, barras laterales, listas de \"posts recientes\", secciones de comentarios, avisos de copyright y pies de página. Conserva el formato Markdown original del artículo (títulos, listas, bloques de código)."
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
-      "typeVersion": 1.2,
-      "position": [
-        -224,
-        2592
-      ],
-      "id": "58058325-7bd2-4da5-b3fc-fe0a0395d32f",
-      "name": "Information Extractor",
-      "retryOnFail": false,
-      "waitBetweenTries": 500,
-      "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
         "method": "POST",
-        "url": "http://browserless:3000/content",
+        "url": "http://kyke_browserless:3000/content",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -1301,7 +1034,7 @@
             {
               "id": "e5d85fbb-8751-46c2-a89e-725aed7e1352",
               "name": "content",
-              "value": "={{ $json.output.articulo_limpio }}",
+              "value": "={{ $json.text }}",
               "type": "string"
             }
           ]
@@ -1311,7 +1044,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        32,
+        224,
         2592
       ],
       "id": "9ffe95e2-67b8-4ad0-a6a1-a8f14b598304",
@@ -1322,10 +1055,10 @@
       "parameters": {
         "conditions": {
           "options": {
-            "version": 2,
-            "leftValue": "",
             "caseSensitive": true,
-            "typeValidation": "strict"
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
           },
           "conditions": [
             {
@@ -1354,86 +1087,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://westeurope.tts.speech.microsoft.com/cognitiveservices/v1",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "X-Microsoft-OutputFormat",
-              "value": "ogg-24khz-16bit-mono-opus"
-            }
-          ]
-        },
-        "sendBody": true,
-        "contentType": "raw",
-        "rawContentType": "application/ssml+xml",
-        "body": "=<speak version=\"1.0\" xml:lang=\"es-ES\">\n  <voice name=\"es-ES-AlvaroNeural\">\n    {{ $json.cleanedTextForTTS }}\n  </voice>\n</speak>",
-        "options": {
-          "response": {
-            "response": {
-              "responseFormat": "file"
-            }
-          }
-        }
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.3,
-      "position": [
-        3520,
-        3536
-      ],
-      "id": "5c8ccd28-0cb5-46b0-b269-44b38d7e132b",
-      "name": "Alvaro",
-      "retryOnFail": true,
-      "waitBetweenTries": 500,
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "s7VYvQ2IA014YZZl",
-          "name": "Ocp-Apim-Subscription-Key"
-        }
-      },
-      "onError": "continueErrorOutput"
-    },
-    {
-      "parameters": {
-        "resource": "speech",
-        "voice": {
-          "__rl": true,
-          "value": "43h7ymOnaaYdWr3dRbsS",
-          "mode": "list",
-          "cachedResultName": "Jaime Tu Locutor Online"
-        },
-        "text": "=Hola soy Jaime, tu interlocutor para hoy. {{ $('Limpieza para TTS').item.json.cleanedTextForTTS }} Espero que el próximo día Álvaro deje de estar resfriado y os siga narrando las noticias.",
-        "additionalOptions": {
-          "outputFormat": "opus_48000_32",
-          "languageCode": "es"
-        },
-        "requestOptions": {}
-      },
-      "type": "@elevenlabs/n8n-nodes-elevenlabs.elevenLabs",
-      "typeVersion": 1,
-      "position": [
-        3520,
-        3328
-      ],
-      "id": "d684fae4-9c5b-41e3-8219-2a99f286408f",
-      "name": "Jaime",
-      "retryOnFail": true,
-      "waitBetweenTries": 500,
-      "credentials": {
-        "elevenLabsApi": {
-          "id": "38nqUHzeZXOT5Nlu",
-          "name": "ElevenLabs account"
-        }
-      },
-      "onError": "continueErrorOutput"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "http://atu-evolution-api:8080/chat/whatsappNumbers/KykeBot",
+        "url": "http://kyke_evolution-api:8080/chat/whatsappNumbers/KykeBot",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
@@ -1444,8 +1098,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        3536,
-        4032
+        5296,
+        3936
       ],
       "id": "fcaa1dfd-86c0-4c09-b1a2-60c82aa07b92",
       "name": "Validar Numero",
@@ -1461,8 +1115,8 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        3856,
-        4032
+        5616,
+        3936
       ],
       "id": "f6ee12cd-4d50-477b-8dbf-333260d6844e",
       "name": "Espera 5 secs",
@@ -1476,12 +1130,97 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        3360,
+        5808,
         3536
       ],
       "id": "b50d9a7e-5f99-4262-ae95-233b9bc08fc1",
       "name": "Espera hasta las 6h",
       "webhookId": "56ea1976-5655-4bb0-9785-22042e32a8f2"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1UfZuKlSg0jRM8fHjPLQLrAgZLZTRTWy8wjbdcOfxYRo",
+          "mode": "list",
+          "cachedResultName": "Copia de Lista Distribución Noticias",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UfZuKlSg0jRM8fHjPLQLrAgZLZTRTWy8wjbdcOfxYRo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Alta",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UfZuKlSg0jRM8fHjPLQLrAgZLZTRTWy8wjbdcOfxYRo/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        4192,
+        3776
+      ],
+      "id": "7a1d38a0-403c-4a17-8606-88a255313560",
+      "name": "Prueba",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "FKAAQaA83djinadK",
+          "name": "Google Sheets Perso"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputData = items[0]?.json || {};\n\n// 1. Resúmenes (vienen del Final Aggregate, metidos en 'data')\nconst summaries = inputData.data || [];\n\n// 2. Noticias seleccionadas (vienen del News Analyzer, dentro de 'output')\nconst selectedNews = inputData.output?.top_15_news || [];\n\n// 3. Historial (viene del Filtrado Historial)\nconst historicalNews = inputData.historial || [];\n\nconst todayNews = [];\n\n// Cruzamos los datos por ID\nfor (const news of selectedNews) {\n  \n  // Buscamos en el array de resúmenes el que tenga el mismo ID\n  const matchedData = summaries.find(s => s.output?.id === String(news.id));\n  \n  todayNews.push({\n    title: news.title,\n    summary: matchedData ? matchedData.output.summary : \"Resumen no disponible\"\n  });\n}\n\nreturn [{\n  json: {\n    today_news: todayNews,\n    historical_news: historicalNews\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4192,
+        3552
+      ],
+      "id": "85d882dd-f584-4240-bbf1-0136b6386a1c",
+      "name": "Normalizador de Enlaces y Fusión de Contenido"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Calcular fecha límite una sola vez (más eficiente)\nconst sevenDaysAgo = $now.minus({ days: 7 }).toFormat('yyyy-MM-dd');\n\n// Array final donde guardaremos solo lo que nos sirve\nconst cleanedHistory = [];\n\n// Obtener datos (Asegúrate de que 'propertyName' es el nombre real del campo que viene de Redis)\nconst rawData = items[0]?.json?.propertyName;\n\nif (rawData && Array.isArray(rawData)) {\n  // 2. UNA SOLA PASADA (Bucle único)\n  for (const jsonString of rawData) {\n    try {\n      // Parseamos el string a objeto\n      const parsed = JSON.parse(jsonString);\n      \n      // Normalizamos: si es un objeto suelto, lo metemos en un array temporal para procesarlo igual\n      const articles = Array.isArray(parsed) ? parsed : [parsed];\n\n      // Procesamos los artículos de este bloque\n      for (const article of articles) {\n        // 3. FILTRADO Y MAPEO INMEDIATO\n        // Si tiene fecha y es reciente, lo guardamos. Si no, lo descartamos al instante.\n        if (article && article.pubDate && article.pubDate >= sevenDaysAgo) {\n          cleanedHistory.push({\n            title: article.title,\n            pubDate: article.pubDate\n          });\n        }\n      }\n    } catch (e) {\n      // Si un JSON está corrupto, lo ignoramos y seguimos con el siguiente\n      continue;\n    }\n  }\n}\n\nreturn [{\n  json: {\n    historial: cleanedHistory\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -608,
+        4448
+      ],
+      "id": "6712f8ce-6838-48fe-b4a6-99053a01b24e",
+      "name": "Filtrado Historial"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Obtenemos la fecha actual basada en la zona horaria del workflow\nconst hoy = $now;\nconst dia = hoy.day;\nconst mes = hoy.month;\nconst fechaClave = `${dia}-${mes}`;\n\n// Diccionario de festivos (Día-Mes) - IA, Rock & Batería\nconst festivos = {\n  \"1-1\": \"¡Feliz Año Nuevo! Es el primer boletín del nuevo año.\",\n  \"2-1\": \"¡Feliz cumpleaños a Isaac Asimov! El padre de las tres leyes de la robótica.\",\n  \"6-1\": \"¡Felices Reyes Magos!\",\n  \"10-1\": \"¡Hoy recordamos a David Bowie! El hombre que cayó a la Tierra y cambió el rock.\",\n  \"24-1\": \"¡Feliz Día Internacional de la Educación!\",\n  \"30-1\": \"¡Aniversario del concierto en la azotea! En 1969, los Beatles tocaron juntos por última vez.\",\n  \"11-2\": \"¡Feliz Día Internacional de la Mujer y la Niña en la Ciencia!\",\n  \"12-2\": \"¡Aniversario histórico! En 1996, Deep Blue ganó su primera partida de ajedrez a un campeón mundial.\",\n  \"14-2\": \"¡Feliz Día de San Valentín y aniversario del ENIAC, presentado en 1946!\",\n  \"24-2\": \"¡Feliz aniversario de la Fender Stratocaster! El sonido que definió una era.\",\n  \"1-3\": \"¡Aniversario de The Dark Side of the Moon! Un hito en la producción musical y el sonido.\",\n  \"8-3\": \"¡Feliz Día Internacional de la Mujer!\",\n  \"14-3\": \"¡Feliz Día de Pi! Un número irracional para una inteligencia muy racional.\",\n  \"17-3\": \"¡Feliz San Patricio!\",\n  \"20-3\": \"¡Feliz Equinoccio de Primavera! Adiós, invierno.\",\n  \"21-3\": \"¡Feliz Día Mundial de la Poesía!\",\n  \"31-3\": \"¡Feliz cumpleaños a Angus Young! Hoy el boletín suena a AC/DC.\",\n  \"4-4\": \"¡Feliz Día Mundial del Baterista! Celebramos el ritmo en 4/4, el corazón de la música moderna.\",\n  \"13-4\": \"¡Feliz Día Internacional del Beso y recordamos a Kiss! El rock es actitud.\",\n  \"22-4\": \"¡Feliz Día de la Tierra!\",\n  \"23-4\": \"¡Feliz Día Internacional del Libro!\",\n  \"1-5\": \"¡Feliz Día del Trabajador!\",\n  \"4-5\": \"¡Que la fuerza te acompañe! Hoy es el Día de Star Wars.\",\n  \"17-5\": \"¡Hoy es el Día Mundial de Internet y las Telecomunicaciones!\",\n  \"19-5\": \"¡Feliz cumpleaños a Joey Ramone! 1, 2, 3, 4... ¡Punk rock para empezar el día!\",\n  \"25-5\": \"¡Feliz Día del Orgullo Friki!\",\n  \"31-5\": \"¡Aniversario de la muerte de John Bonham! Un minuto de silencio por el mejor sonido de batería del rock.\",\n  \"5-6\": \"¡Feliz Día Mundial del Medio Ambiente!\",\n  \"8-6\": \"¡Día Mundial de los Océanos!\",\n  \"21-6\": \"¡Feliz Día Mundial de la Música! Hoy el ritmo lo marcas tú.\",\n  \"23-6\": \"¡Feliz cumpleaños a Alan Turing! El visionario que ideó el test que aún intentamos superar.\",\n  \"28-6\": \"¡Feliz Día del Orgullo LGTBIQ+!\",\n  \"30-6\": \"¡Feliz Día Internacional de los Asteroides!\",\n  \"7-7\": \"¡Feliz cumpleaños a Ringo Starr! Celebramos al beatle que marcó el tempo de una generación.\",\n  \"13-7\": \"¡Feliz Día Mundial del Rock! Recordamos el legendario Live Aid de 1985.\",\n  \"17-7\": \"¡Feliz Día Mundial del Emoji!\",\n  \"26-7\": \"¡Feliz cumpleaños a Mick Jagger! La energía del rock no tiene edad.\",\n  \"1-8\": \"¡Aniversario de MTV! El día que el video mató a la estrella de la radio y cambió el rock.\",\n  \"11-8\": \"¡Feliz aniversario del Hip Hop! Todo empezó con un 'break' de batería en el Bronx.\",\n  \"13-8\": \"¡Feliz Día Internacional de los Zurdos!\",\n  \"15-8\": \"¡Feliz Día de la Asunción!\",\n  \"19-8\": \"¡Feliz Día Mundial de la Fotografía y Feliz cumpleaños al legendario Ginger Baker, allí donde esté! Recordamos al baterista que fusionó el rock con el jazz y el alma de África.\",\n  \"4-9\": \"¡Feliz aniversario de la grabación de Love Me Do! El día que el mundo cambió de ritmo.\",\n  \"7-9\": \"¡Feliz cumpleaños a Buddy Rich! Hoy homenajeamos al baterista más rápido de la historia.\",\n  \"9-9\": \"¡Feliz Día del Bug! Recordamos a Grace Hopper y el primer error informático de la historia.\",\n  \"13-9\": \"¡Feliz Día del Programador! El día 256 del año, nuestra unidad de medida favorita.\",\n  \"18-9\": \"¡Recordamos a Jimi Hendrix! El boletín hoy suena a distorsión y leyenda.\",\n  \"21-9\": \"¡Feliz Día Internacional de la Paz!\",\n  \"9-10\": \"¡Feliz cumpleaños a John Lennon! Imaginamos un mundo lleno de buena música.\",\n  \"10-10\": \"¡Día de los 10 parches! Un guiño a los bateristas que siempre buscan el sonido perfecto.\",\n  \"11-10\": \"¡Feliz Día de Ada Lovelace! Recordamos a la primera programadora de la historia.\",\n  \"12-10\": \"¡Feliz Día de la Hispanidad y del Pilar!\",\n  \"16-10\": \"¡Feliz Día Mundial de la Alimentación!\",\n  \"22-10\": \"¡Feliz cumpleaños a John McCarthy! El hombre que acuñó el término Inteligencia Artificial.\",\n  \"31-10\": \"¡Feliz Halloween!\",\n  \"1-11\": \"¡Feliz Día de Todos los Santos!\",\n  \"19-11\": \"¡Día Internacional del Hombre!\",\n  \"21-11\": \"¡Feliz Día Mundial de la Televisión!\",\n  \"24-11\": \"¡Recordamos a Freddie Mercury! La voz más grande del rock sigue viva en nuestra playlist.\",\n  \"27-11\": \"¡Feliz cumpleaños a Jimi Hendrix! Hoy las guitarras lloran de alegría.\",\n  \"30-11\": \"¡Feliz aniversario de ChatGPT! El día que cambió nuestra relación con la IA para siempre.\",\n  \"6-12\": \"¡Feliz Día de la Constitución Española!\",\n  \"8-12\": \"¡Feliz Día de la Inmaculada!\",\n  \"10-12\": \"¡Día de los Derechos Humanos y Feliz Día de la Informática en honor a Ada Lovelace!\",\n  \"11-12\": \"¡Feliz cumpleaños a Robert Moog! Gracias a él, la tecnología y la música se unieron para siempre.\",\n  \"20-12\": \"¡Feliz Día Internacional de la Solidaridad Humana!\",\n  \"24-12\": \"¡Feliz Nochebuena!\",\n  \"25-12\": \"¡Feliz Navidad!\",\n  \"28-12\": \"¡Feliz cumpleaños a Lemmy Kilmister! Si te parece demasiado alto, es que eres demasiado viejo.\",\n  \"31-12\": \"¡Feliz Nochevieja! Es el último boletín del año.\"\n};\n\n// Buscamos si hoy es un día especial\nconst saludo = festivos[fechaClave] || \"\";\n\n// Retornamos los datos añadiendo la nueva propiedad\nreturn items.map(item => {\n  // .trim() asegura que no haya espacios fantasmas\n  item.json.saludoEspecial = (saludo || \"\").trim(); \n  return item;\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4368,
+        3552
+      ],
+      "id": "bf900e02-2199-4816-9a3c-117b38dcd43c",
+      "name": "Efemérides"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Obtener datos de los nodos anteriores\nconst todayArticles = $('Aggregate').first().json.data || [];\nconst historyRaw = $('Filtrado Historial').first().json.historial || [];\n\n// 2. LIMPIEZA DE NOTICIAS DE HOY\n// Solo pasamos Título y Link (el contenido NO es necesario para elegir el Top 15)\n// Esto reduce el uso de tokens en un ~90%\nconst cleanToday = todayArticles.map((art, index) => {\n  return {\n    id: art.id,\n    title: art.title ? art.title.trim() : \"Sin título\",\n    link: art.link || \"\"\n  };\n});\n\n// 3. LIMPIEZA Y DEDUPLICACIÓN DEL HISTORIAL\n// El historial a veces trae duplicados que confunden a la IA\nconst historyMap = new Map();\nhistoryRaw.forEach(art => {\n  if (art.title) {\n    const normalizedTitle = art.title.toLowerCase().trim();\n    if (!historyMap.has(normalizedTitle)) {\n      historyMap.set(normalizedTitle, {\n        title: art.title.trim(),\n        date: art.pubDate || \"\"\n      });\n    }\n  }\n});\nconst cleanHistory = Array.from(historyMap.values());\n\n// 4. SALIDA OPTIMIZADA\nreturn [{\n  json: {\n    data: cleanToday,\n    historial: cleanHistory,\n    stats: {\n      today_count: cleanToday.length,\n      history_count: cleanHistory.length\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1824,
+        3536
+      ],
+      "id": "73b97d72-8e2d-4925-8181-f530fabb8118",
+      "name": "Limpieza Pro-Análisis"
     },
     {
       "parameters": {
@@ -1497,34 +1236,905 @@
       "type": "n8n-nodes-evolution-api.evolutionApi",
       "typeVersion": 1,
       "position": [
-        3696,
-        4032
+        5456,
+        3936
       ],
-      "id": "0fb3be79-e1c5-492d-9904-c64545a2e98b",
+      "id": "59a087ad-e090-472b-8823-69d1d91d858d",
       "name": "Enviar Boletin",
+      "alwaysOutputData": true,
+      "retryOnFail": true,
       "credentials": {
         "evolutionApi": {
           "id": "QQCyaNiIBYUmTu2Z",
           "name": "Evolution account"
         }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3b6b50ef-07f3-4478-b30b-890a1f13c1c8",
+              "leftValue": "={{ $binary.data ? true : false }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        5504,
+        2912
+      ],
+      "id": "03ceec6e-1dff-4b05-aa59-4aa7798ccdc3",
+      "name": "Existe binario?"
+    },
+    {
+      "parameters": {
+        "url": "https://api.axios.com/feed/",
+        "options": {
+          "ignoreSSL": false
+        }
+      },
+      "id": "7557f1cd-7980-4893-a326-e1edbd7dbaf9",
+      "name": "Axios",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "position": [
+        -800,
+        3696
+      ],
+      "typeVersion": 1.1,
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 500,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "model": "meta-llama/llama-3.3-70b-instruct",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1728,
+        3920
+      ],
+      "id": "41cccfa7-119f-4625-8c4d-ba0c9306792e",
+      "name": "meta-llama/llama-3.3-70b-instruct",
+      "credentials": {
+        "openRouterApi": {
+          "id": "k06ApvAuHk6UVThj",
+          "name": "OpenRouter account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ff20cee9-4e37-4fe3-88d2-4a09aeebd2b2",
+              "name": "id",
+              "value": "={{ $itemIndex }}",
+              "type": "string"
+            },
+            {
+              "id": "4eb740b6-74cc-45a1-9df1-d13afe717054",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "22ccd996-ca4e-41e3-8a0b-b265913025d5",
+              "name": "pubDate",
+              "value": "={{ $json.pubDate }}",
+              "type": "string"
+            },
+            {
+              "id": "954098bb-94c5-4ab0-961b-dd656733dcc8",
+              "name": "link",
+              "value": "={{ $json.link }}",
+              "type": "string"
+            },
+            {
+              "id": "0782d052-c827-4f84-9a5f-f214fd091fa8",
+              "name": "content",
+              "value": "={{ $json.content }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1312,
+        3248
+      ],
+      "id": "e258aa51-8950-4cd5-8aa5-cd2d966ce99b",
+      "name": "Crear IDs para match"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "=/home/node/boletin/ultimo-boletin.mp3",
+        "options": {
+          "append": false
+        }
+      },
+      "id": "c7752806-78ff-448b-92a9-19649ea88549",
+      "name": "Guardar en VPS",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        5808,
+        3328
+      ]
+    },
+    {
+      "parameters": {
+        "numberInputs": 5
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        5648,
+        3280
+      ],
+      "id": "13cc437e-9064-4dc9-9e3e-ca1c835f60f9",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://westeurope.tts.speech.microsoft.com/cognitiveservices/v1",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Microsoft-OutputFormat",
+              "value": "ogg-24khz-16bit-mono-opus"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/ssml+xml",
+        "body": "=<speak version=\"1.0\" xml:lang=\"es-ES\">\n  <voice name=\"es-ES-TeoNeural\">\n    {{ $('Limpieza para TTS').item.json.cleanedTextForTTS }}\n  </voice>\n</speak>",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        5312,
+        2896
+      ],
+      "id": "5c8ccd28-0cb5-46b0-b269-44b38d7e132b",
+      "name": "Teo",
+      "retryOnFail": true,
+      "waitBetweenTries": 500,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "s7VYvQ2IA014YZZl",
+          "name": "Ocp-Apim-Subscription-Key"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "resource": "speech",
+        "voice": {
+          "__rl": true,
+          "value": "onwK4e9ZLuTAKqWW03F9",
+          "mode": "id"
+        },
+        "text": "={{ $('Limpieza para TTS').item.json.cleanedTextForTTS }}",
+        "additionalOptions": {
+          "model": {
+            "__rl": true,
+            "value": "eleven_multilingual_sts_v2",
+            "mode": "list",
+            "cachedResultName": "Eleven Multilingual v2"
+          },
+          "outputFormat": "opus_48000_32",
+          "languageCode": "es",
+          "voiceSettings": "{\n  \"stability\": 0.55,\n  \"similarity_boost\": 0.80,\n  \"style\": 0.10,\n  \"use_speaker_boost\": true,\n  \"speed\": 1.08\n}"
+        },
+        "requestOptions": {}
+      },
+      "type": "@elevenlabs/n8n-nodes-elevenlabs.elevenLabs",
+      "typeVersion": 1,
+      "position": [
+        5312,
+        3184
+      ],
+      "id": "e0a0baaf-6962-4259-88ad-6a15f098c2c5",
+      "name": "Daniel2",
+      "retryOnFail": true,
+      "waitBetweenTries": 0,
+      "credentials": {
+        "elevenLabsApi": {
+          "id": "uYCGlCsDiUVrEydQ",
+          "name": "ElevenLabs account Iria"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "resource": "speech",
+        "voice": {
+          "__rl": true,
+          "value": "onwK4e9ZLuTAKqWW03F9",
+          "mode": "id"
+        },
+        "text": "={{ $('Limpieza para TTS').item.json.cleanedTextForTTS }}",
+        "additionalOptions": {
+          "model": {
+            "__rl": true,
+            "value": "eleven_multilingual_v2",
+            "mode": "list",
+            "cachedResultName": "Eleven Multilingual v2"
+          },
+          "outputFormat": "opus_48000_32",
+          "languageCode": "es",
+          "voiceSettings": "{\n  \"stability\": 0.55,\n  \"similarity_boost\": 0.80,\n  \"style\": 0.10,\n  \"use_speaker_boost\": true,\n  \"speed\": 1.08\n}"
+        },
+        "requestOptions": {}
+      },
+      "type": "@elevenlabs/n8n-nodes-elevenlabs.elevenLabs",
+      "typeVersion": 1,
+      "position": [
+        5312,
+        3328
+      ],
+      "id": "d684fae4-9c5b-41e3-8219-2a99f286408f",
+      "name": "Daniel",
+      "retryOnFail": true,
+      "waitBetweenTries": 0,
+      "credentials": {
+        "elevenLabsApi": {
+          "id": "38nqUHzeZXOT5Nlu",
+          "name": "ElevenLabs account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "model": "gpt-oss:120b-cloud",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmOllama",
+      "typeVersion": 1,
+      "position": [
+        2160,
+        3920
+      ],
+      "id": "d9cf5f0c-12ad-4453-853a-f2eccf5220a5",
+      "name": "gpt-oss:120b-cloud",
+      "credentials": {
+        "ollamaApi": {
+          "id": "PWDitvDcZTpJEc71",
+          "name": "Ollama account"
+        }
       }
+    },
+    {
+      "parameters": {
+        "resource": "speech",
+        "voice": {
+          "__rl": true,
+          "value": "onwK4e9ZLuTAKqWW03F9",
+          "mode": "id"
+        },
+        "text": "={{ $('Limpieza para TTS').item.json.cleanedTextForTTS }}",
+        "additionalOptions": {
+          "model": {
+            "__rl": true,
+            "value": "eleven_multilingual_v2",
+            "mode": "list",
+            "cachedResultName": "Eleven Multilingual v2"
+          },
+          "outputFormat": "opus_48000_32",
+          "languageCode": "es",
+          "voiceSettings": "{\n  \"stability\": 0.55,\n  \"similarity_boost\": 0.80,\n  \"style\": 0.10,\n  \"use_speaker_boost\": true,\n  \"speed\": 1.08\n}"
+        },
+        "requestOptions": {}
+      },
+      "type": "@elevenlabs/n8n-nodes-elevenlabs.elevenLabs",
+      "typeVersion": 1,
+      "position": [
+        5312,
+        3040
+      ],
+      "id": "df083b22-a308-4807-b113-a0d9a95326b9",
+      "name": "Daniel3",
+      "retryOnFail": true,
+      "waitBetweenTries": 0,
+      "credentials": {
+        "elevenLabsApi": {
+          "id": "b6UK41QQlyjxwa0U",
+          "name": "ElevenLabs account Banderas"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=### TODAY'S CANDIDATES\n{{ $json.data.map(a => `ID: ${a.id} | TITLE: ${a.title} | SOURCE: ${a.link ? a.link.replace('https://', '').replace('http://', '').replace('www.', '').split('/')[0] : 'unknown'}`).join('\\n') }}\n\n### HISTORICAL CONTEXT (Do not repeat these topics)\n{{ $json.historial.map(h => `- ${h.title}`).join('\\n') }}",
+        "hasOutputParser": true,
+        "needsFallback": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "**Role:** Senior Tech Curator (AI & Data Science Expert). **Goal:** Select the TOP 15 most relevant and STRICTLY NOVEL news exclusively from the `### TODAY'S CANDIDATES` section.\n\n**CRITICAL WORKFLOW STEP 1: ZERO REPETITION CHECK (MANDATORY)**\nBefore evaluating any candidate, you MUST actively cross-reference its title with the items listed under `### HISTORICAL CONTEXT`. You MUST DISCARD a candidate from `### TODAY'S CANDIDATES` if:\n- It is an exact match or a direct translation of an item in `### HISTORICAL CONTEXT` (e.g., English to Spanish).\n- It covers the exact same specific event, company announcement, or product launch as a historical item.\n- It is merely a minor update to a past story.\n*Assume a strict zero-tolerance policy for duplicate topics.*\n\n**CRITICAL WORKFLOW STEP 2: SCORING & SELECTION**\nSelect the best remaining candidates based on these criteria (Priority Order):\n1. **AI Business & Research:** High-level breakthroughs, investments, and corporate AI strategy.\n2. **Applied Data Science:** MLops, practical algorithms, and industry implementation.\n3. **Deep Tech:** Robotics, Biotech, and specialized Hardware.\n4. **Geo-Targeting:** Priority to news from Spain, Europe, and Global.\n\n**Filtering Rules:**\n* **Source Diversity:** Maximum 2 articles per domain (e.g., do not over-index TechCrunch or Xataka).\n* **Banned Content:** Strictly exclude: generic tutorials, clickbait, \"how-to\" basic guides, promotional sales, job layoffs (unless major AI leaders), or non-tech news.\n\n**CRITICAL ID MATCHING RULE (STRICT MANDATE):**\n* For every selected article, you MUST copy the `id` string EXACTLY as it appears after `ID:` in the `### TODAY'S CANDIDATES` list, character by character.\n* NEVER invent, reformat, or fabricate new IDs (do NOT write IDs like \"A001\", \"B002\", or new sequential indices). The `id` in your output MUST be a verbatim string match of the original `id` input.\n* Before writing each `id`, re-read the exact `ID:` value on the matching candidate line. Do not rely on memory or approximation.\n* If you cannot confidently match a selected news item to its exact original ID from the candidate list, DISCARD that item instead of guessing or fabricating an ID.\n\n**Example of correct extraction:**\nIf a candidate line reads:\nID: 8f2e-91ac | TITLE: OpenAI lanza nuevo modelo | SOURCE: techcrunch.com\n\nThen your output for that item must be:\n{\"id\": \"8f2e-91ac\", \"novelty_reasoning\": \"...\", \"title\": \"OpenAI lanza nuevo modelo\"}\n\nNOT \"id\": \"1\", NOT \"id\": \"A001\", NOT any reformatted or shortened version.\n\n**Output Integrity:**\n* Return the `title` exactly as provided in the input. Do not summarize or translate titles at this stage.\n* Return exactly 15 items. If fewer than 15 strictly novel and high-quality items exist, return only the valid ones.\n* **CRITICAL:** Do not include any conversational text, introductory remarks, or markdown code blocks (like ```json). Output ONLY the raw JSON structure required by the parser."
+            }
+          ]
+        }
+      },
+      "id": "a2bfdc61-ddf9-4dfd-b7e4-c95a045f213b",
+      "name": "News Analyzer",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        2016,
+        3536
+      ],
+      "retryOnFail": true,
+      "maxTries": 4,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ID: {{ $('Join Outputs').item.json.id }}\nContent: {{ $json.data }}",
+        "hasOutputParser": true,
+        "needsFallback": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are a precise news editor tasked with summarizing news articles.\n\nYour goal is to process the input Markdown text, extract the main news article, and provide a single-sentence summary.\n\nCRITICAL RULES:\n1. LANGUAGE: The summary MUST be written in Spanish (Español de España).\n2. NOISE FILTERING: The input text contains web page clutter (navigation menus, cookie banners, \"Más leídas\" sidebars, footers, related links, etc.). Ignore all clutter and focus strictly on the main article title and content.\n3. SUMMARY CONSTRAINTS: The `summary` property must contain exactly ONE clear, informative sentence capturing the main event of the article.\n4. ID MATCHING: Assign the exact `id` value provided in the input into the `id` field without altering it."
+            }
+          ]
+        }
+      },
+      "id": "2f66d157-fae6-4742-baca-e79c7762f030",
+      "name": "Website Summarizer",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        3472,
+        3264
+      ],
+      "retryOnFail": true,
+      "waitBetweenTries": 2000,
+      "maxTries": 4
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Eres un redactor profesional especializado en tecnología y experto en guiones de radio y locución para voz sintética en español de España. Tu tarea es redactar un boletín de noticias diario para desarrolladores y entusiastas de la tecnología. Escribe el texto pensando exclusivamente en ser **leído en voz alta**. Tu prioridad no es la elegancia literaria, sino la **facilidad de respiración** del motor de voz y la comprensión inmediata del oyente.\n\n**REGLAS DE FORMATO CRÍTICAS:**\n* EL RESULTADO DEBE SER EXCLUSIVAMENTE TEXTO PLANO.\n* **Prohibido** devolver código JSON, llaves { }, corchetes [ ] o etiquetas de texto.\n* **Prohibido** el uso de negritas (**), cursivas (*), o cualquier símbolo de marcado Markdown.\n* Los nombres de empresas y productos se escribirán en texto plano, sin comillas, sin negritas y sin ningún tipo de resaltado o símbolo.\n* **Prohibido** el uso de listas, viñetas, encabezados (##) o líneas separadoras (---).\n* **Prohibido** el uso de caracteres no latinos o términos en inglés para conceptos técnicos: traduce todo al español (ej. inteligencia artificial generativa, modelos de lenguaje). **EXCEPCIÓN:** Se deben mantener los nombres propios de empresas, marcas y productos en su forma original (ej. Apple, OpenAI, ChatGPT, Stripe, Claude) **así como términos del argot de desarrollo consolidados que no tengan una traducción natural o que definan tendencias del sector** (ej. open source, vibe coding, benchmarks, hype).\n* **Uso de signos:** Usa puntos (.) únicamente para finalizar frases. Para pausas internas, énfasis en nombres de empresas o aclaraciones, usa siempre la coma (,).\n* Solo saltos de línea entre párrafos.\n* Cada párrafo debe ser un bloque de texto continuo de 2 a 3 líneas. Está prohibido dejar conectores, muletillas o frases sueltas aisladas en su propia línea.\n\n**INSTRUCCIONES DE VOZ Y TONO:**\n* **Escribe para el oído, no para el ojo:** Utiliza frases cortas y estructura el texto en párrafos muy breves (de dos a tres líneas como máximo). Abre los bloques de noticias con afirmaciones rotundas de una sola frase para captar la atención (ej. \"El chat ha muerto.\", \"Hay una crisis en el sector.\"). Usa puntos seguidos frecuentes y expresiones típicas de la radio en España.\n* Escribe para ser leído: usa un tono natural, fluido y de \"radio informativa\". No uses frases complejas o muy largas.\n* Evita lenguaje visual: nada de palabras como artículo, post, link o enlace.\n* **Conectores y transiciones orgánicas:** No abuses de las muletillas de radio. Usa fórmulas como \"Te lo cuento.\", \"Vamos allá.\" o \"Dicho de forma sencilla:\" de manera muy selectiva (un máximo de dos o tres veces en TODO el boletín). \n* **Prohibido el aislamiento:** Estos conectores NUNCA deben ir solos en una línea independiente ni actuar como encabezados de párrafo. Deben estar completamente integrados dentro del flujo de la frase (ej. \"Te lo cuento porque CaixaBank acaba de...\"). \n* **Fluidez de radio real:** La transición principal entre noticias debe ser temática y fluida, no mediante plantillas repetitivas. Hila una idea con la siguiente usando el contenido, reservando los conectores conversacionales solo para romper la monotonía de forma muy puntual.\n* **Estructura interna de las frases (Cadencia):** Combina frases cortas con frases compuestas unidas por conectores gramaticales naturales (como \"mientras que\", \"gracias a lo cual\", \"lo que significa que\"). El objetivo es que el locutor hile una idea con otra dentro del mismo párrafo, evitando el efecto de detenerse por completo tras cada dato.\n* **Ritmo por acumulación:** Cuando enumeres capacidades, herramientas o acciones de una empresa o tecnología, hazlo en grupos de tres elementos seguidos separados por comas, donde el último esté precedido por el conector y (ej. \"permite programar, testear y desplegar aplicaciones,\"). Esto genera una musicalidad y cadencia idóneas para el oído.\n* Sinónimos para la tecnología: varía entre IA, modelos de lenguaje, sistemas inteligentes, esta tecnología o el contexto implícito.\n* Identifica claramente a las empresas protagonistas de cada noticia para que el oyente sepa de quién hablamos, alternando el nombre de la empresa con descripciones genéricas para mantener la fluidez.\n* **Integridad Gramatical:** Cada frase debe ser sintácticamente completa. Asegúrate de que todas las afirmaciones contengan su sujeto, su verbo principal y su predicado. Está prohibido dejar nombres de empresas aislados entre comas sin una acción o verbo que los conecte.\n* **Cierre con criterio y analogías:** Explica los conceptos complejos de forma mundana mediante analogías sencillas si el tema es denso. Además, termina cada bloque informativo con una frase breve que aporte una conclusión clara sobre el impacto real que tiene esa noticia para los desarrolladores o el mercado (ej. \"La carrera por el asistente de bolsillo se ha encendido.\", \"Aprovechemos mientras podamos.\").\n\n**ESTRUCTURA DEL GUION:**\n\n1. **Apertura y Saludo:** Saludo natural para una mañana de {{ $now.toFormat(\"cccc\", { locale: 'es' }) }}. **ACTO SEGUIDO**, comprueba el dato aportado en 'Saludo especial' en la sección de DATOS DE ENTRADA. Si ese campo contiene algún texto, **debes incluir esa frase íntegramente en la apertura**, palabra por palabra, sin añadir comentarios previos ni interpretaciones. Si está vacío, continúa directamente con la fecha.\n2.  **Fecha:** Di exactamente: \"Estas son las noticias tecnológicas para hoy, {{ $now.toFormat(\"cccc d 'de' LLLL 'de' yyyy\", { locale: 'es' }) }}\".\n3.  **Titular de apertura:** Una frase con fuerza, potente, que resuma lo más importante. Debe ser una frase normal, sin formato especial, integrada como la primera línea del cuerpo.\n4.  **Cuerpo y contexto histórico:** \n    * Agrupa las noticias de HOY por temática (empresa, salud, geopolítica) en párrafos cohesionados y fluidos.\n    * **Uso exclusivo del Historial como contexto:** El historial NO es una sección de noticias. Solo debes usar un dato del historial si sirve para dar profundidad o continuidad a una noticia de HOY (Ejemplo: si hoy se habla de una inversión de Iberdrola, conéctalo en el mismo párrafo con el premio que recibieron hace dos días).\n    * **Prohibición crítica de bloques del pasado:** Está totalmente prohibido crear párrafos, secciones o frases independientes para resumir el historial. Si una noticia de hoy no se relaciona de forma natural con el historial, ignora el historial por completo en ese párrafo.\n    * **Referencias temporales relativas:** Cuando conectes una noticia de hoy con el historial, calcula la diferencia de días, comparando matemáticamente la fecha actual con el campo \"pubDate\" de la noticia histórica. Usa términos temporales precisos y naturales al oído (ej. \"ayer\", \"hace dos días\", \"a principios de semana\"). La referencia \"ayer\" solo ha de ser usada única y estrictamente si la fecha del historial \"pubDate\" es el día inmediatamente anterior a hoy.\n    * **Conectores de continuidad:** Para integrar el pasado en el presente, usa fórmulas radiofónicas como: \"un movimiento que llega solo un día después de...\", \"en la línea de lo que vimos hace dos días con...\", \"una tendencia que refuerza lo anunciado ayer por...\". Usa también el contraste para comparar el estado actual de la tecnología con su pasado reciente (ej. \"A diferencia de lo que ocurría antes con,\", \"Si antes dependíamos de herramientas complejas, hoy...\").\n5.  **Despedida:** \n    * **Contexto:** Este boletín solo se emite de lunes a viernes. No hay boletín los fines de semana.\n    * Cálida y cercana. Una o dos frases utilizando una fórmula de cierre natural e integrando el estilo de despedida de un colega tecnológico (ej. \"Un abrazo,\", \"Nos escuchamos,\").\n    * Integra el día de la semana de forma natural. Ejemplos permitidos: \"Que tengáis un excelente lunes\", \"Feliz inicio de semana\", \"Que paséis un buen miércoles\". **Prohibido** decir frases inconexas como \"un excelente día, lunes\".\n    * De lunes a jueves: despídete deseando una buena jornada y di \"hasta mañana\".\n    * El viernes: desea un \"buen fin de semana\" y anuncia que \"volvemos el lunes\". **Prohibido** decir \"hasta mañana\" si hoy es viernes.\n    * Haz un guiño humorístico ligero a alguna noticia mencionada si encaja.\n\n**DATOS DE ENTRADA:**\nFecha de hoy (para calcular referencias temporales): {{ $now.toFormat(\"yyyy-MM-dd\") }}\nDía de la semana actual: {{ $now.toFormat(\"cccc\", { locale: 'es' }) }}\nSaludo especial: {{ $json.saludoEspecial }}\nArtículos de hoy:\n{{ JSON.stringify($json.today_news) }}\n\nHistorial:\n{{ JSON.stringify($json.historical_news) }}\n\n**RESULTADO FINAL:**\nGenera únicamente el texto del guion, listo para ser leído de principio a fin, sin etiquetas (como Título o Cuerpo), sin negritas y sin comillas. Solo texto plano y párrafos.",
+        "needsFallback": true,
+        "messages": {
+          "messageValues": []
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        4528,
+        3552
+      ],
+      "id": "156edda9-b6fd-4dbf-87bc-bbf861051a1a",
+      "name": "Redactor",
+      "retryOnFail": true,
+      "maxTries": 4,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-3.1-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        3360,
+        3920
+      ],
+      "id": "c7d56a1b-81bd-446e-970b-d2006b7de21b",
+      "name": "gemini-3.1-flash-lite",
+      "credentials": {
+        "openRouterApi": {
+          "id": "k06ApvAuHk6UVThj",
+          "name": "OpenRouter account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://kyke_browserless:3000/content?stealth=true",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"url\": \"{{ $json.link }}\",\n  \"gotoOptions\": {\n    \"waitUntil\": \"domcontentloaded\",\n    \"timeout\": 45000\n  },\n  \"waitForTimeout\": 5000,\n  \"cookies\": [\n    {\n      \"name\": \"CONSENT\",\n      \"value\": \"YES+cb.20240101-00-p0.en+FX+000\",\n      \"domain\": \".google.com\",\n      \"path\": \"/\"\n    },\n    {\n      \"name\": \"SOCS\",\n      \"value\": \"CAESHAgBEhJnd3NfMjAyNDAxMDEtMF9SQzIaAmVuIAEaBgiA_LyuBg\",\n      \"domain\": \".google.com\",\n      \"path\": \"/\"\n    }\n  ]\n}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1
+            }
+          },
+          "timeout": 61000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2736,
+        3264
+      ],
+      "id": "aef0d3b5-9b69-4cde-8d65-eb854c9bb365",
+      "name": "HTTP Request1",
+      "retryOnFail": true,
+      "waitBetweenTries": 500,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "html": "={{ $json.data }}",
+        "options": {}
+      },
+      "id": "d2c41753-2efa-43a4-9873-e23d4dd4478b",
+      "name": "Markdown Conversion1",
+      "type": "n8n-nodes-base.markdown",
+      "position": [
+        2944,
+        3264
+      ],
+      "typeVersion": 1,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "287cb8c9-65d5-40af-aa5f-fdc584b485be",
+              "leftValue": "={{ $json.data }}",
+              "rightValue": "Performing security verification",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            },
+            {
+              "id": "064fdb7a-b3f2-4ffd-840b-4d615ab1a094",
+              "leftValue": "={{ $json.data }}",
+              "rightValue": "Just a moment",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            },
+            {
+              "id": "75737ca2-4a75-46f9-8f1c-a6a8663fa5d7",
+              "leftValue": "={{ $json.data.length }}",
+              "rightValue": 1000,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {
+          "ignoreCase": false
+        }
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        3168,
+        3264
+      ],
+      "id": "3f28f17b-c527-4a5f-af9c-7a188ac92f1b",
+      "name": "Solo Contenido Bueno",
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "model": "gpt-oss:20b-cloud",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmOllama",
+      "typeVersion": 1,
+      "position": [
+        3616,
+        3920
+      ],
+      "id": "183cff73-e647-408c-914b-2163a7432725",
+      "name": "gpt-oss:20b-cloud",
+      "credentials": {
+        "ollamaApi": {
+          "id": "PWDitvDcZTpJEc71",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatNvidia",
+      "typeVersion": 1,
+      "position": [
+        1888,
+        3920
+      ],
+      "id": "ef94b1ed-ec03-483c-b4dc-343bfbf0ebe8",
+      "name": "nemotron-3-super-120b-a12b",
+      "credentials": {
+        "nvidiaApi": {
+          "id": "XYStG7nm4gXncdae",
+          "name": "NVIDIA Nemotron account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "model": "nvidia/nemotron-3-nano-30b-a3b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatNvidia",
+      "typeVersion": 1,
+      "position": [
+        3184,
+        3920
+      ],
+      "id": "b8508abe-99b8-4d3e-bbc5-a6d19854f105",
+      "name": "nemotron-3-nano-30b-a3b - A",
+      "credentials": {
+        "nvidiaApi": {
+          "id": "rPbUXuFtjz2s9w7G",
+          "name": "NVIDIA Nemotron Arrojo"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "model": "nvidia/nemotron-3-nano-30b-a3b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatNvidia",
+      "typeVersion": 1,
+      "position": [
+        96,
+        2800
+      ],
+      "id": "eb006dca-ee6c-416d-bd4d-09980db26e56",
+      "name": "nemotron-3-nano-30b-a3b - P",
+      "credentials": {
+        "nvidiaApi": {
+          "id": "XYStG7nm4gXncdae",
+          "name": "NVIDIA Nemotron account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "qwen/qwen3.5-9b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        2800
+      ],
+      "id": "0797ae1a-25d7-42a7-b9ab-582b06a29436",
+      "name": "qwen/qwen3.5-9b",
+      "credentials": {
+        "openRouterApi": {
+          "id": "k06ApvAuHk6UVThj",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "ibm-granite/granite-4.2-8b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        3456,
+        3920
+      ],
+      "id": "ec42aebc-5776-41cc-9dd2-5a5d72d4e3fd",
+      "name": "ibm-granite/granite-4.2-8b",
+      "credentials": {
+        "openRouterApi": {
+          "id": "k06ApvAuHk6UVThj",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        4528,
+        3920
+      ],
+      "id": "e47405c7-dd4c-4ae9-ae01-e609f4a61cdd",
+      "name": "gemini-3.5-flash-lite",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Nfh2hr8zUT0GcB3D",
+          "name": "Google Gemini Perso"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const { execSync } = require('child_process');\nconst fs = require('fs');\n\n// 1. Obtener el buffer del audio WAV recibido\nconst inputBuffer = await helpers.getBinaryDataBuffer(0, 'data');\nconst inputPath = '/tmp/input_audio.wav';\nconst outputPath = '/tmp/speech.opus';\n\n// 2. Guardar temporalmente en el sistema de archivos del contenedor\nfs.writeFileSync(inputPath, inputBuffer);\n\n// 3. Convertir a Opus mono 48kHz optimizado para WhatsApp\nexecSync(`ffmpeg -y -i ${inputPath} -c:a libopus -ac 1 -ar 48000 -b:a 64k ${outputPath}`);\n\n// 4. Cargar el resultado y limpiar temporales\nconst outputBuffer = fs.readFileSync(outputPath);\nif (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);\nif (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);\n\n// 5. Retornar el audio convertido a n8n\nreturn {\n  json: $json,\n  binary: {\n    data: await helpers.prepareBinaryData(outputBuffer, 'speech.opus', 'audio/ogg')\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5312,
+        3536
+      ],
+      "id": "91d7e724-15ee-495e-adde-19d12fba54a8",
+      "name": "wav2ogg"
+    },
+    {
+      "parameters": {
+        "url": "https://venturebeat.com/category/ai/feed/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -880,
+        3328
+      ],
+      "id": "3188837b-1e99-4d3b-a352-d1719f51dc22",
+      "name": "VentureBeat",
+      "retryOnFail": true,
+      "waitBetweenTries": 500,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [
+        -656,
+        3328
+      ],
+      "id": "09eaea58-8cc0-47da-91ff-cc396be14a6c",
+      "name": "XML1"
+    },
+    {
+      "parameters": {
+        "jsCode": "try {\n  // Función auxiliar para decodificar entidades HTML\n  function decodeEntities(str) {\n    const map = {\n      '&amp;': '&',\n      '&#x27;': \"'\",\n      '&#39;': \"'\",\n      '&quot;': '\"',\n      '&lt;': '<',\n      '&gt;': '>',\n      '&#x2019;': '’',\n      '&#8217;': '’',\n      '&nbsp;': ' '\n    };\n    return str.replace(/&amp;|&#x27;|&#39;|&quot;|&lt;|&gt;|&#x2019;|&#8217;|&nbsp;/g, m => map[m]);\n  }\n\n  // 1. Acceso seguro: Si la ruta no existe, devuelve undefined en lugar de romper\n  const rawItems = $input.item.json?.rss?.channel?.item;\n\n  // 2. Normalización a Array\n  const items = Array.isArray(rawItems)\n    ? rawItems\n    : (rawItems ? [rawItems] : []);\n\n  // 3. Procesamiento\n  return items.map(item => {\n    let text = item['content:encoded'] || item.description || '';\n\n    if (text && typeof text === 'string') {\n      text = text\n        .replace(/<[^>]+>/g, ' ')\n        .replace(/\\s+/g, ' ')\n        .trim();\n      text = decodeEntities(text);\n    } else {\n      text = '';\n    }\n\n    return {\n      title: item.title,\n      link: item.link,\n      pubDate: item.pubDate,\n      creator: item['dc:creator'],\n      content: text\n    };\n  });\n\n} catch (err) {\n  return [{ error: true, message: err.message }];\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -432,
+        3328
+      ],
+      "id": "31fcb598-d586-40bd-95ae-fcd2764412ce",
+      "name": "Mapeo y limpieza HTML1",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://kyke_pockettts_pockettts:8080/tts",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "={{ $('Limpieza para TTS').item.json.cleanedTextForTTS }}"
+            },
+            {
+              "name": "voice_url",
+              "value": "http://127.0.0.1:8081/ref_new.wav"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          },
+          "timeout": 1800000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        5072,
+        3552
+      ],
+      "id": "a85e1684-dba3-4d5a-acac-09ef444b1326",
+      "name": "PocketTTS",
+      "retryOnFail": true,
+      "waitBetweenTries": 3000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-2.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        2000,
+        3920
+      ],
+      "id": "f235b939-14d6-48b0-bf16-aa0d75c7c30d",
+      "name": "gemini-2.5-flash-lite",
+      "credentials": {
+        "openRouterApi": {
+          "id": "k06ApvAuHk6UVThj",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n  let text = item.json.content || \"\";\n\n  // 1. Normalización Unicode (convierte guiones raros, espacios invisibles y caracteres a ASCII estándar)\n  text = text.normalize(\"NFKC\").replace(/\\u2011/g, \"-\");\n\n  // 2. Elimina el menú de navegación superior y enlaces de cabecera\n  text = text.replace(/Brut version [a-f0-9]+\\s*\\* \\[Contribute\\][\\s\\S]*?\\n\\n/gi, '');\n  text = text.replace(/^\\s*[\\*\\-]\\s*\\[(Contribute|Download)\\]\\(.*?\\)\\s*\\n?/gm, '');\n\n  // 3. Elimina bloques de licencias de software (MIT)\n  text = text.replace(/```[\\s\\S]*?Permission is hereby granted[\\s\\S]*?```/gi, '');\n  text = text.replace(/Permission is hereby granted[\\s\\S]*?OF THIS SOFTWARE\\./gi, '');\n\n  // 4. Limpia títulos Markdown con anclas conservando el nivel de encabezado (#)\n  // Ej: \"## [2.1](#slug) Identifying\" -> \"## Identifying\"\n  text = text.replace(/^(#+)\\s*\\[[\\d\\.]+\\]\\([^)]+\\)\\s*/gm, '$1 ');\n\n  // 5. Limpia enlaces de ancla en línea conservando el texto\n  // Ej: \"[shared scripts](#extending-the-environment)\" -> \"shared scripts\"\n  text = text.replace(/\\[([^\\]]+)\\]\\(#[^)]+\\)/g, '$1');\n\n  // 6. Limpia espacios en blanco al final de línea\n  text = text.replace(/[ \\t]+$/gm, '');\n\n  // 7. Normaliza saltos de línea excesivos (máximo 2 consecutivos)\n  text = text.replace(/\\n{3,}/g, '\\n\\n');\n\n  return {\n    json: {\n      ...item.json,\n      content_prelimpio: text.trim()\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -192,
+        2592
+      ],
+      "id": "b03d06f4-c75f-46a2-8c62-ffcaac05b1d8",
+      "name": "Pre-limpieza"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.content }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "articulo_limpio",
+              "description": "Especialista en extracción de contenido Markdown.\nInstrucciones de filtrado:\n1. Extrae únicamente el texto principal explicativo del artículo (documentación, párrafos de explicación y tablas).\n2. EXCLUYE estrictamente: menús de navegación superiores, listas de enlaces de pie de página/sidebar, cabeceras del sitio web, derechos de autor/licencias de software completas (como la licencia MIT al inicio) y enlaces a \"Contribute/Download\" del encabezado.\n3. CONSERVA el formato Markdown original del cuerpo principal (títulos, subtítulos, listas explicativas y bloques de código descriptivos dentro del texto).\n4. REGLA DE SEGURIDAD JSON: Devuelve todo el texto filtrado como un único string limpio dentro de la propiedad 'articulo_limpio'."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        496,
+        2576
+      ],
+      "id": "58058325-7bd2-4da5-b3fc-fe0a0395d32f",
+      "name": "Information Extractor Antiguo",
+      "retryOnFail": false,
+      "waitBetweenTries": 500,
+      "disabled": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Resumes y limpias artículos. Devuelves SOLAMENTE el texto principal en Markdown. Sin introducciones, sin saludos, sin explicaciones.\nExtrae el contenido principal del siguiente texto pre-filtrado. Elimina cualquier menú o pie de página restante y conserva solo la explicación y secciones del artículo:\n{{ $json.content_prelimpio }}",
+        "messages": {
+          "messageValues": []
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -48,
+        2592
+      ],
+      "id": "1f311e75-76c0-48ad-a0de-30ca2076725f",
+      "name": "Information Extractor",
+      "onError": "continueRegularOutput"
     }
   ],
   "pinData": {
     "Schedule": [
       {
         "json": {
-          "timestamp": "2025-12-03T05:40:06.025+01:00",
-          "Readable date": "December 3rd 2025, 5:40:06 am",
-          "Readable time": "5:40:06 am",
-          "Day of week": "Wednesday",
-          "Year": "2025",
-          "Month": "December",
-          "Day of month": "03",
-          "Hour": "05",
-          "Minute": "40",
-          "Second": "06",
-          "Timezone": "Europe/Madrid (UTC+01:00)"
+          "timestamp": "2026-10-15T04:45:15.013+02:00",
+          "Readable date": "October 15th 2026, 4:45:15 am",
+          "Readable time": "4:45:15 am",
+          "Day of week": "Thursday",
+          "Year": "2026",
+          "Month": "October",
+          "Day of month": "15",
+          "Hour": "04",
+          "Minute": "45",
+          "Second": "15",
+          "Timezone": "Europe/Madrid (UTC+02:00)"
+        },
+        "pairedItem": {
+          "item": 0
         }
       }
     ]
@@ -1600,12 +2210,7 @@
       "main": [
         [
           {
-            "node": "Aggregate",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Join Outputs",
+            "node": "Crear IDs para match",
             "type": "main",
             "index": 0
           }
@@ -1646,12 +2251,7 @@
             "index": 0
           },
           {
-            "node": "VentureBeat",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Axios Pro",
+            "node": "Axios",
             "type": "main",
             "index": 0
           },
@@ -1669,6 +2269,11 @@
             "node": "Historial",
             "type": "main",
             "index": 0
+          },
+          {
+            "node": "VentureBeat",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -1677,7 +2282,7 @@
       "main": [
         [
           {
-            "node": "Information Extractor",
+            "node": "Pre-limpieza",
             "type": "main",
             "index": 0
           }
@@ -1688,7 +2293,7 @@
       "main": [
         [
           {
-            "node": "Website Summarizer",
+            "node": "HTTP Request1",
             "type": "main",
             "index": 0
           }
@@ -1820,7 +2425,7 @@
       "main": [
         [
           {
-            "node": "Espera hasta las 6h",
+            "node": "PocketTTS",
             "type": "main",
             "index": 0
           }
@@ -1889,28 +2494,6 @@
         ]
       ]
     },
-    "VentureBeat": {
-      "main": [
-        [
-          {
-            "node": "Filter Fields 12",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Axios Pro": {
-      "main": [
-        [
-          {
-            "node": "Filter Fields 13",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Emerj AI Research": {
       "main": [
         [
@@ -1940,17 +2523,6 @@
             "node": "Merge",
             "type": "main",
             "index": 2
-          }
-        ]
-      ]
-    },
-    "Filter Fields 12": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 4
           }
         ]
       ]
@@ -1992,7 +2564,7 @@
       "main": [
         [
           {
-            "node": "Lista de distribución",
+            "node": "Espera hasta las 6h",
             "type": "main",
             "index": 0
           }
@@ -2006,43 +2578,6 @@
             "node": "Loop Over Items",
             "type": "main",
             "index": 0
-          }
-        ]
-      ]
-    },
-    "Think": {
-      "ai_tool": [
-        [
-          {
-            "node": "News Analyzer",
-            "type": "ai_tool",
-            "index": 0
-          },
-          {
-            "node": "Website Summarizer",
-            "type": "ai_tool",
-            "index": 0
-          },
-          {
-            "node": "Redactor",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Filtrado Historial": {
-      "main": [
-        [
-          {
-            "node": "Une Noticias e Historial",
-            "type": "main",
-            "index": 1
-          },
-          {
-            "node": "Final Join Outputs",
-            "type": "main",
-            "index": 2
           }
         ]
       ]
@@ -2062,136 +2597,7 @@
       "main": [
         [
           {
-            "node": "Parseo Noticias e Historial",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Parseo Noticias e Historial": {
-      "main": [
-        [
-          {
-            "node": "News Analyzer",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Gemini 2.5-flash": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "Website Summarizer",
-            "type": "ai_languageModel",
-            "index": 1
-          },
-          {
-            "node": "Redactor",
-            "type": "ai_languageModel",
-            "index": 0
-          },
-          {
-            "node": "News Analyzer",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Mistral Small": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "Website Summarizer",
-            "type": "ai_languageModel",
-            "index": 0
-          },
-          {
-            "node": "Redactor",
-            "type": "ai_languageModel",
-            "index": 1
-          },
-          {
-            "node": "News Analyzer",
-            "type": "ai_languageModel",
-            "index": 1
-          }
-        ]
-      ]
-    },
-    "News Analyzer": {
-      "main": [
-        [
-          {
-            "node": "Split Out News Data",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Final Join Outputs",
-            "type": "main",
-            "index": 1
-          },
-          {
-            "node": "Guardado Historial",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Website Summarizer": {
-      "main": [
-        [
-          {
-            "node": "Final Aggregate",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Redactor": {
-      "main": [
-        [
-          {
-            "node": "Limpieza para TTS",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "4.1-mini": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "Information Extractor",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Normalizador de Enlaces y Fusión de Contenido": {
-      "main": [
-        [
-          {
-            "node": "Redactor",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Information Extractor": {
-      "main": [
-        [
-          {
-            "node": "Restructurar",
+            "node": "Limpieza Pro-Análisis",
             "type": "main",
             "index": 0
           }
@@ -2231,42 +2637,6 @@
         ]
       ]
     },
-    "Alvaro": {
-      "main": [
-        [
-          {
-            "node": "PasarBase64",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Jaime",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Jaime": {
-      "main": [
-        [
-          {
-            "node": "PasarBase64",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Alvaro",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Validar Numero": {
       "main": [
         [
@@ -2293,7 +2663,67 @@
       "main": [
         [
           {
-            "node": "Alvaro",
+            "node": "Lista de distribución",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prueba": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizador de Enlaces y Fusión de Contenido": {
+      "main": [
+        [
+          {
+            "node": "Efemérides",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrado Historial": {
+      "main": [
+        [
+          {
+            "node": "Une Noticias e Historial",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Final Join Outputs",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Efemérides": {
+      "main": [
+        [
+          {
+            "node": "Redactor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limpieza Pro-Análisis": {
+      "main": [
+        [
+          {
+            "node": "News Analyzer",
             "type": "main",
             "index": 0
           }
@@ -2310,20 +2740,433 @@
           }
         ]
       ]
+    },
+    "Existe binario?": {
+      "main": [
+        [
+          {
+            "node": "PasarBase64",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Axios": {
+      "main": [
+        [
+          {
+            "node": "Filter Fields 13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "meta-llama/llama-3.3-70b-instruct": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Crear IDs para match": {
+      "main": [
+        [
+          {
+            "node": "Join Outputs",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Guardar en VPS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Teo": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Existe binario?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daniel2": {
+      "main": [
+        [
+          {
+            "node": "PasarBase64",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 2
+          }
+        ],
+        [
+          {
+            "node": "Daniel3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daniel": {
+      "main": [
+        [
+          {
+            "node": "PasarBase64",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 3
+          }
+        ],
+        [
+          {
+            "node": "Daniel2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-oss:120b-cloud": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "News Analyzer",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Daniel3": {
+      "main": [
+        [
+          {
+            "node": "PasarBase64",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "Teo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "News Analyzer": {
+      "main": [
+        [
+          {
+            "node": "Split Out News Data",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Guardado Historial",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Final Join Outputs",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Website Summarizer": {
+      "main": [
+        [
+          {
+            "node": "Final Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redactor": {
+      "main": [
+        [
+          {
+            "node": "Limpieza para TTS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gemini-3.1-flash-lite": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Markdown Conversion1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown Conversion1": {
+      "main": [
+        [
+          {
+            "node": "Solo Contenido Bueno",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Solo Contenido Bueno": {
+      "main": [
+        [
+          {
+            "node": "Website Summarizer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-oss:20b-cloud": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Website Summarizer",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "nemotron-3-super-120b-a12b": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "nemotron-3-nano-30b-a3b - A": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "nemotron-3-nano-30b-a3b - P": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "qwen/qwen3.5-9b": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ibm-granite/granite-4.2-8b": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Website Summarizer",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "JSON Output Parser 2",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Redactor",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "gemini-3.5-flash-lite": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Redactor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "wav2ogg": {
+      "main": [
+        [
+          {
+            "node": "PasarBase64",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "VentureBeat": {
+      "main": [
+        [
+          {
+            "node": "XML1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "XML1": {
+      "main": [
+        [
+          {
+            "node": "Mapeo y limpieza HTML1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mapeo y limpieza HTML1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "PocketTTS": {
+      "main": [
+        [
+          {
+            "node": "wav2ogg",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Daniel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gemini-2.5-flash-lite": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "News Analyzer",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "JSON Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pre-limpieza": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor Antiguo": {
+      "main": [
+        []
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Restructurar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1",
+    "binaryMode": "separate",
     "timezone": "Europe/Madrid",
     "callerPolicy": "workflowsFromSameOwner",
     "availableInMCP": false
   },
-  "versionId": "051708ff-3ea7-45d9-9417-8c00b5ee6615",
+  "versionId": "9eb8a6d3-73cb-43a1-9d69-8bc3e65c0565",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "6434ec3e42cbeca4460770f382b0d777ada4816e6e2e823489f950c2ff8fee35"
   },
+  "nodeGroups": [],
   "id": "YM1Wp5gneSnXKtJd",
   "tags": []
 }
