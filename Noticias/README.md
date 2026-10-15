@@ -37,7 +37,7 @@ Para que este workflow funcione, necesitarás:
       * Los nodos de comunidad [`n8n-nodes-evolution-api`](https://www.npmjs.com/package/n8n-nodes-evolution-api) y `@elevenlabs/n8n-nodes-elevenlabs`.
       * **ffmpeg** disponible dentro del contenedor de n8n (lo usa el nodo `wav2ogg`).
       * Permiso para usar `child_process` y `fs` en los nodos `Code` (variable de entorno `NODE_FUNCTION_ALLOW_BUILTIN`), necesario para `wav2ogg`.
-      * Una carpeta con escritura en `/home/node/boletin` (monta un volumen) para la copia del último boletín. (Para que se escuche [`aquí`](kyke.dpdns.org)  también.)
+      * Una carpeta con escritura en `/home/node/boletin` (monta un volumen) para la copia del último boletín. (Para que se escuche [aquí](kyke.dpdns.org)  también.)
   * Un **servidor propio para el servicio PocketTTS** (contenedor Docker, solo CPU, ver [sección 8](#-8-voz-autoalojada-pockettts)), en la misma red Docker que n8n, y un token de **Hugging Face**.
   * Una puerta de enlace de **WhatsApp API**, como **Evolution API** (usada en este flujo).
   * Una base de datos **Redis** (para el historial de noticias).
