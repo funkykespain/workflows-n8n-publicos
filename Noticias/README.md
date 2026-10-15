@@ -38,7 +38,7 @@ Para que este workflow funcione, necesitarás:
       * **ffmpeg** disponible dentro del contenedor de n8n (lo usa el nodo `wav2ogg`).
       * Permiso para usar `child_process` y `fs` en los nodos `Code` (variable de entorno `NODE_FUNCTION_ALLOW_BUILTIN`), necesario para `wav2ogg`.
       * Una carpeta con escritura en `/home/node/boletin` (monta un volumen) para la copia del último boletín. (Para que se escuche [aquí](https://kyke.dpdns.org)  también.)
-  * Un **servidor propio para el servicio PocketTTS** (contenedor Docker, solo CPU, ver [sección 8](#-8-voz-autoalojada-pockettts)), en la misma red Docker que n8n, y un token de **Hugging Face**.
+  * Un **servidor propio para el servicio PocketTTS** (contenedor Docker, solo CPU, ver [sección 8](https://github.com/funkykespain/workflows-n8n-publicos/tree/main/Noticias#%EF%B8%8F-8-voz-autoalojada-pockettts)), en la misma red Docker que n8n, y un token de **Hugging Face**.
   * Una puerta de enlace de **WhatsApp API**, como **Evolution API** (usada en este flujo).
   * Una base de datos **Redis** (para el historial de noticias).
   * Una cuenta de **Google Sheets** (para leer la lista de distribución).
@@ -55,7 +55,7 @@ Para que este workflow funcione, necesitarás:
 ## 📦 4. Archivos Incluidos
 
   * `Noticias.json`: El export completo del workflow de n8n.
-  * `PocketTTS/docker-compose.yml`: Despliegue del servicio de voz autoalojado (ver [sección 8](#-8-voz-autoalojada-pockettts)).
+  * `PocketTTS/docker-compose.yml`: Despliegue del servicio de voz autoalojado (ver [sección 8](https://github.com/funkykespain/workflows-n8n-publicos/tree/main/Noticias#%EF%B8%8F-8-voz-autoalojada-pockettts)).
   * `profile.png`: Imagen de perfil del bot.
   * `schema.png`: Diagrama visual del workflow.
   * `README.md`: Este documento explicativo.
@@ -64,7 +64,7 @@ Para que este workflow funcione, necesitarás:
 
 ## 🚀 5. Instalación e Importación del Workflow
 
-1.  **Despliega PocketTTS** siguiendo la [sección 8](#-8-voz-autoalojada-pockettts) y comprueba que responde en `http://<host>:8080/tts`.
+1.  **Despliega PocketTTS** siguiendo la [sección 8](https://github.com/funkykespain/workflows-n8n-publicos/tree/main/Noticias#%EF%B8%8F-8-voz-autoalojada-pockettts) y comprueba que responde en `http://<host>:8080/tts`.
 2.  Descarga el archivo `Noticias.json`.
 3.  En tu instancia de n8n, ve a **Import > From File**.
 4.  Selecciona el archivo `Noticias.json` y guarda el workflow.
