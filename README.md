@@ -41,7 +41,7 @@ Flujos de trabajo centrados en la curación, generación y distribución de cont
 
 | Proyecto | Descripción | Esquema del Flujo |
 | :--- | :--- | :--- |
-| <img src="https://github.com/funkykespain/workflows-n8n-publicos/blob/main/Noticias/profile.png?raw=true" width="100"><br/>[**Boletín de Audio IA**](Noticias/README.md) | **Generador de Boletín de Noticias en Audio.** Un sistema que escanea +10 fuentes de noticias tech, las procesa con una orquesta de 3 agentes de IA (Analista, Summarizer, Guionista) y distribuirá un resumen de audio diario por WhatsApp. | <img src="https://github.com/funkykespain/workflows-n8n-publicos/blob/main/Noticias/schema.png?raw=true" width="300"> |
+| <img src="https://github.com/funkykespain/workflows-n8n-publicos/blob/main/Noticias/profile.png?raw=true" width="100"><br/>[**Boletín de Audio IA**](Noticias/README.md) | **Generador de Boletín de Noticias en Audio.** Orquesta multi-agente que procesa fuentes tecnológicas, genera un podcast diario con voz autoalojada (PocketTTS) y gestiona una distribución segura por WhatsApp. | <img src="https://github.com/funkykespain/workflows-n8n-publicos/blob/main/Noticias/schema.png?raw=true" width="300"> |
 
 ## ⚙️ Utilidades y Meta-Workflows
 
